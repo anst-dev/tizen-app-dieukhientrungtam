@@ -1,0 +1,68 @@
+{
+  "result": {
+    "items": [
+      {
+        "maHienThiDieuKhienTrungTam": 22,
+        "tenManHinh": "M4: Màn hình bản đồ đường ống, tín hiệu áp lực SCADA, vị trí các điểm chảy",
+        "layout": 1,
+        "theme": "light",
+        "isActive": true,
+        "thoiGianHienThi": "2025-10-29T15:43:52.6913167",
+        "nguoiCapQuyen": "Ngô Sỹ Tuấn Anh",
+        "trangThaiQuyen": "Cấp quyền",
+        "stt": 4,
+        "id": 22
+      },
+      {
+        "maHienThiDieuKhienTrungTam": 23,
+        "tenManHinh": "M5: Màn hình thông tin điểm chảy",
+        "layout": 1,
+        "theme": "light",
+        "isActive": true,
+        "thoiGianHienThi": "2025-10-29T15:43:52.6913167",
+        "nguoiCapQuyen": "Ngô Sỹ Tuấn Anh",
+        "trangThaiQuyen": "Cấp quyền",
+        "stt": 5,
+        "id": 23
+      },
+      {
+        "maHienThiDieuKhienTrungTam": 24,
+        "tenManHinh": "M6: Màn hình thông tin lắp đặt mới, thay thế đồng hồ",
+        "layout": 1,
+        "theme": "light",
+        "isActive": true,
+        "thoiGianHienThi": "2025-10-29T15:43:52.6913167",
+        "nguoiCapQuyen": "Ngô Sỹ Tuấn Anh",
+        "trangThaiQuyen": "Cấp quyền",
+        "stt": 6,
+        "id": 24
+      },
+      {
+        "maHienThiDieuKhienTrungTam": 26,
+        "tenManHinh": "M8: Màn hình thông tin kết quả ghi chỉ số đồng hồ",
+        "layout": 1,
+        "theme": "light",
+        "isActive": true,
+        "thoiGianHienThi": "2025-10-29T15:43:52.6913167",
+        "nguoiCapQuyen": "Ngô Sỹ Tuấn Anh",
+        "trangThaiQuyen": "Cấp quyền",
+        "stt": 8,
+        "id": 26
+      },
+      {
+        "maHienThiDieuKhienTrungTam": 27,
+        "tenManHinh": "M9: Màn hình thông tin kết quả công nợ",
+        "layout": 1,
+        "theme": "light",
+        "isActive": true,
+        "thoiGianHienThi": "2025-10-29T15:43:52.6913167",
+        "nguoiCapQuyen": "Ngô Sỹ Tuấn Anh",
+        "trangThaiQuyen": "Cấp quyền",
+        "stt": 9,
+        "id": 27
+      }
+    ]
+  },
+  "success": true,
+  "error": null
+}

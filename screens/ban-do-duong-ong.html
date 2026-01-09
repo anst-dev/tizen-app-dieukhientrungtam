@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bản đồ đường ống - M4</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: #e2e8f0;
+            padding: 2rem;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid #3b82f6;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #60a5fa;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #94a3b8;
+            font-size: 1.2rem;
+        }
+
+        .content {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .card h2 {
+            color: #3b82f6;
+            margin-bottom: 1rem;
+        }
+
+        .map-placeholder {
+            width: 100%;
+            height: 400px;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            font-size: 1.5rem;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(100, 116, 139, 0.2);
+        }
+
+        .status-value {
+            color: #10b981;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗺️ Bản đồ đường ống</h1>
+            <p>Màn hình M4 - Hệ thống mạng lưới cấp nước</p>
+        </div>
+
+        <div class="content">
+            <div class="card" style="grid-column: span 2;">
+                <h2>Bản đồ mạng lưới</h2>
+                <div class="map-placeholder">
+                    [Bản đồ đường ống sẽ hiển thị ở đây]
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Thông tin hệ thống</h2>
+                <div class="status-item">
+                    <span>Tổng chiều dài:</span>
+                    <span class="status-value">1,234 km</span>
+                </div>
+                <div class="status-item">
+                    <span>Số điểm nút:</span>
+                    <span class="status-value">456</span>
+                </div>
+                <div class="status-item">
+                    <span>Áp suất trung bình:</span>
+                    <span class="status-value">5.2 bar</span>
+                </div>
+                <div class="status-item">
+                    <span>Lưu lượng:</span>
+                    <span class="status-value">12,345 m³/h</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Trạng thái</h2>
+                <div class="status-item">
+                    <span>Hoạt động bình thường:</span>
+                    <span class="status-value">95%</span>
+                </div>
+                <div class="status-item">
+                    <span>Cảnh báo:</span>
+                    <span style="color: #f59e0b;">3</span>
+                </div>
+                <div class="status-item">
+                    <span>Sự cố:</span>
+                    <span style="color: #ef4444;">1</span>
+                </div>
+                <div class="status-item">
+                    <span>Bảo trì:</span>
+                    <span style="color: #8b5cf6;">2</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
