@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo Cáo Tiến Độ Thi Công</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #F1F5F9;
+            --card-bg: #FFFFFF;
+            --text-primary: #1E293B;
+            --text-secondary: #64748B;
+            --accent-primary: #3B82F6;
+            /* Blue */
+            --accent-secondary: #0EA5E9;
+            /* Sky */
+            --accent-success: #10B981;
+            /* Emerald */
+            --accent-warning: #F59E0B;
+            /* Amber */
+            --accent-danger: #EF4444;
+            /* Red */
+            --border-color: #E2E8F0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+        }
+
+        /* === HEADER === */
+        header {
+            background: var(--card-bg);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            z-index: 10;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .brand-logo {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .brand-info h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #0F172A, #334155);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        .brand-info p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .clock {
+            text-align: right;
+        }
+
+        .clock-time {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .clock-date {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* === MAIN CONTENT === */
+        main {
+            padding: 1.5rem;
+            display: grid;
+            grid-template-columns: 55fr 45fr;
+            /* 55% Info, 45% Charts */
+            gap: 1.5rem;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        /* === LEFT COLUMN: INFO === */
+        .info-col {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .info-col::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .info-col::-webkit-scrollbar-thumb {
+            background-color: #CBD5E1;
+            border-radius: 3px;
+        }
+
+        .project-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.25rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .project-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .project-header {
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .project-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent-primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .project-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.4;
+        }
+
+        /* Table Styles within Card */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            text-align: left;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            font-weight: 600;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table td {
+            padding: 0.75rem 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            border-bottom: 1px solid #F1F5F9;
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .col-work {
+            font-weight: 600;
+        }
+
+        .col-val {
+            text-align: right;
+            font-family: 'Plus Jakarta Sans', monospace;
+            font-weight: 600;
+        }
+
+        .val-badge {
+            display: inline-block;
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+            background: #F8FAFC;
+            color: var(--text-primary);
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .val-high {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-success);
+        }
+
+        /* === RIGHT COLUMN: CHARTS === */
+        .charts-col {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .chart-card {
+            flex: 1;
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .chart-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chart-title::before {
+            content: '';
+            width: 4px;
+            height: 1.25rem;
+            background: var(--accent-primary);
+            border-radius: 2px;
+        }
+
+        .chart-container-wrapper {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            min-height: 0;
+        }
+
+        /* === FOOTER === */
+        footer {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--text-secondary);
+        }
+
+        .status-dot.active {
+            background-color: var(--accent-success);
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+        }
+
+        /* Loading */
+        #loading {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.9);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            transition: opacity 0.3s;
+        }
+
+        #loading.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #E2E8F0;
+            border-top-color: var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- LOADING -->
+    <div id="loading">
+        <div class="spinner"></div>
+        <p style="margin-top: 1rem; font-weight: 600; color: var(--text-secondary);">Đang tải dữ liệu...</p>
+    </div>
+
+    <!-- HEADER -->
+    <header>
+        <div class="brand">
+            <div class="brand-logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 3v18h18" />
+                    <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3" />
+                </svg>
+            </div>
+            <div class="brand-info">
+                <h1>DASHBOARD THI CÔNG</h1>
+                <p>Theo Dõi Tiến Độ Mạng Cấp 1 & 2</p>
+            </div>
+        </div>
+        <div class="clock">
+            <div class="clock-time" id="clock-time">--:--</div>
+            <div class="clock-date" id="clock-date">--/--/----</div>
+        </div>
+    </header>
+
+    <!-- CONTENT -->
+    <main>
+        <!-- LEFT: INFO LIST -->
+        <div class="info-col" id="info-col">
+            <!-- Project Cards Injected Here -->
+        </div>
+
+        <!-- RIGHT: CHARTS -->
+        <div class="charts-col">
+            <!-- Chart 1: Month -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h2 class="chart-title" style="--accent-primary: var(--accent-success);">Lũy Kế Trong Tháng</h2>
+                </div>
+                <div class="chart-container-wrapper">
+                    <canvas id="monthChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 2: Year -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h2 class="chart-title">Lũy Kế Trong Năm</h2>
+                </div>
+                <div class="chart-container-wrapper">
+                    <canvas id="yearChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="status-pill">
+            <div class="status-dot" id="api-dot"></div>
+            <span id="api-status">Connecting...</span>
+        </div>
+        <div id="last-update">Last update: --:--</div>
+    </footer>
+
+    <script>
+        // === CONFIG ===
+        const API_URL = 'http://localhost:44311/api/services/app/Report/GetReportDataNoCount';
+        const AUTH_TOKEN = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjQ0MiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJuc3RhbmgiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJuc3RhbmhAbmF3YXNjby5jb20udm4iLCJBc3BOZXQuSWRlbnRpdHkuU2VjdXJpdHlTdGFtcCI6IlJNRFdIVExXTU1LUzdZNElGM1FMVlEyRUU2Q1ZRNjJRIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjpbIkFkbWluIiwixJDEg25nIGvDvSBuZ2jhu4kiXSwic3ViIjoiNDQyIiwianRpIjoiOWJlYmU0NzMtMmM5OC00NTczLTk2OGYtMzlmZjRmY2IzYTdkIiwiaWF0IjoxNzM3NTUyMTI5LCJuYmYiOjE3Mzc1NTIxMjksImV4cCI6MjA1MjkxMjEyOSwiaXNzIjoiRVJQIiwiYXVkIjoiRVJQIn0.i5NWUse89skdwOKFXnaBAYJA-JQBkNDYyO5ucfbVHi4';
+
+        // === STATE ===
+        // ĐĂNG KÝ PLUGIN ĐỂ LABELS LUÔN HIỂN THỊ (KHÔNG CẦN HOVER)
+        Chart.register(ChartDataLabels);
+
+        let monthChart = null;
+        let yearChart = null;
+
+        // === UTILS ===
+        function formatNumber(num) {
+            return num ? num.toLocaleString('vi-VN') : '0';
+        }
+
+        function cleanText(text) {
+            return text ? text.replace(/[\r\n]+/g, ' ').trim() : '';
+        }
+
+        // === CLOCK ===
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock-time').textContent = now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('clock-date').textContent = now.toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' });
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // === RENDERING ===
+        function renderInfo(items) {
+            const container = document.getElementById('info-col');
+            container.innerHTML = '';
+
+            // Group by TenCongTrinh
+            const groups = {};
+            items.forEach(item => {
+                const name = cleanText(item.TenCongTrinh);
+                if (!groups[name]) groups[name] = [];
+                groups[name].push(item);
+            });
+
+            // Create Cards
+            Object.keys(groups).forEach(projectName => {
+                const groupItems = groups[projectName];
+
+                // Card HTML
+                const card = document.createElement('div');
+                card.className = 'project-card';
+
+                let rowsHTML = groupItems.map((item, idx) => `
+                    <tr>
+                        <td class="col-work">
+                            <div style="display:flex; align-items:center;">
+                                <span style="background:#F1F5F9; color:#64748B; padding:2px 6px; border-radius:4px; font-size:10px; margin-right:8px; font-weight:700;">#${item.STT}</span>
+                                ${item.NoiDungCongViec}
+                            </div>
+                        </td>
+                        <td class="col-val">${item.KhoiLuongNgayTruocLienKe > 0 ? `<span class="val-badge">${formatNumber(item.KhoiLuongNgayTruocLienKe)}</span>` : '-'}</td>
+                        <td class="col-val"><span class="val-badge ${item.LuyKeTrongThang > 0 ? 'val-high' : ''}">${formatNumber(item.LuyKeTrongThang)}</span></td>
+                        <td class="col-val">${formatNumber(item.LuyKeTrongNam)}</td>
+                    </tr>
+                `).join('');
+
+                card.innerHTML = `
+                    <div class="project-header">
+                        <div class="project-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 22h20"/><path d="M12 2v20"/><path d="M2.5 7a11 11 0 0 1 19 0"/><path d="M12 11l-3 3-5-5"/><path d="M12 11l3 3 5-5"/></svg>
+                        </div>
+                        <div class="project-title">${projectName}</div>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 40%">Hạng Mục</th>
+                                <th style="width: 20%; text-align:right">Ngày Trước</th>
+                                <th style="width: 20%; text-align:right">Tháng</th>
+                                <th style="width: 20%; text-align:right">Năm</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rowsHTML}
+                        </tbody>
+                    </table>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // === CHARTS ===
+        function initCharts() {
+            const commonOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                        titleFont: { family: 'Plus Jakarta Sans', size: 13 },
+                        bodyFont: { family: 'Plus Jakarta Sans', size: 13 },
+                        padding: 10,
+                        cornerRadius: 8,
+                        displayColors: false
+                    },
+                    datalabels: {
+                        display: true, // LUÔN HIỂN THỊ - không cần hover
+                        color: '#FFFFFF',
+                        backgroundColor: 'rgba(15, 23, 42, 0.85)',
+                        borderRadius: 4,
+                        padding: { top: 4, bottom: 4, left: 6, right: 6 },
+                        anchor: 'end',
+                        align: 'end',
+                        offset: 6,
+                        font: {
+                            family: 'Plus Jakarta Sans',
+                            weight: '700',
+                            size: 13
+                        },
+                        formatter: (val) => val > 0 ? val.toLocaleString('vi-VN') : ''
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' }, color: '#64748B' }
+                    },
+                    y: {
+                        grid: { color: '#F1F5F9', borderDash: [4, 4] },
+                        ticks: { font: { family: 'Plus Jakarta Sans', size: 10 }, color: '#94A3B8' },
+                        beginAtZero: true
+                    }
+                },
+                layout: { padding: { top: 20, right: 30, left: 0, bottom: 0 } }
+            };
+
+            // Month Chart
+            const ctxMonth = document.getElementById('monthChart').getContext('2d');
+            monthChart = new Chart(ctxMonth, {
+                type: 'bar',
+                data: { labels: [], datasets: [] },
+                options: commonOptions
+            });
+
+            // Year Chart
+            const ctxYear = document.getElementById('yearChart').getContext('2d');
+            yearChart = new Chart(ctxYear, {
+                type: 'bar',
+                data: { labels: [], datasets: [] },
+                options: commonOptions
+            });
+        }
+
+        function updateCharts(items) {
+            // Helper function để rút gọn tên
+            const shortenName = (text) => {
+                const shortened = text
+                    .replace(/Ống nhựa /i, '')
+                    .replace(/Ống thép /i, 'Thép ')
+                    .replace(/tráng kẽm/i, '')
+                    .replace(/PE100 PN10/i, '');
+                return shortened.length > 18 ? shortened.substring(0, 18) + '..' : shortened;
+            };
+
+            // CHỈ LẤY CÁC ITEMS CÓ GIÁ TRỊ > 0 CHO MỖI BIỂU ĐỒ
+            const monthItems = items.filter(i => i.LuyKeTrongThang > 0);
+            const yearItems = items.filter(i => i.LuyKeTrongNam > 0);
+
+            // Update Month Chart
+            const monthLabels = monthItems.map(i => shortenName(i.NoiDungCongViec));
+            const monthData = monthItems.map(i => i.LuyKeTrongThang);
+            const monthBarThickness = monthItems.length > 6 ? 18 : 28;
+
+            monthChart.data = {
+                labels: monthLabels,
+                datasets: [{
+                    label: 'Tháng',
+                    data: monthData,
+                    backgroundColor: '#10B981',
+                    borderRadius: 6,
+                    barThickness: monthBarThickness
+                }]
+            };
+            monthChart.update();
+
+            // Update Year Chart
+            const yearLabels = yearItems.map(i => shortenName(i.NoiDungCongViec));
+            const yearData = yearItems.map(i => i.LuyKeTrongNam);
+            const yearBarThickness = yearItems.length > 6 ? 18 : 28;
+
+            yearChart.data = {
+                labels: yearLabels,
+                datasets: [{
+                    label: 'Năm',
+                    data: yearData,
+                    backgroundColor: '#3B82F6',
+                    borderRadius: 6,
+                    barThickness: yearBarThickness
+                }]
+            };
+            yearChart.update();
+        }
+
+        // === API ===
+        async function fetchData() {
+            const apiStatus = document.getElementById('api-status');
+            const apiDot = document.getElementById('api-dot');
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'accept': 'text/plain',
+                        'Content-Type': 'application/json',
+                        'Authorization': AUTH_TOKEN
+                    },
+                    body: JSON.stringify({
+                        "reportPath": "tt.dktt_ThongKeThiCongMangCap12",
+                        "page": 0,
+                        "format": "html",
+                        "parameters": {}
+                    })
+                });
+
+                if (!res.ok) throw new Error('Network response was not ok');
+                const data = await res.json();
+
+                if (data.result && data.result.items) {
+                    renderInfo(data.result.items);
+                    updateCharts(data.result.items);
+
+                    apiStatus.textContent = "Connected";
+                    apiStatus.style.color = "var(--accent-success)";
+                    apiDot.classList.add('active');
+
+                    // Hide loading
+                    document.getElementById('loading').classList.add('hidden');
+                    document.getElementById('last-update').textContent = `Cập nhật: ${new Date().toLocaleTimeString('vi-VN')}`;
+                }
+
+            } catch (error) {
+                console.error("Fetch error:", error);
+                apiStatus.textContent = "Disconnected";
+                apiStatus.style.color = "var(--accent-danger)";
+                apiDot.classList.remove('active');
+            }
+        }
+
+        // === INIT ===
+        window.addEventListener('DOMContentLoaded', () => {
+            initCharts();
+            fetchData();
+            setInterval(fetchData, 60000); // 1 min refresh
+        });
+
+    </script>
+</body>
+
+</html>
