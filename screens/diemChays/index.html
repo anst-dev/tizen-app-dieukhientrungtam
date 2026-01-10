@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Executive Dashboard - Giám Sát Điểm Chảy</title>
+    <!-- Fonts: Inter for clean, modern look -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-color: #0B1120;
+            --card-bg: rgba(30, 41, 59, 0.6);
+            --text-primary: #F1F5F9;
+            --text-secondary: #94A3B8;
+            --accent-primary: #38bdf8;
+            --accent-success: #34d399;
+            --accent-warning: #fbbf24;
+            --accent-danger: #f87171;
+            --accent-purple: #8b5cf6;
+            --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 20%);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+        }
+
+        /* --- Header --- */
+        header {
+            height: 10vh;
+            padding: 0 3vw;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: var(--glass-border);
+            background: linear-gradient(to right, rgba(15, 23, 42, 0.8), transparent);
+        }
+
+        .brand h1 {
+            font-size: 3vh;
+            margin: 0;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(90deg, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand span {
+            font-size: 1.8vh;
+            color: var(--accent-primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: block;
+            margin-bottom: 0.5vh;
+        }
+
+        .clock {
+            text-align: right;
+        }
+
+        .clock-time {
+            font-size: 4vh;
+            font-weight: 300;
+            line-height: 1;
+        }
+
+        .clock-date {
+            font-size: 1.8vh;
+            color: var(--text-secondary);
+            margin-top: 0.5vh;
+        }
+
+        /* --- Main Layout --- */
+        main {
+            height: 90vh;
+            padding: 2vh 3vw;
+            display: grid;
+            grid-template-columns: 20% 40% 40%;
+            grid-template-rows: 45% 55%;
+            gap: 2vh;
+        }
+
+        /* Stats are now in the first column, spanning both rows */
+        .stats-column {
+            grid-column: 1;
+            grid-row: 1 / span 2;
+            display: flex;
+            flex-direction: column;
+            gap: 2vh;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: var(--glass-border);
+            border-radius: 12px;
+            padding: 2vh 1.5vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex: 1;
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: scale(1.02);
+            background: rgba(51, 65, 85, 0.6);
+        }
+
+        .stat-label {
+            font-size: 1.6vh;
+            color: var(--text-secondary);
+            margin-bottom: 0.5vh;
+        }
+
+        .stat-value {
+            font-size: 4.5vh;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .stat-trend {
+            font-size: 1.4vh;
+            margin-top: 0.5vh;
+        }
+
+        /* Charts */
+        .chart-panel-1 {
+            grid-column: 2;
+            grid-row: 1;
+        }
+
+        .chart-panel-2 {
+            grid-column: 3;
+            grid-row: 1;
+        }
+
+        .panel {
+            background: var(--card-bg);
+            border: var(--glass-border);
+            border-radius: 12px;
+            padding: 1.5vh;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .panel-header {
+            font-size: 1.8vh;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1vh;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 0.5vh;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chart-container {
+            flex: 1;
+            position: relative;
+            min-height: 0;
+        }
+
+        /* Table spans bottom row of col 2 and 3 */
+        .table-panel {
+            grid-column: 2 / span 2;
+            grid-row: 2;
+        }
+
+        /* --- Table --- */
+        .table-container {
+            overflow: hidden;
+            flex: 1;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            color: var(--text-secondary);
+            font-size: 1.5vh;
+            padding-bottom: 1vh;
+            font-weight: 500;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        td {
+            padding: 1.2vh 0;
+            font-size: 1.6vh;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            vertical-align: middle;
+        }
+
+        .cell-location {
+            max-width: 35vw;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: var(--text-secondary);
+        }
+
+        .cell-time {
+            font-family: monospace;
+            color: var(--text-secondary);
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 1.3vh;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-overdue {
+            background: rgba(248, 113, 113, 0.2);
+            color: var(--accent-danger);
+            border: 1px solid rgba(248, 113, 113, 0.3);
+            animation: pulse-red 2s infinite;
+        }
+
+        .badge-processing {
+            background: rgba(251, 191, 36, 0.2);
+            color: var(--accent-warning);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        @keyframes pulse-red {
+            0% {
+                box-shadow: 0 0 0 0 rgba(248, 113, 113, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(248, 113, 113, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(248, 113, 113, 0);
+            }
+        }
+
+        .loading-mask {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-color);
+            z-index: 999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s;
+            pointer-events: none;
+        }
+
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* --- New Button & Modal Styles --- */
+        .btn-view-all {
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid var(--accent-primary);
+            color: var(--accent-primary);
+            padding: 0.5vh 1.5vw;
+            border-radius: 6px;
+            font-size: 1.4vh;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-view-all:hover,
+        .btn-view-all.focused {
+            background: var(--accent-primary);
+            color: #000;
+            box-shadow: 0 0 15px var(--accent-primary);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: var(--bg-color);
+            border: 1px solid var(--accent-primary);
+            border-radius: 12px;
+            width: 90%;
+            height: 90%;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+            padding: 2vw;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2vh;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 1vh;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 3vh;
+            color: var(--text-primary);
+        }
+
+        .modal-close {
+            color: var(--text-secondary);
+            font-size: 1.5vh;
+        }
+
+        .modal-body {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .modal-body table td {
+            font-size: 1.8vh;
+            padding: 1.5vh 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loading" class="loading-mask">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Modal Structure -->
+    <div id="all-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📋 Tất Cả Điểm Chảy Chưa Hoàn Thành</h2>
+                <span class="modal-close">Nhấn [Back] hoặc [ESC] để đóng</span>
+            </div>
+            <div class="modal-body table-container">
+                <table id="all-table">
+                    <thead>
+                        <tr>
+                            <th>Mã ĐC</th>
+                            <th>Vị Trí</th>
+                            <th>Số Điện Thoại</th>
+                            <th>Ngày Tiếp Nhận</th>
+                            <th>Thời gian (Phút)</th>
+                            <th>Trạng Thái</th>
+                        </tr>
+                    </thead>
+                    <tbody id="all-body">
+                        <!-- Filled by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <header>
+        <div class="brand">
+            <h1>Thông tin điểm chảy</h1>
+            <!-- Button marked as focusable -->
+            <button id="btn-view-all" class="btn-view-all focusable" onclick="openModal()">
+                Xem Tất Cả
+            </button>
+        </div>
+        <div class="clock">
+            <div class="clock-time" id="clock-time">--:--</div>
+            <div class="clock-date" id="clock-date">...</div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Col 1: Key Stats -->
+        <div class="stats-column">
+            <div class="stat-card">
+                <div class="stat-label">Tổng Điểm Chảy Tháng</div>
+                <div class="stat-value" id="val-total" style="color: var(--text-primary)">--</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Đã Xử Lý</div>
+                <div class="stat-value" id="val-done" style="color: var(--accent-success)">--</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Đang Xử Lý</div>
+                <div class="stat-value" id="val-pending" style="color: var(--accent-warning)">--</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Nghe Dò (Số Vị Trí)</div>
+                <div class="stat-value" id="val-listening-loc" style="color: var(--accent-purple)">--</div>
+            </div>
+        </div>
+
+        <!-- Col 2 Row 1: Chart 1 (Process Overview) -->
+        <div class="panel chart-panel-1">
+            <div class="panel-header">Tình Hình Xử Lý</div>
+            <div class="chart-container">
+                <canvas id="processChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Col 3 Row 1: Chart 2 (Listening) -->
+        <div class="panel chart-panel-2">
+            <div class="panel-header">Hoạt Động Nghe Dò</div>
+            <div class="chart-container">
+                <canvas id="listeningChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Col 2 & 3 Row 2: Top 5 List -->
+        <div class="panel table-panel">
+            <div class="panel-header">
+                <div>
+                    <span>⚠️ Top 5 Điểm Chảy Chờ Xử Lý Lâu Nhất</span>
+                    <span style="font-size: 1.4vh; color: var(--text-secondary); display:block">Ưu tiên xử lý
+                        ngay</span>
+                </div>
+
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mã ĐC</th>
+                            <th>Vị Trí</th>
+                            <th>Ngày Tiếp Nhận</th>
+                            <th>Thời Quá hạn (Phút)</th>
+                            <th>Trạng Thái</th>
+                        </tr>
+                    </thead>
+                    <tbody id="top5-body">
+                        <!-- Rendered via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // --- CONSTANTS ---
+        const API_BASE = 'http://localhost:44311/api/services/app/Report/GetReportDataNoCount';
+        const AUTH_TOKEN = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjQ0MiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJuc3RhbmgiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJuc3RhbmhAbmF3YXNjby5jb20udm4iLCJBc3BOZXQuSWRlbnRpdHkuU2VjdXJpdHlTdGFtcCI6IlJNRFdIVExXTU1LUzdZNElGM1FMVlEyRUU2Q1ZRNjJRIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjpbIkFkbWluIiwixJDEg25nIGvDvSBuZ2jhu4kiXSwic3ViIjoiNDQyIiwianRpIjoiOWJlYmU0NzMtMmM5OC00NTczLTk2OGYtMzlmZjRmY2IzYTdkIiwiaWF0IjoxNzM3NTUyMTI5LCJuYmYiOjE3Mzc1NTIxMjksImV4cCI6MjA1MjkxMjEyOSwiaXNzIjoiRVJQIiwiYXVkIjoiRVJQIn0.i5NWUse89skdwOKFXnaBAYJA-JQBkNDYyO5ucfbVHi4';
+        const XSRF_TOKEN = 'CfDJ8Jj_fLMZXdVGiF7LaxJKgH67zIadLPmx1rQUBmngplHfSzqmbvtWTw6wRiTBlIDSLmpo1XHvWPM0an_N6ktkr8iNrRtYQAqWPvfHKMhityf02HYc46dwr46xGnnRjVT_Qad-BzC-MxYcOeazYY9iP44swyLUZg6AJ6TjBiiYt7mjKgu8QoRHgIciWuKMrH8V1Q';
+
+        // --- GLOBAL STATE ---
+        let charts = {};
+        let allLeakPoints = [];
+        let isModalOpen = false;
+
+        // --- CLOCK ---
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock-time').innerText = now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('clock-date').innerText = now.toLocaleDateString('vi-VN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // --- API HELPER ---
+        async function fetchReport(reportPath) {
+            try {
+                const res = await fetch(API_BASE, {
+                    method: 'POST',
+                    headers: {
+                        'accept': 'text/plain',
+                        'Content-Type': 'application/json',
+                        'Authorization': AUTH_TOKEN,
+                        'X-XSRF-TOKEN': XSRF_TOKEN
+                    },
+                    body: JSON.stringify({
+                        reportPath: reportPath,
+                        page: 0,
+                        format: 'HTML',
+                        parameters: {}
+                    })
+                });
+
+                if (!res.ok) throw new Error('API Error');
+                const data = await res.json();
+                return data?.result?.items || [];
+            } catch (e) {
+                console.error("Fetch Error:", e);
+                return [];
+            }
+        }
+
+        // --- DATA PROCESSING ---
+        async function reloadData() {
+            document.getElementById('loading').style.opacity = '1';
+
+            // Parallel fetch
+            const [summaryData, detailData] = await Promise.all([
+                fetchReport('tt.dktt_TongHopDiemChays'),
+                fetchReport('tt.dktt_TongHopDiemChayChuaHoanThanhs')
+            ]);
+
+            const summary = summaryData[0] || {
+                SoLuongDiemChayTrongThang: 0,
+                SoLuongDaXuLy: 0,
+                SoLuongDangXuLy: 0,
+                SoLuongNgheDoTrongThang: 0,
+                SoLuongViTriDangNgheDo: 0
+            };
+
+            // Calculate Stats
+            const total = summary.SoLuongDiemChayTrongThang || 0;
+            const done = summary.SoLuongDaXuLy || 0;
+            const pending = summary.SoLuongDangXuLy || 0;
+            const rate = total > 0 ? Math.round((done / total) * 100) : 0;
+
+            const listeningCount = summary.SoLuongNgheDoTrongThang || 0;
+            const listeningLocs = summary.SoLuongViTriDangNgheDo || 0;
+
+            // Analyse Details
+            const validDetails = detailData.filter(i => i.MaDiemChay);
+            validDetails.sort((a, b) => new Date(a.ThoiGianTiepNhan) - new Date(b.ThoiGianTiepNhan));
+
+            // Store globally for Modal
+            allLeakPoints = validDetails;
+
+            const top5 = validDetails.slice(0, 5);
+
+            // --- UPDATE UI ---
+            document.getElementById('val-total').innerText = total;
+            document.getElementById('val-done').innerText = done;
+            document.getElementById('val-pending').innerText = pending;
+            document.getElementById('val-listening-loc').innerText = listeningLocs;
+
+            // Update Charts
+            updateCharts(total, done, pending, listeningCount, listeningLocs);
+
+            // Update Top 5 Table
+            const tbody = document.getElementById('top5-body');
+            tbody.innerHTML = '';
+            top5.forEach(item => {
+                tbody.appendChild(createRow(item));
+            });
+
+            // Update Modal if open
+            if (isModalOpen) renderModalRows();
+
+            document.getElementById('loading').style.opacity = '0';
+        }
+
+        function createRow(item) {
+            const tr = document.createElement('tr');
+            const isOverdue = item.QuaHanKhaoSat === 1;
+            const receivedDate = new Date(item.ThoiGianTiepNhan);
+
+            // Task 5: Use Minutes from API if available
+            const minutes = item.KhoangThoiGianKhaoSat_Phut || 0;
+            // Format number (e.g. 1,234)
+            const formattedMin = new Intl.NumberFormat('vi-VN').format(minutes);
+
+            tr.innerHTML = `
+                <td style="font-weight:600; color: #fff;">${item.MaDiemChay}</td>
+                <td><div class="cell-location" title="${item.ViTri}">${item.ViTri}</div></td>
+                <td class="cell-time">${receivedDate.toLocaleDateString('vi-VN')}</td>
+                <td style="color:${minutes > 4320 ? '#f87171' : '#ccc'}">${formattedMin} phút</td>
+                <td>
+                    <span class="badge ${isOverdue ? 'badge-overdue' : 'badge-processing'}">
+                        ${isOverdue ? 'QUÁ HẠN' : 'Đang xử lý'}
+                    </span>
+                </td>
+            `; // 4320 mins = 3 days, logic kept same as previous "3 days" check, just simpler for color
+            return tr;
+        }
+
+        // --- CHARTS ---
+        function updateCharts(total, done, pending, listeningCount, listeningLocs) {
+            // Chart 1: Process Overview (Total, Processed, Pending)
+            const ctxProcess = document.getElementById('processChart').getContext('2d');
+            if (charts.process) charts.process.destroy();
+
+            charts.process = new Chart(ctxProcess, {
+                type: 'bar',
+                data: {
+                    labels: ['Đang xử lý', 'Đã xử lý', 'Tổng số'],
+                    datasets: [{
+                        label: 'Số lượng',
+                        data: [pending, done, total],
+                        backgroundColor: ['rgba(251, 191, 36, 0.7)', 'rgba(52, 211, 153, 0.7)', 'rgba(56, 189, 248, 0.7)'],
+                        borderColor: ['#fbbf24', '#34d399', '#38bdf8'],
+                        borderWidth: 1,
+                        borderRadius: 6,
+                        barPercentage: 0.6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y', // Horizontal Bar for better readability
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+                        y: { grid: { display: false }, ticks: { color: '#fff', font: { size: 14 } } }
+                    }
+                }
+            });
+
+            // Chart 2: Listening stats
+            const ctxListening = document.getElementById('listeningChart').getContext('2d');
+            if (charts.listening) charts.listening.destroy();
+
+            charts.listening = new Chart(ctxListening, {
+                type: 'bar',
+                data: {
+                    labels: ['Số lần nghe dò', 'Vị trí đang nghe'],
+                    datasets: [{
+                        label: 'Số lượng',
+                        data: [listeningCount, listeningLocs],
+                        backgroundColor: ['rgba(139, 92, 246, 0.7)', 'rgba(236, 72, 153, 0.7)'],
+                        borderColor: ['#8b5cf6', '#ec4899'],
+                        borderWidth: 1,
+                        borderRadius: 6,
+                        barPercentage: 0.5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+                        x: { grid: { display: false }, ticks: { color: '#fff', font: { size: 14 } } }
+                    }
+                }
+            });
+        }
+
+        // --- MODAL LOGIC ---
+        function openModal() {
+            isModalOpen = true;
+            document.getElementById('all-modal').style.display = 'flex';
+            renderModalRows();
+
+            // Set focus to the modal body for scrolling
+            // In a more complex app we might focus a 'close' button or the first row
+            // Here we just ensure focus trap or allow scroll
+            document.querySelector('.modal-body').focus();
+        }
+
+        function closeModal() {
+            isModalOpen = false;
+            document.getElementById('all-modal').style.display = 'none';
+        }
+
+        function renderModalRows() {
+            const tbody = document.getElementById('all-body');
+            tbody.innerHTML = '';
+
+            allLeakPoints.forEach(item => {
+                const tr = document.createElement('tr');
+                const isOverdue = item.QuaHanKhaoSat === 1;
+                const receivedDate = new Date(item.ThoiGianTiepNhan);
+
+                // Task 5: Use Minutes
+                const minutes = item.KhoangThoiGianKhaoSat_Phut || 0;
+                const formattedMin = new Intl.NumberFormat('vi-VN').format(minutes);
+
+                tr.innerHTML = `
+                    <td style="font-weight:600; color: #fff;">${item.MaDiemChay}</td>
+                    <td><div class="cell-location" style="max-width: 25vw" title="${item.ViTri}">${item.ViTri}</div></td>
+                    <td>${item.SoDienThoai || ''}</td>
+                    <td class="cell-time">${receivedDate.toLocaleDateString('vi-VN')}</td>
+                    <td style="color:${minutes > 4320 ? '#f87171' : '#ccc'}">${formattedMin} phút</td>
+                    <td>
+                        <span class="badge ${isOverdue ? 'badge-overdue' : 'badge-processing'}">
+                            ${isOverdue ? 'QUÁ HẠN' : 'Đang xử lý'}
+                        </span>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // --- INITIALIZATION ---
+        window.onload = () => {
+            reloadData();
+            // Initial focus setup
+            updateFocus();
+        };
+        setInterval(reloadData, 300000); // 5 minutes refresh
+
+        // --- NAVIGATION & INPUT ---
+        // Simple Focus Manager
+
+        const focusableSelectors = '.focusable';
+        let focusIndex = 0;
+
+        function getFocusables() {
+            // If modal is open, we might want to change what is focusable or just handle scroll
+            // For this mission, only the 'View All' button is explicitly focusable in main view.
+            return Array.from(document.querySelectorAll(focusableSelectors));
+        }
+
+        function updateFocus() {
+            const els = getFocusables();
+            if (els.length === 0) return;
+
+            // Wrap index
+            if (focusIndex < 0) focusIndex = els.length - 1;
+            if (focusIndex >= els.length) focusIndex = 0;
+
+            // Remove focus class
+            els.forEach(el => el.classList.remove('focused'));
+
+            // Add focus class
+            els[focusIndex].classList.add('focused');
+            els[focusIndex].focus();
+        }
+
+        window.addEventListener('keydown', function (e) {
+            // console.log('Key:', e.key, e.keyCode);
+
+            // BACK / ESCAPE
+            if (e.key === 'Escape' || e.keyCode === 10009 || e.key === 'Back') {
+                if (isModalOpen) {
+                    closeModal();
+                    e.preventDefault();
+                    return;
+                }
+            }
+
+            // NAVIGATION
+            if (isModalOpen) {
+                // Modal Navigation (Scroll)
+                if (e.keyCode === 38) { // Up
+                    document.querySelector('.modal-body').scrollBy({ top: -100, behavior: 'smooth' });
+                }
+                if (e.keyCode === 40) { // Down
+                    document.querySelector('.modal-body').scrollBy({ top: 100, behavior: 'smooth' });
+                }
+            } else {
+                // Dashboard Navigation
+                const els = getFocusables();
+
+                if (e.keyCode === 37) { // Left
+                    focusIndex--;
+                    updateFocus();
+                }
+                else if (e.keyCode === 39) { // Right
+                    focusIndex++;
+                    updateFocus();
+                }
+                else if (e.keyCode === 13) { // Enter
+                    if (els[focusIndex]) els[focusIndex].click();
+                }
+
+                // Keep page scroll for Up/Down if needed, or disable if we have no vertical focusables
+            }
+        });
+
+        // Ensure Mouse hover also sets focus style or compatible behavior
+        document.addEventListener('mouseover', function (e) {
+            if (e.target.classList.contains('focusable')) {
+                // Optional: Synchronize focusIndex with mouse hover
+            }
+        });
+
+    </script>
+</body>
+
+</html>

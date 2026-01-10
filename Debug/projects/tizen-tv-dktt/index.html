@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Hệ thống giám sát phòng điều khiển</title>
+    
+    <!-- OpenLayers CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.3.0/ol.css">
+    
+    <!-- Application CSS -->
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="app-loading" class="app-loading">
+        <div class="loading-content">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+            </div>
+            <h2>Đang khởi động hệ thống...</h2>
+            <p>Vui lòng đợi trong giây lát</p>
+        </div>
+    </div>
+
+    <!-- Error Screen -->
+    <div id="app-error" class="app-error" style="display: none;">
+        <div class="error-content">
+            <h2>Lỗi</h2>
+            <p id="error-message"></p>
+            <button onclick="location.reload()">Thử lại</button>
+        </div>
+    </div>
+
+    <!-- Map Fullscreen Container -->
+    <div id="map-fullscreen-container" class="view-container" style="display: none;"></div>
+
+    <!-- Dashboard Container -->
+    <div id="dashboard-container" class="view-container" style="display: none;"></div>
+
+    <!-- Detail Container -->
+    <div id="detail-container" class="view-container" style="display: none;">
+        <div class="detail-wrapper">          
+            <div class="detail-content">
+                <div class="widget-grid">
+                    <div class="detail-widget top-left" tabindex="0">
+                        <h3>Trạng thái</h3>
+                        <div class="widget-content" id="widget-status"></div>
+                    </div>
+                    <div class="detail-widget top-right" tabindex="0">
+                        <h3>Biểu đồ</h3>
+                        <div class="widget-content" id="widget-chart"></div>
+                    </div>
+                    <div class="detail-widget bottom-left" tabindex="0">
+                        <h3>Cảnh báo</h3>
+                        <div class="widget-content" id="widget-alerts"></div>
+                    </div>
+                    <div class="detail-widget bottom-right" tabindex="0">
+                        <h3>Thông tin</h3>
+                        <div class="widget-content" id="widget-info"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- OpenLayers JS -->
+    <script src="https://cdn.jsdelivr.net/npm/ol@v7.3.0/dist/ol.js"></script>
+
+    <!-- Core Configuration -->
+    <script src="src/core/Config.js"></script>
+
+    <!-- Services -->
+    <script src="src/services/ApiService.js"></script>
+    <script src="src/services/ScreenManager.js"></script>
+
+    <!-- Components -->
+    <script src="src/components/map/MapFullscreen.js"></script>
+    <script src="src/components/dashboard/DashboardGrid.js"></script>
+    <script src="src/components/dashboard/NavigationManager.js"></script>
+
+    <!-- Core Application -->
+    <script src="src/core/Router.js"></script>
+    <script src="src/core/Routes.js"></script>
+    <script src="src/core/App.js"></script>
+</body>
+</html>

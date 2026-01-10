@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -103,11 +104,30 @@
         }
 
         /* Color Themes */
-        .kpi-total { --card-color: #64748b; --card-glow: rgba(100, 116, 139, 0.3); }
-        .kpi-processing { --card-color: #f59e0b; --card-glow: rgba(245, 158, 11, 0.3); }
-        .kpi-completed { --card-color: #10b981; --card-glow: rgba(16, 185, 129, 0.3); }
-        .kpi-monitoring { --card-color: #3b82f6; --card-glow: rgba(59, 130, 246, 0.3); }
-        .kpi-locations { --card-color: #8b5cf6; --card-glow: rgba(139, 92, 246, 0.3); }
+        .kpi-total {
+            --card-color: #64748b;
+            --card-glow: rgba(100, 116, 139, 0.3);
+        }
+
+        .kpi-processing {
+            --card-color: #f59e0b;
+            --card-glow: rgba(245, 158, 11, 0.3);
+        }
+
+        .kpi-completed {
+            --card-color: #10b981;
+            --card-glow: rgba(16, 185, 129, 0.3);
+        }
+
+        .kpi-monitoring {
+            --card-color: #3b82f6;
+            --card-glow: rgba(59, 130, 246, 0.3);
+        }
+
+        .kpi-locations {
+            --card-color: #8b5cf6;
+            --card-glow: rgba(139, 92, 246, 0.3);
+        }
 
         /* Charts Section */
         .charts-section {
@@ -206,8 +226,15 @@
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
         }
 
         .days-overdue {
@@ -239,11 +266,19 @@
         }
 
         @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <!-- Header -->
@@ -386,10 +421,10 @@
         // Update DateTime
         function updateDateTime() {
             const now = new Date();
-            const options = { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
+            const options = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
                 day: 'numeric',
                 hour: '2-digit',
                 minute: '2-digit',
@@ -577,6 +612,193 @@
 
         // Auto refresh every 5 minutes
         setInterval(refreshData, 5 * 60 * 1000);
+
+        // ===== NAVIGATION FOR MULTIPLE INPUT DEVICES =====
+        // Support for: Tizen TV Remote, Keyboard, Mouse
+
+        const SCROLL_AMOUNT = 200; // pixels to scroll per arrow key press
+        const PAGE_SCROLL_AMOUNT = window.innerHeight * 0.8; // 80% of viewport height
+        const ZOOM_KEYS = ['AudioVolumeUp', 'AudioVolumeDown', 'VolumeUp', 'VolumeDown'];
+        const ZOOM_KEY_CODES = [175, 174, 447, 448];
+
+        // ===== KEYBOARD NAVIGATION =====
+        document.addEventListener('keydown', function (e) {
+            // Prevent default for navigation keys
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Escape',
+                'PageUp', 'PageDown', 'Home', 'End', ' '].includes(e.key) ||
+                e.keyCode === 10009 || // Tizen Back key
+                ZOOM_KEYS.includes(e.key) ||
+                ZOOM_KEY_CODES.includes(e.keyCode)) {
+                e.preventDefault();
+            }
+
+            // Handle different keys
+            switch (e.key) {
+                case 'ArrowUp':
+                    // Scroll up
+                    window.scrollBy({
+                        top: -SCROLL_AMOUNT,
+                        behavior: 'smooth'
+                    });
+                    break;
+
+                case 'ArrowDown':
+                    // Scroll down
+                    window.scrollBy({
+                        top: SCROLL_AMOUNT,
+                        behavior: 'smooth'
+                    });
+                    break;
+
+                case 'ArrowLeft':
+                    // Scroll left (if needed)
+                    window.scrollBy({
+                        left: -SCROLL_AMOUNT,
+                        behavior: 'smooth'
+                    });
+                    break;
+
+                case 'ArrowRight':
+                    // Scroll right (if needed)
+                    window.scrollBy({
+                        left: SCROLL_AMOUNT,
+                        behavior: 'smooth'
+                    });
+                    break;
+
+                case 'PageUp':
+                    // Scroll up one page
+                    window.scrollBy({
+                        top: -PAGE_SCROLL_AMOUNT,
+                        behavior: 'smooth'
+                    });
+                    break;
+
+                case 'PageDown':
+                case ' ': // Space bar
+                    // Scroll down one page
+                    window.scrollBy({
+                        top: PAGE_SCROLL_AMOUNT,
+                        behavior: 'smooth'
+                    });
+                    break;
+
+                case 'Home':
+                    // Scroll to top
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                    break;
+
+                case 'End':
+                    // Scroll to bottom
+                    window.scrollTo({
+                        top: document.body.scrollHeight,
+                        behavior: 'smooth'
+                    });
+                    break;
+
+                case 'Escape':
+                    // Back to dashboard - communicate with parent window
+                    if (window.parent && window.parent !== window) {
+                        // This is inside iframe, send message to parent
+                        window.parent.postMessage({ action: 'navigateBack' }, '*');
+                    }
+                    break;
+            }
+
+            // Handle Tizen Back key (keyCode 10009)
+            if (e.keyCode === 10009) {
+                if (window.parent && window.parent !== window) {
+                    window.parent.postMessage({ action: 'navigateBack' }, '*');
+                }
+            }
+        });
+
+        // ===== MOUSE NAVIGATION =====
+        // Enable smooth scrolling via mouse wheel
+        let isScrolling = false;
+        let scrollTimeout;
+
+        document.addEventListener('wheel', function (e) {
+            // Prevent default browser scroll behavior for smoother control
+            e.preventDefault();
+
+            // Clear previous timeout
+            if (scrollTimeout) {
+                clearTimeout(scrollTimeout);
+            }
+
+            // Calculate scroll amount based on wheel delta
+            const scrollAmount = e.deltaY > 0 ? SCROLL_AMOUNT : -SCROLL_AMOUNT;
+
+            // Perform smooth scroll
+            window.scrollBy({
+                top: scrollAmount,
+                behavior: 'smooth'
+            });
+
+            // Set scrolling flag
+            isScrolling = true;
+
+            // Reset scrolling flag after a delay
+            scrollTimeout = setTimeout(() => {
+                isScrolling = false;
+            }, 150);
+        }, { passive: false });
+
+        // Enable click-and-drag scrolling
+        let isDragging = false;
+        let startY = 0;
+        let startScrollTop = 0;
+
+        document.addEventListener('mousedown', function (e) {
+            isDragging = true;
+            startY = e.pageY;
+            startScrollTop = window.pageYOffset;
+            document.body.style.cursor = 'grabbing';
+        });
+
+        document.addEventListener('mousemove', function (e) {
+            if (!isDragging) return;
+
+            const deltaY = startY - e.pageY;
+            window.scrollTo({
+                top: startScrollTop + deltaY,
+                behavior: 'auto' // instant scroll for dragging
+            });
+        });
+
+        document.addEventListener('mouseup', function () {
+            isDragging = false;
+            document.body.style.cursor = 'default';
+        });
+
+        document.addEventListener('mouseleave', function () {
+            isDragging = false;
+            document.body.style.cursor = 'default';
+        });
+
+        // ===== TIZEN TV HARDWARE KEY REGISTRATION =====
+        // Register Tizen hardware keys if available
+        if (window.tizen && window.tizen.tvinputdevice) {
+            try {
+                const keys = ['VolumeUp', 'VolumeDown'];
+                keys.forEach(key => {
+                    try {
+                        window.tizen.tvinputdevice.registerKey(key);
+                    } catch (err) {
+                        console.log('Cannot register key:', key);
+                    }
+                });
+            } catch (err) {
+                console.log('Tizen TV Input Device not available');
+            }
+        }
+
+
     </script>
 </body>
+
 </html>

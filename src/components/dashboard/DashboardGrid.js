@@ -272,6 +272,42 @@ class DashboardGrid {
         this.applyFlexLayout();
 
         this.restoreFocus(previousFocusStt);
+
+        // Auto-focus vào ô đầu tiên sau khi render xong
+        // Sử dụng setTimeout để đảm bảo DOM đã được update hoàn toàn
+        setTimeout(() => {
+            this.autoFocusFirstScreen();
+        }, 50);
+    }
+
+    /**
+     * Auto-focus vào ô màn hình đầu tiên (ưu tiên M0)
+     */
+    autoFocusFirstScreen() {
+        // Ưu tiên focus vào M0 (map screen) nếu tồn tại
+        let targetElement = this.container?.querySelector('.screen-tile[data-stt="0"]');
+
+        // Nếu không có M0, focus vào ô đầu tiên
+        if (!targetElement) {
+            targetElement = this.container?.querySelector('.screen-tile');
+        }
+
+        if (targetElement) {
+            const navigationManager = window.app?.navigationManager;
+            if (navigationManager && typeof navigationManager.moveFocus === 'function') {
+                navigationManager.moveFocus(targetElement);
+            } else {
+                // Fallback: focus trực tiếp
+                document.querySelectorAll('.screen-tile.focused').forEach((focusedEl) => {
+                    if (focusedEl !== targetElement) {
+                        focusedEl.classList.remove('focused');
+                    }
+                });
+                targetElement.focus();
+                targetElement.classList.add('focused');
+            }
+            Config.log('debug', 'Auto-focused to first screen tile:', targetElement);
+        }
     }
 
     /**
@@ -357,11 +393,19 @@ class DashboardGrid {
 
         // Calculate neighbors
         const up = row > 0 ? index - columns : -1;
-        const down = row < rows - 1 && index + columns < this.screens.length ? index + columns : -1;
-        const left = col > 0
-            ? index - 1
-            : (row > 0 ? Math.min(row * columns - 1, this.screens.length - 1) : -1);
-        const right = index + 1 < this.screens.length ? index + 1 : -1;
+
+        let down = -1;
+        if (row < rows - 1) {
+            // Check if direct neighbor below exists
+            if (index + columns < this.screens.length) {
+                down = index + columns;
+            } else {
+                // If not (irregular grid), snap to the last item
+                down = this.screens.length - 1;
+            }
+        }
+        const left = col > 0 ? index - 1 : -1;
+        const right = col < columns - 1 && index + 1 < this.screens.length ? index + 1 : -1;
 
         const getNeighborStt = (neighborIndex) => {
             if (neighborIndex < 0 || neighborIndex >= this.screens.length) {

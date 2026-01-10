@@ -1,0 +1,192 @@
+# Project type [web_app, test_runner]
+project_type: web_app
+
+# Default profile, Tizen API version
+profile: tv-samsung
+api_version: "2.3"
+
+# Build type [Debug/ Release/ Test]
+build_type: Debug
+
+# Output name for application
+output_name: BasicProject3
+
+# Output path for build
+output_path: ""
+
+# Enable size optimization of wgt for web workspace
+opt: false
+
+# Signing profile to be used for Tizen package signing
+# If value is empty: "", active signing profile will be used
+# Else If value is ".", default signing profile will be used
+signing_profile: ""
+
+# list of certs in web project (.trust-anchor)
+trust_anchor: []
+
+# list of files in web project (.html,.css etc) and resources
+files:
+  - .git/COMMIT_EDITMSG
+  - .git/FETCH_HEAD
+  - .git/HEAD
+  - .git/config
+  - .git/description
+  - .git/hooks/applypatch-msg.sample
+  - .git/hooks/commit-msg.sample
+  - .git/hooks/fsmonitor-watchman.sample
+  - .git/hooks/post-update.sample
+  - .git/hooks/pre-applypatch.sample
+  - .git/hooks/pre-commit.sample
+  - .git/hooks/pre-merge-commit.sample
+  - .git/hooks/pre-push.sample
+  - .git/hooks/pre-rebase.sample
+  - .git/hooks/pre-receive.sample
+  - .git/hooks/prepare-commit-msg.sample
+  - .git/hooks/push-to-checkout.sample
+  - .git/hooks/sendemail-validate.sample
+  - .git/hooks/update.sample
+  - .git/index
+  - .git/info/exclude
+  - .git/logs/HEAD
+  - .git/logs/refs/heads/main
+  - .git/logs/refs/remotes/tizen-app-dieukhientrungtam/HEAD
+  - .git/logs/refs/remotes/tizen-app-dieukhientrungtam/main
+  - .git/objects/05/bd71b6ec2c1982d1e8a5653073281994564ae8
+  - .git/objects/06/a7290046efbb5723b9dc312da36fce27b5ff15
+  - .git/objects/07/48dc127c1f1c3a1a33cd7ea8c93c5f42174315
+  - .git/objects/09/217c140701bb37fddac7ee835d85397bc272f8
+  - .git/objects/0e/f032e541c36ce99605707c7075a9afe9adb39e
+  - .git/objects/12/d6cb4448955c248325d8c8f0d67b663d66fc40
+  - .git/objects/15/737de342079672445be7838c5653f4e6332af5
+  - .git/objects/15/d7a1b0e28633a07d4048101694d68caaa240e3
+  - .git/objects/17/b8b0a250abbfaa5ec65de91e79bb5480bf74a1
+  - .git/objects/1b/5f46039afa79ba574bb4cdab3fedac216ee742
+  - .git/objects/1f/9612b69ec5956aa65fc70987c235f223123a7f
+  - .git/objects/23/86351522759e2a0b051a0cb0e4b35a56dff088
+  - .git/objects/26/12efb2a3bea677f2359b33fdbb587558fc2bb3
+  - .git/objects/2f/b093cbd649f0dacd7d7631d582d20ebe7807eb
+  - .git/objects/37/5c7164d3ebd3aaf75eb738f55efec8d6ea7cc8
+  - .git/objects/39/3e860acc75099111ba92e49d0c7d86681ae7dd
+  - .git/objects/3b/d5d0a4803967bc0bf72a7dd66d7e292ed2e586
+  - .git/objects/3c/1c3d0e99158e76d81d662c14bbeb10d602e678
+  - .git/objects/3c/6fd20526afcf27a80243fbd7d1951cac2425e1
+  - .git/objects/3e/9f9101baf1b09c03b6967e1eb144e9f10a81f5
+  - .git/objects/42/2576f067a79631688affc8b24c91cb71036fa5
+  - .git/objects/43/957bf4a1815977a59ffa9fb30ab9f762fe1773
+  - .git/objects/47/1f795dd00e9d610bc20a11117ecf1bc723530b
+  - .git/objects/57/e93279969e76b94d841cf1570a9449a68af61c
+  - .git/objects/5d/dc6bd5f24cf4e67a53e20384dfc868809d10b3
+  - .git/objects/61/be88a3edcd6a31147eb7dbbb77ef3c274718ec
+  - .git/objects/64/7c3f9f4e521485471d6480f8ba8bdd53f851dd
+  - .git/objects/67/6eb67f0b60fb855ad8e8e03c62d3db6649b0b3
+  - .git/objects/6b/2e81257a27d98e0b7bb8866de51533f0ab92dd
+  - .git/objects/70/0182fa0d89457a0b494662fd3f8209c7ef866b
+  - .git/objects/71/826fb12402370c8c16e31882d6021e6f3d82ec
+  - .git/objects/76/95e704272c671cccc0560c20c2818e6be64b54
+  - .git/objects/78/f8f4b8295a01f0e12630e53037c8a1643f6529
+  - .git/objects/7a/64d9c5204dc40cc76a14e3099cbdd9b42bbb57
+  - .git/objects/7a/ab7fe2ec30e6c018e7d45a1904e0e3a0401a32
+  - .git/objects/7b/c821d2d94181cbde668c741c96a7fdca6e87a3
+  - .git/objects/7e/1ef3415d9fca982177b31ce60c8066250b9d1c
+  - .git/objects/80/5f7b4972ac5bfe26faa26cbd7c4bb02ea9277b
+  - .git/objects/82/5aa4fa16c1058932f815d2d3dfd436fb221bd9
+  - .git/objects/82/b42ff74947c2d434e05fd184b58d21850e592a
+  - .git/objects/83/b1dff5f809be4faedd15ba9c4cd64c7dfdcba1
+  - .git/objects/86/0ef7762e5d21926760e1cc18b81682ce936f81
+  - .git/objects/8a/2afaeec1129ed4f9190284414a4aa3d53454d4
+  - .git/objects/8a/68d7f0c234d12f07757dacc39135b892cb70d7
+  - .git/objects/8c/ab0563a89725255d2174be068a8f409e89921a
+  - .git/objects/91/9cfbaf5a1f7df2a788c6b07b07265fd45ab607
+  - .git/objects/93/4122037bd70ad4756ff8c0f8161fb004bbc129
+  - .git/objects/93/4db5887af63afdad12c5f76ee1fe45d12d0d00
+  - .git/objects/93/748fe5601bc380393a0d1b3135bbc2aa003a57
+  - .git/objects/93/cdb7538775b19f34cf69285e17b20defd43d5b
+  - .git/objects/95/cd91728f5b29d0ff0fadd82688f186ced435da
+  - .git/objects/97/65b1bda7e5bddf0925555ab204b887a873bf24
+  - .git/objects/a2/bb006e5fa18fa8a0e053c04711b7b1a8c976c1
+  - .git/objects/ac/3cf53a4b3fb9228d7e29ea0e1cc4081f25ced1
+  - .git/objects/b1/01b98af9102a3b7d37b8fac2167dd7fa6067d6
+  - .git/objects/b5/57a0b8a9e7dfd8127ea655c1fd65159b05be38
+  - .git/objects/b5/b2ad168d60afd310579c3ec169f02b37a1ddfb
+  - .git/objects/b5/c62a6fb57cd44ce420c5e548a3ebdc5351c716
+  - .git/objects/c2/65c4a52501018786e1acebc51941cac14a2765
+  - .git/objects/c4/87c068cae1a73c7bf7239555c1329610507ec9
+  - .git/objects/f1/289cf01b365426f62acd67eacd24250a27e1e9
+  - .git/refs/heads/main
+  - .git/refs/remotes/tizen-app-dieukhientrungtam/HEAD
+  - .git/refs/remotes/tizen-app-dieukhientrungtam/main
+  - .gitignore
+  - .project
+  - .settings/.jsdtscope
+  - .settings/org.eclipse.wst.css.core.prefs
+  - .settings/org.eclipse.wst.jsdt.ui.superType.container
+  - .settings/org.eclipse.wst.jsdt.ui.superType.name
+  - .sign/.manifest.tmp
+  - .sign/author-signature.xml
+  - .sign/signature1.xml
+  - .tproject
+  - .vscode/settings.json
+  - BasicProject3.wgt
+  - Quy định 15- Hiện thị thông tin liên quan hoạt động cấp nước của công ty ở phòng điều khiển trung tâm.pdf
+  - Quy định 15.md
+  - api-mock.json
+  - assets/css/dashboard.css
+  - assets/css/main.css
+  - assets/css/responsive.css
+  - css/map-fullscreen.css
+  - css/style.css
+  - icon.png
+  - images/10_ThatThoat.png
+  - images/11_ChatLuongNuoc.png
+  - images/1_VanHanh_HN.png
+  - images/2_VanHanh_CB.png
+  - images/3_Bom_Tang_Ap.png
+  - images/4_Scada.png
+  - images/5_DiemChay.png
+  - images/6_LDM_TDH.png
+  - images/7_TienDoThiCong.png
+  - images/8_GhiChiSo.png
+  - images/9_CongNo.png
+  - images/tizen_32.png
+  - index.html
+  - logs/combined.log
+  - logs/error.log
+  - screens/ChiTietDiemChay.html
+  - screens/ban-do-duong-ong.html
+  - src/components/dashboard/DashboardGrid.js
+  - src/components/dashboard/NavigationManager.js
+  - src/components/map/MapFullscreen.js
+  - src/core/App.js
+  - src/core/Config.js
+  - src/core/Router.js
+  - src/core/Routes.js
+  - src/services/ApiService.js
+  - src/services/ScreenManager.js
+  - style.css
+
+# list of files to exclude based on the matched patterns
+excludes:
+  - .Build/*
+  - .buildResult/*
+  - .csproj
+  - .externalToolBuilders/*
+  - .gn
+  - .obj/*
+  - .package/*
+  - .project
+  - .rds_delta
+  - .sdk_delta.info
+  - .settings/*
+  - .sign/*
+  - .tizen-ui-builder-tool.xml
+  - .tproject
+  - .wgt
+  - Build/*
+  - Debug/*
+  - Directory.Build.targets
+  - webUnitTest/*
+
+# project dependencies
+deps: []
+

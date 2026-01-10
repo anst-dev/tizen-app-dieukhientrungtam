@@ -1,0 +1,136 @@
+/**
+ * responsive.css - Responsive styles simplified for 100 inch TV
+ */
+
+/* Simplified responsive approach using viewport units
+   Font size is now based on viewport width in main.css
+   No need for complex media queries */
+
+/* Fine-tune font scaling for different viewport widths */
+@media screen and (min-width: 3840px) {
+    html {
+        /* For 100 inch TV - maintain readability */
+        font-size: calc(0.416vw); /* ~16px at 3840px */
+    }
+}
+
+/* Fallback for smaller screens */
+@media screen and (max-width: 1920px) {
+    html {
+        /* Scale down for smaller displays */
+        font-size: calc(0.833vw); /* ~16px at 1920px */
+    }
+}
+
+/* Body uses viewport units, no transform needed */
+
+/* Aspect Ratio Handling */
+@media (aspect-ratio: 16/9) {
+    /* Standard 16:9 ratio */
+    .dashboard-grid {
+        justify-content: space-evenly;
+    }
+}
+
+@media (aspect-ratio: 21/9) {
+    /* Ultra-wide displays */
+    .dashboard-grid[data-active="2"] .screen-tile,
+    .dashboard-grid[data-active="3"] .screen-tile {
+        flex-basis: calc(33.33% - var(--spacing-md));
+    }
+    
+    .dashboard-grid[data-active="4"] .screen-tile,
+    .dashboard-grid[data-active="5"] .screen-tile,
+    .dashboard-grid[data-active="6"] .screen-tile {
+        flex-basis: calc(25% - var(--spacing-md));
+    }
+}
+
+/* Portrait Mode (unlikely for TV but included for completeness) */
+@media (orientation: portrait) {
+    .dashboard-grid {
+        flex-direction: column;
+        flex-wrap: nowrap;
+    }
+    
+    .screen-tile {
+        flex-basis: auto !important;
+        width: 100%;
+        min-height: 200px;
+    }
+}
+
+/* High DPI Displays */
+@media (-webkit-min-device-pixel-ratio: 2),
+       (min-resolution: 192dpi) {
+    /* Sharper borders and shadows for high DPI */
+    .screen-tile {
+        border-width: 1px;
+    }
+    
+    *:focus {
+        outline-width: 2px;
+    }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Flex-based responsive grid adjustments */
+.dashboard-grid {
+    --auto-grid-min-size: 300px;
+}
+
+@supports (width: min(250px, 100%)) {
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(
+            auto-fit,
+            minmax(min(var(--auto-grid-min-size), 100%), 1fr)
+        );
+        grid-auto-rows: minmax(200px, 1fr);
+    }
+    
+    .screen-tile {
+        flex-basis: auto !important;
+        height: auto !important;
+    }
+}
+
+/* TV Remote Control Focus Visibility Enhancement */
+@media (hover: none) and (pointer: coarse) {
+    /* Enhance focus for TV remotes */
+    *:focus {
+        outline-width: 4px;
+        outline-offset: 4px;
+    }
+    
+    .screen-tile:focus {
+        transform: scale(1.05);
+        z-index: 10;
+    }
+    
+    .detail-widget:focus {
+        transform: scale(1.03);
+    }
+}
+
+/* Performance optimizations for low-end TVs */
+@media (max-width: 1920px) {
+    /* Reduce shadows and effects */
+    .screen-tile:hover {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Simplify animations */
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+    }
+}
