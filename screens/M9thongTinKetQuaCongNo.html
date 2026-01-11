@@ -28,92 +28,117 @@
             background: #cbd5e1;
             border-radius: 4px;
         }
+
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(247, 247, 246, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 5px solid #E2E8F0;
+            border-top-color: #3B82F6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
 
 <body
     class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 transition-colors duration-300 min-h-screen flex flex-col p-4 md:p-6 lg:p-8 overflow-hidden">
+    <div id="loading" class="loading-overlay active">
+        <div class="spinner"></div>
+        <p style="margin-top: 1rem; font-weight: 600; color: #64748B; font-size: 18px;">Đang tải dữ liệu...</p>
+    </div>
+
     <header class="flex justify-between items-center mb-8 px-2">
         <div>
-            <h1 class="text-3xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white uppercase">
-                Thông tin kết quả công nợ
-            </h1>
-            <p class="text-slate-500 dark:text-slate-400 text-lg lg:text-xl mt-2 font-medium">
-                Bảng điều khiển quản trị - Công ty Cấp nước
-            </p>
+            <h1 class="text-3xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white uppercase">Thông
+                tin kết quả công nợ</h1>
+            <p class="text-slate-500 dark:text-slate-400 text-lg lg:text-xl mt-2 font-medium">Bảng điều khiển quản trị -
+                Công ty Cấp nước</p>
         </div>
         <div class="text-right">
-            <div class="text-2xl lg:text-4xl font-bold font-mono text-primary">
-                14:35
-            </div>
-            <div class="text-slate-500 dark:text-slate-400 text-sm lg:text-lg">
-                Thứ Hai, 24/10/2023
-            </div>
+            <div id="clock-time" class="text-2xl lg:text-4xl font-bold font-mono text-primary">--:--</div>
+            <div id="clock-date" class="text-slate-500 dark:text-slate-400 text-sm lg:text-lg">...</div>
         </div>
     </header>
+
     <main class="flex-grow grid grid-cols-1 lg:grid-cols-12 gap-6 h-full">
+        <!-- Kỳ Hiện Tại -->
         <section class="lg:col-span-3 flex flex-col gap-6">
             <div class="flex items-center gap-2 mb-2">
                 <span class="material-icons text-primary text-3xl">today</span>
                 <h2 class="text-2xl font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Kỳ Hiện Tại
                 </h2>
             </div>
-            <div
+            <div id="card-ky-phatsinh"
                 class="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl shadow-lg border-l-8 border-blue-500 flex flex-col justify-between flex-1 relative overflow-hidden group">
-                <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <span class="material-icons text-6xl text-blue-500">trending_up</span>
-                </div>
+                <div class="absolute right-0 top-0 p-4 opacity-10"><span
+                        class="material-icons text-6xl text-blue-500">trending_up</span></div>
                 <h3 class="text-slate-500 dark:text-slate-400 font-medium text-lg uppercase mb-1">Phát sinh</h3>
-                <div class="text-4xl xl:text-5xl font-bold text-slate-900 dark:text-white truncate">
-                    12.4 <span class="text-2xl text-slate-500">Tỷ</span>
-                </div>
-                <div class="mt-4 flex items-center text-sm text-green-500 font-bold">
-                    <span class="material-icons text-sm mr-1">arrow_upward</span> 2.5% so với tháng trước
-                </div>
+                <div id="val-ky-phatsinh"
+                    class="text-4xl xl:text-5xl font-bold text-slate-900 dark:text-white truncate">-- <span
+                        class="text-2xl text-slate-500">Tỷ</span></div>
             </div>
-            <div
-                class="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl shadow-lg border-l-8 border-emerald-500 flex flex-col justify-between flex-1 relative overflow-hidden group">
-                <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <span class="material-icons text-6xl text-emerald-500">payments</span>
-                </div>
+            <div id="card-ky-dathu"
+                class="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl shadow-lg border-l-8 border-emerald-500 flex flex-col flex-1 relative overflow-hidden group">
+                <div class="absolute right-0 top-0 p-4 opacity-10"><span
+                        class="material-icons text-6xl text-emerald-500">payments</span></div>
                 <h3 class="text-slate-500 dark:text-slate-400 font-medium text-lg uppercase mb-1">Đã thu</h3>
-                <div class="text-4xl xl:text-5xl font-bold text-emerald-600 dark:text-emerald-400 truncate">
-                    8.9 <span class="text-2xl text-emerald-600/70 dark:text-emerald-400/70">Tỷ</span>
+                <div id="val-ky-dathu"
+                    class="text-4xl xl:text-5xl font-bold text-emerald-600 dark:text-emerald-400 mb-4">-- <span
+                        class="text-2xl text-emerald-500 ml-1">Tỷ</span></div>
+                <div class="mt-auto">
+                    <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5">
+                        <div id="progress-ky-dathu" class="bg-emerald-500 h-2.5 rounded-full" style="width: 0%"></div>
+                    </div>
+                    <p id="percent-ky-dathu" class="text-xs text-right mt-1 text-slate-400">0% hoàn thành</p>
                 </div>
-                <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5 mt-4">
-                    <div class="bg-emerald-500 h-2.5 rounded-full" style="width: 71%"></div>
-                </div>
-                <p class="text-xs text-right mt-1 text-slate-400">71% hoàn thành</p>
             </div>
-            <div
+            <div id="card-ky-conno"
                 class="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl shadow-lg border-l-8 border-orange-500 flex flex-col justify-between flex-1 relative overflow-hidden group">
-                <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <span class="material-icons text-6xl text-orange-500">pending_actions</span>
-                </div>
+                <div class="absolute right-0 top-0 p-4 opacity-10"><span
+                        class="material-icons text-6xl text-orange-500">pending_actions</span></div>
                 <h3 class="text-slate-500 dark:text-slate-400 font-medium text-lg uppercase mb-1">Còn nợ</h3>
-                <div class="text-4xl xl:text-5xl font-bold text-orange-600 dark:text-orange-400 truncate">
-                    3.5 <span class="text-2xl text-orange-600/70 dark:text-orange-400/70">Tỷ</span>
-                </div>
-                <div class="mt-4 text-sm text-slate-500 dark:text-slate-400">
-                    Cần thu hồi gấp
-                </div>
+                <div id="val-ky-conno"
+                    class="text-4xl xl:text-5xl font-bold text-orange-600 dark:text-orange-400 truncate">-- <span
+                        class="text-2xl text-orange-600/70">Tỷ</span></div>
             </div>
-            <div
+            <div id="card-ky-quahan"
                 class="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl shadow-lg border-l-8 border-red-600 flex flex-col justify-between flex-1 relative overflow-hidden group bg-red-50 dark:bg-red-900/10">
-                <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <span class="material-icons text-6xl text-red-600">warning</span>
-                </div>
+                <div class="absolute right-0 top-0 p-4 opacity-10"><span
+                        class="material-icons text-6xl text-red-600">warning</span></div>
                 <h3 class="text-red-800 dark:text-red-300 font-bold text-lg uppercase mb-1 flex items-center gap-2">
                     <span class="material-icons text-sm">error</span> Quá hạn
                 </h3>
-                <div class="text-4xl xl:text-5xl font-bold text-red-600 dark:text-red-500 truncate">
-                    1.2 <span class="text-2xl text-red-600/70 dark:text-red-500/70">Tỷ</span>
-                </div>
-                <div class="mt-4 text-sm text-red-700 dark:text-red-400 font-semibold">
-                    Ưu tiên xử lý
-                </div>
+                <div id="val-ky-quahan" class="text-4xl xl:text-5xl font-bold text-red-600 dark:text-red-500 truncate">
+                    -- <span class="text-2xl text-red-600/70">Tỷ</span></div>
             </div>
         </section>
+
+        <!-- Chart Section -->
         <section class="lg:col-span-6 flex flex-col h-full">
             <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center gap-2">
@@ -122,14 +147,10 @@
                         Khu Vực</h2>
                 </div>
                 <div class="flex gap-4">
-                    <div class="flex items-center gap-2">
-                        <span class="w-4 h-4 rounded-sm bg-blue-500"></span>
-                        <span class="text-sm font-medium">Vinh</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="w-4 h-4 rounded-sm bg-purple-500"></span>
-                        <span class="text-sm font-medium">10 Trạm</span>
-                    </div>
+                    <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-sm bg-blue-500"></span><span
+                            class="text-sm font-medium">Vinh</span></div>
+                    <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-sm bg-purple-500"></span><span
+                            class="text-sm font-medium">10 Trạm</span></div>
                 </div>
             </div>
             <div
@@ -139,100 +160,33 @@
                     </h3>
                     <p class="text-sm text-slate-400 dark:text-slate-500">Đơn vị: Tỷ VNĐ</p>
                 </div>
-                <div class="flex-grow flex items-end justify-around gap-4 pb-8 pt-16 relative">
-                    <div
-                        class="absolute inset-0 flex flex-col justify-between pointer-events-none pb-8 pt-16 opacity-20">
-                        <div class="w-full h-px bg-slate-400 border-dashed border-slate-400"></div>
-                        <div class="w-full h-px bg-slate-400 border-dashed border-slate-400"></div>
-                        <div class="w-full h-px bg-slate-400 border-dashed border-slate-400"></div>
-                        <div class="w-full h-px bg-slate-400 border-dashed border-slate-400"></div>
-                        <div class="w-full h-px bg-slate-400 border-dashed border-slate-400"></div>
-                    </div>
-                    <div class="flex flex-col items-center gap-2 group w-1/4 h-full justify-end">
-                        <div class="flex items-end gap-1 h-full w-full justify-center">
-                            <div
-                                class="w-1/3 bg-blue-500 rounded-t-lg relative transition-all duration-500 hover:bg-blue-400 h-[70%]">
-                                <span
-                                    class="absolute -top-8 w-full text-center font-bold text-blue-500 text-sm">24.5</span>
-                            </div>
-                            <div
-                                class="w-1/3 bg-purple-500 rounded-t-lg relative transition-all duration-500 hover:bg-purple-400 h-[45%]">
-                                <span
-                                    class="absolute -top-8 w-full text-center font-bold text-purple-500 text-sm">12.2</span>
-                            </div>
-                        </div>
-                        <span class="font-bold text-slate-600 dark:text-slate-300 mt-2">Phát sinh</span>
-                    </div>
-                    <div class="flex flex-col items-center gap-2 group w-1/4 h-full justify-end">
-                        <div class="flex items-end gap-1 h-full w-full justify-center">
-                            <div
-                                class="w-1/3 bg-blue-500 rounded-t-lg relative transition-all duration-500 hover:bg-blue-400 h-[60%]">
-                                <span
-                                    class="absolute -top-8 w-full text-center font-bold text-blue-500 text-sm">20.1</span>
-                            </div>
-                            <div
-                                class="w-1/3 bg-purple-500 rounded-t-lg relative transition-all duration-500 hover:bg-purple-400 h-[35%]">
-                                <span
-                                    class="absolute -top-8 w-full text-center font-bold text-purple-500 text-sm">9.5</span>
-                            </div>
-                        </div>
-                        <span class="font-bold text-slate-600 dark:text-slate-300 mt-2">Đã thu</span>
-                    </div>
-                    <div class="flex flex-col items-center gap-2 group w-1/4 h-full justify-end">
-                        <div class="flex items-end gap-1 h-full w-full justify-center">
-                            <div
-                                class="w-1/3 bg-blue-500 rounded-t-lg relative transition-all duration-500 hover:bg-blue-400 h-[30%] opacity-80">
-                                <span
-                                    class="absolute -top-8 w-full text-center font-bold text-blue-500 text-sm">4.4</span>
-                            </div>
-                            <div
-                                class="w-1/3 bg-purple-500 rounded-t-lg relative transition-all duration-500 hover:bg-purple-400 h-[20%] opacity-80">
-                                <span
-                                    class="absolute -top-8 w-full text-center font-bold text-purple-500 text-sm">2.7</span>
-                            </div>
-                        </div>
-                        <span class="font-bold text-slate-600 dark:text-slate-300 mt-2">Còn nợ</span>
-                    </div>
-                    <div class="flex flex-col items-center gap-2 group w-1/4 h-full justify-end">
-                        <div class="flex items-end gap-1 h-full w-full justify-center">
-                            <div
-                                class="w-1/3 bg-red-500 rounded-t-lg relative transition-all duration-500 hover:bg-red-400 h-[25%]">
-                                <span
-                                    class="absolute -top-8 w-full text-center font-bold text-red-500 text-sm">3.1</span>
-                            </div>
-                            <div
-                                class="w-1/3 bg-rose-400 rounded-t-lg relative transition-all duration-500 hover:bg-rose-300 h-[15%]">
-                                <span
-                                    class="absolute -top-8 w-full text-center font-bold text-rose-400 text-sm">1.5</span>
-                            </div>
-                        </div>
-                        <span class="font-bold text-red-600 dark:text-red-400 mt-2">Quá hạn</span>
-                    </div>
+                <div id="chart-container" class="flex-grow flex items-end justify-around gap-4 pb-8 pt-16 relative">
+                    <!-- Chart bars will be rendered here -->
                 </div>
             </div>
             <div class="mt-6 grid grid-cols-2 gap-6">
                 <div
                     class="bg-blue-900/10 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 p-4 rounded-xl flex items-center gap-4">
-                    <div class="p-3 bg-blue-500 rounded-full text-white">
-                        <span class="material-icons">water_drop</span>
+                    <div class="p-3 bg-blue-500 rounded-full text-white"><span class="material-icons">water_drop</span>
                     </div>
                     <div>
                         <p class="text-sm text-slate-500 dark:text-slate-400 uppercase font-semibold">Tổng Vinh</p>
-                        <p class="text-2xl font-bold text-slate-800 dark:text-white">68.2 Tỷ</p>
+                        <p id="total-vinh" class="text-2xl font-bold text-slate-800 dark:text-white">-- Tỷ</p>
                     </div>
                 </div>
                 <div
                     class="bg-purple-900/10 dark:bg-purple-900/30 border border-purple-200 dark:border-purple-800 p-4 rounded-xl flex items-center gap-4">
-                    <div class="p-3 bg-purple-500 rounded-full text-white">
-                        <span class="material-icons">location_on</span>
-                    </div>
+                    <div class="p-3 bg-purple-500 rounded-full text-white"><span
+                            class="material-icons">location_on</span></div>
                     <div>
                         <p class="text-sm text-slate-500 dark:text-slate-400 uppercase font-semibold">10 Trạm Cấp</p>
-                        <p class="text-2xl font-bold text-slate-800 dark:text-white">34.8 Tỷ</p>
+                        <p id="total-tram" class="text-2xl font-bold text-slate-800 dark:text-white">-- Tỷ</p>
                     </div>
                 </div>
             </div>
         </section>
+
+        <!-- Năm Tài Chính & Trước Tài Chính -->
         <section class="lg:col-span-3 flex flex-col gap-6">
             <div class="flex flex-col gap-4 flex-1">
                 <div class="flex items-center gap-2">
@@ -244,7 +198,7 @@
                     class="bg-surface-light dark:bg-surface-dark p-5 rounded-2xl shadow-md border-l-4 border-slate-500 dark:border-slate-600 flex justify-between items-center">
                     <div>
                         <p class="text-xs font-bold uppercase text-slate-400">Đầu kỳ</p>
-                        <p class="text-2xl font-bold text-slate-800 dark:text-slate-200">50.5 Tỷ</p>
+                        <p id="val-nam-dauky" class="text-2xl font-bold text-slate-800 dark:text-slate-200">-- Tỷ</p>
                     </div>
                     <span
                         class="material-icons text-slate-300 dark:text-slate-600 text-4xl">account_balance_wallet</span>
@@ -253,7 +207,8 @@
                     class="bg-surface-light dark:bg-surface-dark p-5 rounded-2xl shadow-md border-l-4 border-emerald-500 flex justify-between items-center">
                     <div>
                         <p class="text-xs font-bold uppercase text-slate-400">Đã thu</p>
-                        <p class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">38.2 Tỷ</p>
+                        <p id="val-nam-dathu" class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">-- Tỷ
+                        </p>
                     </div>
                     <span class="material-icons text-emerald-200 dark:text-emerald-800/50 text-4xl">check_circle</span>
                 </div>
@@ -261,7 +216,7 @@
                     class="bg-surface-light dark:bg-surface-dark p-5 rounded-2xl shadow-md border-l-4 border-orange-500 flex justify-between items-center">
                     <div>
                         <p class="text-xs font-bold uppercase text-slate-400">Còn nợ</p>
-                        <p class="text-2xl font-bold text-orange-600 dark:text-orange-400">12.3 Tỷ</p>
+                        <p id="val-nam-conno" class="text-2xl font-bold text-orange-600 dark:text-orange-400">-- Tỷ</p>
                     </div>
                     <span class="material-icons text-orange-200 dark:text-orange-800/50 text-4xl">hourglass_empty</span>
                 </div>
@@ -277,7 +232,7 @@
                     class="bg-surface-light dark:bg-surface-dark p-5 rounded-2xl shadow-md border-l-4 border-slate-500 dark:border-slate-600 flex justify-between items-center opacity-80">
                     <div>
                         <p class="text-xs font-bold uppercase text-slate-400">Đầu kỳ</p>
-                        <p class="text-2xl font-bold text-slate-800 dark:text-slate-200">18.2 Tỷ</p>
+                        <p id="val-truoc-dauky" class="text-2xl font-bold text-slate-800 dark:text-slate-200">-- Tỷ</p>
                     </div>
                     <span class="material-icons text-slate-300 dark:text-slate-600 text-4xl">restore</span>
                 </div>
@@ -285,7 +240,8 @@
                     class="bg-surface-light dark:bg-surface-dark p-5 rounded-2xl shadow-md border-l-4 border-emerald-500 flex justify-between items-center opacity-80">
                     <div>
                         <p class="text-xs font-bold uppercase text-slate-400">Đã thu</p>
-                        <p class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">15.0 Tỷ</p>
+                        <p id="val-truoc-dathu" class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">-- Tỷ
+                        </p>
                     </div>
                     <span class="material-icons text-emerald-200 dark:text-emerald-800/50 text-4xl">done_all</span>
                 </div>
@@ -293,22 +249,140 @@
                     class="bg-surface-light dark:bg-surface-dark p-5 rounded-2xl shadow-md border-l-4 border-orange-500 flex justify-between items-center opacity-80">
                     <div>
                         <p class="text-xs font-bold uppercase text-slate-400">Còn nợ</p>
-                        <p class="text-2xl font-bold text-orange-600 dark:text-orange-400">3.2 Tỷ</p>
+                        <p id="val-truoc-conno" class="text-2xl font-bold text-orange-600 dark:text-orange-400">-- Tỷ
+                        </p>
                     </div>
                     <span class="material-icons text-orange-200 dark:text-orange-800/50 text-4xl">warning_amber</span>
                 </div>
             </div>
         </section>
     </main>
+
     <footer class="mt-8 text-center text-slate-400 dark:text-slate-600 text-sm">
-        Hệ thống báo cáo quản trị nước thông minh - Cập nhật lần cuối: 15 phút trước
+        <span id="api-status">Đang kết nối...</span> | <span id="last-update">Cập nhật: --:--:--</span>
     </footer>
+
     <script>
-        // Force light mode as requested
+        // CONFIG
+        const API_URL = 'http://localhost:44311/api/services/app/Report/GetReportDataNoCount';
+        const AUTH_TOKEN = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjQ0MiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJuc3RhbmgiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJuc3RhbmhAbmF3YXNjby5jb20udm4iLCJBc3BOZXQuSWRlbnRpdHkuU2VjdXJpdHlTdGFtcCI6IlJNRFdIVExXTU1LUzdZNElGM1FMVlEyRUU2Q1ZRNjJRIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjpbIkFkbWluIiwixJDEg25nIGvDvSBuZ2jhu4kiXSwic3ViIjoiNDQyIiwianRpIjoiOWJlYmU0NzMtMmM5OC00NTczLTk2OGYtMzlmZjRmY2IzYTdkIiwiaWF0IjoxNzM3NTUyMTI5LCJuYmYiOjE3Mzc1NTIxMjksImV4cCI6MjA1MjkxMjEyOSwiaXNzIjoiRVJQIiwiYXVkIjoiRVJQIn0.i5NWUse89skdwOKFXnaBAYJA-JQBkNDYyO5ucfbVHi4';
+        const PAYLOAD = { "reportPath": "tt.dktt_BaoCaoKetQuaCongNo", "page": 0, "format": "html", "parameters": {} };
+
+        // HELPERS
+        const formatTy = (val) => (val / 1e9).toFixed(1);
+        const $ = (id) => document.getElementById(id);
+
+        // CLOCK
+        function updateClock() {
+            const now = new Date();
+            $('clock-time').textContent = now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+            $('clock-date').textContent = now.toLocaleDateString('vi-VN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // RENDER CHART BAR
+        function renderChart(data) {
+            const chartData = [
+                { label: 'Phát sinh', vinh: data.kyPhatSinh?.Vinh || 0, tram: data.kyPhatSinh?.Tram || 0, color: 'blue' },
+                { label: 'Đã thu', vinh: data.kyDaThu?.Vinh || 0, tram: data.kyDaThu?.Tram || 0, color: 'blue' },
+                { label: 'Còn nợ', vinh: data.kyConNo?.Vinh || 0, tram: data.kyConNo?.Tram || 0, color: 'blue' },
+                { label: 'Quá hạn', vinh: data.kyQuaHan?.Vinh || 0, tram: data.kyQuaHan?.Tram || 0, color: 'red' }
+            ];
+            const maxVal = Math.max(...chartData.flatMap(d => [d.vinh, d.tram]));
+            const container = $('chart-container');
+            container.innerHTML = `<div class="absolute inset-0 flex flex-col justify-between pointer-events-none pb-8 pt-16 opacity-20">
+                <div class="w-full h-px bg-slate-400"></div><div class="w-full h-px bg-slate-400"></div>
+                <div class="w-full h-px bg-slate-400"></div><div class="w-full h-px bg-slate-400"></div>
+                <div class="w-full h-px bg-slate-400"></div></div>` +
+                chartData.map(d => {
+                    const hV = maxVal > 0 ? Math.round((d.vinh / maxVal) * 100) : 0;
+                    const hT = maxVal > 0 ? Math.round((d.tram / maxVal) * 100) : 0;
+                    const colorV = d.color === 'red' ? 'bg-red-500 hover:bg-red-400 text-red-500' : 'bg-blue-500 hover:bg-blue-400 text-blue-500';
+                    const colorT = d.color === 'red' ? 'bg-rose-400 hover:bg-rose-300 text-rose-400' : 'bg-purple-500 hover:bg-purple-400 text-purple-500';
+                    const labelColor = d.color === 'red' ? 'text-red-600 dark:text-red-400' : 'text-slate-600 dark:text-slate-300';
+                    return `<div class="flex flex-col items-center gap-2 group w-1/4 h-full justify-end">
+                        <div class="flex items-end gap-1 h-full w-full justify-center">
+                            <div class="w-1/3 ${colorV.split(' ')[0]} rounded-t-lg relative transition-all duration-500 ${colorV.split(' ')[1]}" style="height:${hV}%">
+                                <span class="absolute -top-8 w-full text-center font-bold ${colorV.split(' ')[2]} text-sm">${formatTy(d.vinh)}</span>
+                            </div>
+                            <div class="w-1/3 ${colorT.split(' ')[0]} rounded-t-lg relative transition-all duration-500 ${colorT.split(' ')[1]}" style="height:${hT}%">
+                                <span class="absolute -top-8 w-full text-center font-bold ${colorT.split(' ')[2]} text-sm">${formatTy(d.tram)}</span>
+                            </div>
+                        </div>
+                        <span class="font-bold ${labelColor} mt-2">${d.label}</span>
+                    </div>`;
+                }).join('');
+        }
+
+        // UPDATE UI
+        function updateUI(items) {
+            const find = (muc, loai) => items.find(i => i.MucSTT === muc && i.LoaiChiTieu === loai);
+            const kyPhatSinh = find('I', 'PhatSinh'), kyDaThu = find('I', 'DaThu'), kyConNo = find('I', 'ConNo'), kyQuaHan = find('I', 'QuaHan');
+            const namDauKy = find('II', 'DauKy'), namDaThu = find('II', 'DaThu'), namConNo = find('II', 'ConNo');
+            const truocDauKy = find('III', 'DauKy'), truocDaThu = find('III', 'DaThu'), truocConNo = find('III', 'ConNo');
+
+            // Kỳ hiện tại
+            if (kyPhatSinh) $('val-ky-phatsinh').innerHTML = `${formatTy(kyPhatSinh.Tong)} <span class="text-2xl text-slate-500 ml-1">Tỷ</span>`;
+            if (kyDaThu) {
+                $('val-ky-dathu').innerHTML = `${formatTy(kyDaThu.Tong)} <span class="text-2xl text-emerald-500 ml-1">Tỷ</span>`;
+                const pct = kyPhatSinh?.Tong > 0 ? Math.round((kyDaThu.Tong / kyPhatSinh.Tong) * 100) : 0;
+                $('progress-ky-dathu').style.width = pct + '%';
+                $('percent-ky-dathu').textContent = pct + '% hoàn thành';
+            }
+            if (kyConNo) $('val-ky-conno').innerHTML = `${formatTy(kyConNo.Tong)} <span class="text-2xl text-orange-500 ml-1">Tỷ</span>`;
+            if (kyQuaHan) $('val-ky-quahan').innerHTML = `${formatTy(kyQuaHan.Tong)} <span class="text-2xl text-red-500 ml-1">Tỷ</span>`;
+
+            // Năm tài chính
+            if (namDauKy) $('val-nam-dauky').textContent = formatTy(namDauKy.Tong) + ' Tỷ';
+            if (namDaThu) $('val-nam-dathu').textContent = formatTy(namDaThu.Tong) + ' Tỷ';
+            if (namConNo) $('val-nam-conno').textContent = formatTy(namConNo.Tong) + ' Tỷ';
+
+            // Trước tài chính
+            if (truocDauKy) $('val-truoc-dauky').textContent = formatTy(truocDauKy.Tong) + ' Tỷ';
+            if (truocDaThu) $('val-truoc-dathu').textContent = formatTy(truocDaThu.Tong) + ' Tỷ';
+            if (truocConNo) $('val-truoc-conno').textContent = formatTy(truocConNo.Tong) + ' Tỷ';
+
+            // Totals
+            const totalVinh = (kyPhatSinh?.Vinh || 0) + (namDauKy?.Vinh || 0);
+            const totalTram = (kyPhatSinh?.Tram || 0) + (namDauKy?.Tram || 0);
+            $('total-vinh').textContent = formatTy(totalVinh) + ' Tỷ';
+            $('total-tram').textContent = formatTy(totalTram) + ' Tỷ';
+
+            // Chart
+            renderChart({ kyPhatSinh, kyDaThu, kyConNo, kyQuaHan });
+        }
+
+        // FETCH DATA
+        async function fetchData() {
+            try {
+                $('api-status').textContent = 'Đang tải...';
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'accept': 'text/plain', 'Content-Type': 'application/json', 'Authorization': AUTH_TOKEN },
+                    body: JSON.stringify(PAYLOAD)
+                });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                if (data.success && data.result?.items) {
+                    updateUI(data.result.items);
+                    $('api-status').textContent = 'Kết nối thành công ✅';
+                } else throw new Error('Dữ liệu không hợp lệ');
+            } catch (err) {
+                console.error(err);
+                $('api-status').textContent = 'Lỗi: ' + err.message + ' ⚠️';
+            } finally {
+                $('loading').classList.remove('active');
+                $('last-update').textContent = 'Cập nhật: ' + new Date().toLocaleTimeString('vi-VN');
+            }
+        }
+
+        // INIT
         document.documentElement.classList.remove('dark');
         localStorage.theme = 'light';
+        fetchData();
+        setInterval(fetchData, 30000);
     </script>
-
 </body>
 
 </html>
