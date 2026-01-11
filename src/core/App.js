@@ -395,6 +395,11 @@ class App {
     showMapView() {
         this.hideLoading();
 
+        // Update FocusManager layer
+        if (window.focusManager) {
+            window.focusManager.setCurrentLayer('map');
+        }
+
         // Hide dashboard container
         const dashboardContainer = document.getElementById('dashboard-container');
         if (dashboardContainer) {
@@ -438,6 +443,12 @@ class App {
         this.mapFullscreen.hide();
         this.hideDetailView(true);
 
+        // Update FocusManager layer to dashboard
+        if (window.focusManager) {
+            window.focusManager.setCurrentLayer('dashboard');
+            Config.log('debug', '[App] FocusManager layer set to dashboard');
+        }
+
         // Ensure dashboard container is visible
         const dashboardContainer = document.getElementById('dashboard-container');
         if (dashboardContainer) {
@@ -475,6 +486,12 @@ class App {
         this.hideLoading();
         this.mapFullscreen.hide();
         this.dashboardGrid.hide();
+
+        // Update FocusManager layer to detail
+        if (window.focusManager) {
+            window.focusManager.setCurrentLayer('detail');
+            Config.log('debug', '[App] FocusManager layer set to detail');
+        }
 
         const detailContainer = document.getElementById('detail-container');
         if (!detailContainer) {

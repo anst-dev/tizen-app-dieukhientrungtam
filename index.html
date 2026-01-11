@@ -81,10 +81,40 @@
     <script src="src/components/dashboard/DashboardGrid.js"></script>
     <script src="src/components/dashboard/NavigationManager.js"></script>
 
+    <!-- TV Remote Navigation System -->
+    <script src="src/core/FocusManager.js"></script>
+    <script src="src/core/LayerNavigationManager.js"></script>
+    <script src="src/core/IframeScreenManager.js"></script>
+    <script src="src/core/TVRemoteInputHandler.js"></script>
+
     <!-- Core Application -->
     <script src="src/core/Router.js"></script>
     <script src="src/core/Routes.js"></script>
     <script src="src/core/App.js"></script>
+
+    <!-- Initialize TV Remote Input Handler -->
+    <script>
+        // Initialize TV Remote navigation system after App is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            // Wait for app to initialize first
+            setTimeout(() => {
+                // Initialize managers
+                if (window.focusManager) {
+                    window.focusManager.init();
+                }
+                if (window.layerNavigationManager) {
+                    window.layerNavigationManager.init();
+                }
+                if (window.iframeScreenManager) {
+                    window.iframeScreenManager.init();
+                }
+                if (window.tvRemoteInputHandler) {
+                    window.tvRemoteInputHandler.init();
+                }
+                console.log('[TV Remote] Navigation system initialized');
+            }, 500);
+        });
+    </script>
 </body>
 
 </html>

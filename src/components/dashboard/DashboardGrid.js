@@ -58,6 +58,19 @@ class DashboardGrid {
      * @param {Array} activeScreens - Danh sách màn hình active từ API
      */
     render(activeScreens) {
+        // Edge case: Handle empty or invalid input
+        if (!activeScreens || !Array.isArray(activeScreens)) {
+            Config.log('warn', 'Invalid activeScreens provided, using empty array');
+            activeScreens = [];
+        }
+
+        // Edge case: API trả về 0 màn hình
+        if (activeScreens.length === 0) {
+            Config.log('info', 'No active screens from API');
+            this.handleNoScreens();
+            return;
+        }
+
         // Sort screens, ensuring M0 comes first
         this.screens = activeScreens.sort((a, b) => {
             // M0 always comes first
@@ -75,6 +88,92 @@ class DashboardGrid {
 
         // Update info
         this.updateInfo();
+
+        // Update dynamic screen mapping in IframeScreenManager
+        this.updateScreenMapping(activeScreens);
+
+        // Refresh focusable elements after DOM update
+        this.refreshFocusableElements();
+    }
+
+    /**
+     * Handle case when API returns 0 screens
+     */
+    handleNoScreens() {
+        this.screens = [];
+        this.currentLayout = null;
+        this.screenElements.clear();
+
+        const gridElement = document.getElementById('dashboard-grid');
+        if (gridElement) {
+            gridElement.innerHTML = `
+                <div class="no-screens">
+                    <div class="no-screens-message">
+                        <span class="no-screens-icon">📺</span>
+                        <p>Không có màn hình nào được kích hoạt</p>
+                        <p class="no-screens-hint">Vui lòng liên hệ quản trị viên</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Clear focus manager state for dashboard
+        const focusManager = window.focusManager;
+        if (focusManager) {
+            focusManager.clearFocusState('dashboard');
+        }
+
+        Config.log('info', 'Dashboard rendered with no screens message');
+    }
+
+    /**
+     * Update screen mapping in IframeScreenManager
+     * @param {Array} screens - Array of screen data from API
+     */
+    updateScreenMapping(screens) {
+        // Check if iframeScreenManager is available
+        const iframeManager = window.iframeScreenManager;
+        if (iframeManager && typeof iframeManager.updateScreenMapping === 'function') {
+            try {
+                iframeManager.updateScreenMapping(screens);
+                Config.log('debug', 'Screen mapping updated from DashboardGrid');
+            } catch (error) {
+                Config.log('error', 'Failed to update screen mapping:', error);
+            }
+        } else {
+            Config.log('warn', 'IframeScreenManager not available for screen mapping update');
+        }
+    }
+
+    /**
+     * Refresh focusable elements in FocusManager after DOM changes
+     * IMPORTANT: This method is designed to preserve focus state
+     * It only refreshes the focusable elements list, NOT the focus itself
+     * Focus will only be restored if the currently focused element was removed from DOM
+     */
+    refreshFocusableElements() {
+        // Use setTimeout to ensure DOM is fully updated
+        setTimeout(() => {
+            const focusManager = window.focusManager;
+            if (focusManager && typeof focusManager.refreshFocusableElements === 'function') {
+                try {
+                    // refreshFocusableElements in FocusManager now preserves focus
+                    // It will only change focus if the current focused element is invalid
+                    const result = focusManager.refreshFocusableElements('dashboard');
+                    Config.log('debug', 'Focusable elements refreshed (focus preserved):', result);
+                    
+                    // Log focus status for debugging
+                    if (result.focusedElement) {
+                        const stt = result.focusedElement.getAttribute?.('data-stt');
+                        Config.log('debug', `Current focus: M${stt || 'unknown'}`);
+                    }
+                } catch (error) {
+                    Config.log('error', 'Failed to refresh focusable elements:', error);
+                }
+            } else {
+                Config.log('warn', 'FocusManager not available for refresh');
+            }
+        }, 100);
     }
 
     /**
@@ -271,19 +370,35 @@ class DashboardGrid {
         // Apply flex styles
         this.applyFlexLayout();
 
-        this.restoreFocus(previousFocusStt);
+        // Restore focus to previously focused element if available
+        const focusRestored = this.restoreFocus(previousFocusStt);
 
-        // Auto-focus vào ô đầu tiên sau khi render xong
+        // Auto-focus vào ô đầu tiên CHỈ KHI không có focus nào được restore
         // Sử dụng setTimeout để đảm bảo DOM đã được update hoàn toàn
-        setTimeout(() => {
-            this.autoFocusFirstScreen();
-        }, 50);
+        if (!focusRestored) {
+            setTimeout(() => {
+                this.autoFocusFirstScreen();
+            }, 50);
+        }
     }
 
     /**
      * Auto-focus vào ô màn hình đầu tiên (ưu tiên M0)
+     * Chỉ được gọi khi không có element nào đang được focus
      */
     autoFocusFirstScreen() {
+        // CRITICAL: Kiểm tra xem đã có element nào được focus chưa
+        const currentFocused = document.activeElement;
+        const hasFocusedTile = currentFocused &&
+            currentFocused.classList &&
+            currentFocused.classList.contains('screen-tile');
+        
+        // Nếu đã có tile được focus, không làm gì cả
+        if (hasFocusedTile) {
+            Config.log('debug', 'Already has focused tile, skipping auto-focus');
+            return;
+        }
+
         // Ưu tiên focus vào M0 (map screen) nếu tồn tại
         let targetElement = this.container?.querySelector('.screen-tile[data-stt="0"]');
 
@@ -293,18 +408,23 @@ class DashboardGrid {
         }
 
         if (targetElement) {
-            const navigationManager = window.app?.navigationManager;
-            if (navigationManager && typeof navigationManager.moveFocus === 'function') {
-                navigationManager.moveFocus(targetElement);
+            const focusManager = window.focusManager;
+            if (focusManager && typeof focusManager.setFocus === 'function') {
+                focusManager.setFocus(targetElement);
             } else {
-                // Fallback: focus trực tiếp
-                document.querySelectorAll('.screen-tile.focused').forEach((focusedEl) => {
-                    if (focusedEl !== targetElement) {
-                        focusedEl.classList.remove('focused');
-                    }
-                });
-                targetElement.focus();
-                targetElement.classList.add('focused');
+                const navigationManager = window.app?.navigationManager;
+                if (navigationManager && typeof navigationManager.moveFocus === 'function') {
+                    navigationManager.moveFocus(targetElement);
+                } else {
+                    // Fallback: focus trực tiếp
+                    document.querySelectorAll('.screen-tile.focused').forEach((focusedEl) => {
+                        if (focusedEl !== targetElement) {
+                            focusedEl.classList.remove('focused');
+                        }
+                    });
+                    targetElement.focus();
+                    targetElement.classList.add('focused');
+                }
             }
             Config.log('debug', 'Auto-focused to first screen tile:', targetElement);
         }
@@ -504,45 +624,63 @@ class DashboardGrid {
         });
     }
 
+    /**
+     * Restore focus to a previously focused element
+     * @param {string} previousFocusStt - The data-stt value of the previously focused element
+     * @returns {boolean} - True if focus was restored, false otherwise
+     */
     restoreFocus(previousFocusStt) {
+        // If no previous focus info, return false (will trigger auto-focus)
         if (!previousFocusStt && previousFocusStt !== '0') {
-            return;
+            return false;
         }
 
         const targetSelector = `.screen-tile[data-stt="${previousFocusStt}"]`;
         const targetElement = this.container?.querySelector(targetSelector);
-        const navigationManager = window.app?.navigationManager;
 
         const focusWithManager = (element) => {
             if (!element) {
-                return;
+                return false;
             }
 
-            if (navigationManager && typeof navigationManager.moveFocus === 'function') {
-                navigationManager.moveFocus(element);
+            const focusManager = window.focusManager;
+            if (focusManager && typeof focusManager.setFocus === 'function') {
+                focusManager.setFocus(element);
             } else {
-                document.querySelectorAll('.screen-tile.focused').forEach((focusedEl) => {
-                    if (focusedEl !== element) {
-                        focusedEl.classList.remove('focused');
-                    }
-                });
-                element.focus();
-                element.classList.add('focused');
+                const navigationManager = window.app?.navigationManager;
+                if (navigationManager && typeof navigationManager.moveFocus === 'function') {
+                    navigationManager.moveFocus(element);
+                } else {
+                    document.querySelectorAll('.screen-tile.focused').forEach((focusedEl) => {
+                        if (focusedEl !== element) {
+                            focusedEl.classList.remove('focused');
+                        }
+                    });
+                    element.focus();
+                    element.classList.add('focused');
+                }
             }
+            
+            Config.log('debug', `Focus restored to M${element.getAttribute('data-stt')}`);
+            return true;
         };
 
+        // Try to focus the exact element that was previously focused
         if (targetElement) {
-            focusWithManager(targetElement);
-            return;
+            return focusWithManager(targetElement);
         }
 
+        // Fallback: try M0 or first tile
         const fallbackElement =
             this.container?.querySelector('.screen-tile.map-screen') ||
             this.container?.querySelector('.screen-tile[data-stt="0"]');
 
         if (fallbackElement) {
-            focusWithManager(fallbackElement);
+            Config.log('debug', 'Original focus target not found, using fallback');
+            return focusWithManager(fallbackElement);
         }
+
+        return false;
     }
 
     /**
@@ -558,9 +696,51 @@ class DashboardGrid {
                 window.app.router.navigate('/map');
             }
         } else {
+            // Check if screen exists in IframeScreenManager before opening
+            const iframeManager = window.iframeScreenManager;
+            if (iframeManager && typeof iframeManager.hasScreen === 'function') {
+                if (!iframeManager.hasScreen(screen.STT)) {
+                    Config.log('warn', `Screen M${screen.STT} does not exist in screen mapping`);
+                    this.handleMissingScreen(screen);
+                    return;
+                }
+            }
             // Other screens - open detail view
             this.openDetailView(screen);
         }
+    }
+
+    /**
+     * Handle case when screen file doesn't exist
+     * @param {Object} screen - Screen object
+     */
+    handleMissingScreen(screen) {
+        // Show notification to user
+        const notification = document.createElement('div');
+        notification.className = 'screen-notification screen-notification-warning';
+        notification.innerHTML = `
+            <div class="notification-content">
+                <span class="notification-icon">⚠️</span>
+                <span class="notification-message">Màn hình M${screen.STT} chưa được cấu hình</span>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Auto remove after 3 seconds
+        setTimeout(() => {
+            notification.classList.add('fade-out');
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, 3000);
+
+        // Dispatch event for external handling
+        window.dispatchEvent(new CustomEvent('screenNotFound', {
+            detail: { screen, stt: screen.STT }
+        }));
     }
 
     /**
