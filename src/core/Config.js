@@ -15,7 +15,8 @@ const Config = {
 
     // Cấu hình API
     API: {
-        BASE_URL: "https://unsupercilious-leonarda-unreaving.ngrok-free.dev",
+        // BASE_URL: "https://unsupercilious-leonarda-unreaving.ngrok-free.dev",
+        BASE_URL: "http://localhost:44311",
         ENDPOINTS: {
             GET_ACTIVE_DISPLAY: '/api/services/app/HienThiDieuKhienTrungTam/GetActiveDisplays'
         },
@@ -27,7 +28,7 @@ const Config = {
     NAVIGATION: {
         KEYS: {
             UP: ['ArrowUp', '38'],
-            DOWN: ['ArrowDown', '40'], 
+            DOWN: ['ArrowDown', '40'],
             LEFT: ['ArrowLeft', '37'],
             RIGHT: ['ArrowRight', '39'],
             ENTER: ['Enter', '13'],
@@ -78,7 +79,7 @@ const Config = {
         },
         DEFAULT_WIDGETS: [
             'StatusWidget',
-            'ChartWidget', 
+            'ChartWidget',
             'AlertWidget',
             'InfoWidget'
         ]
@@ -106,11 +107,11 @@ const Config = {
     // Log với level
     log(level, ...args) {
         if (!this.DEBUG.ENABLED) return;
-        
+
         const levels = ['error', 'warn', 'info', 'debug'];
         const currentLevelIndex = levels.indexOf(this.DEBUG.LOG_LEVEL);
         const messageLevelIndex = levels.indexOf(level);
-        
+
         if (messageLevelIndex <= currentLevelIndex) {
             console[level](...args);
         }

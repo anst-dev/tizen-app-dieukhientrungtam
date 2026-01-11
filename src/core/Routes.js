@@ -29,42 +29,42 @@ class Routes {
             4: {
                 name: 'Bản đồ đường ống, SCADA',
                 type: 'iframe',
-                url: 'screens/ban-do-duong-ong.html'
+                url: 'screens/M4banDoDuongOng.html'
             },
             5: {
                 name: 'Chi tiết điểm chảy',
                 type: 'iframe',
-                url: 'screens/ChiTietDiemChay.html'
+                url: 'screens/M5thongTinDiemChay.html'
             },
             6: {
                 name: 'Lắp đặt mới, thay đồng hồ',
                 type: 'iframe',
-                url: 'screens/lap-dat-moi.html'
+                url: 'screens/M6thongTinLapDatMoiThayTheDongHo.html'
             },
             7: {
                 name: 'Tiến độ thi công đường ống',
                 type: 'iframe',
-                url: 'screens/tien-do-thi-cong.html'
+                url: 'screens/M7thongTinTienDoThiCongMangDuongOngCap12.html'
             },
             8: {
                 name: 'Ghi chỉ số đồng hồ',
                 type: 'iframe',
-                url: 'screens/chi-so-dong-ho.html'
+                url: 'screens/M8thongTinKetQuaGhiChiSoDongHo.html'
             },
             9: {
                 name: 'Công nợ',
                 type: 'iframe',
-                url: 'screens/cong-no.html'
+                url: 'screens/M9thongTinKetQuaCongNo.html'
             },
             10: {
                 name: 'Thất thoát DMA',
                 type: 'iframe',
-                url: 'screens/that-thoat-dma.html'
+                url: 'screens/M10thongTinTyLeThaThoatCacDMA.html'
             },
             11: {
                 name: 'Chất lượng nước',
                 type: 'iframe',
-                url: 'screens/chat-luong-nuoc.html'
+                url: 'screens/M11thongTinChatLuongNuoc.html'
             }
         };
 
