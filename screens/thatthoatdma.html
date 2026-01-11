@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>DMA Dashboard: Light Mode 90% Framed View</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#2563EB", // Stronger Blue for light mode
+                        secondary: "#64748B",
+                        surface: "#FFFFFF",
+                        background: "#F8FAFC",
+                        success: "#10B981",
+                        warning: "#F59E0B",
+                        danger: "#EF4444",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "sans-serif"],
+                    },
+                },
+            },
+        };
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8;
+        }
+
+        .live-dot {
+            animation: pulse-subtle 2s infinite;
+        }
+
+        @keyframes pulse-subtle {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 text-gray-900 h-screen w-screen overflow-hidden flex items-center justify-center">
+    <div
+        class="w-[100%] h-[100%] bg-white rounded-3xl shadow-2xl flex flex-col overflow-hidden relative border border-gray-200/60">
+        <header
+            class="h-24 bg-white shadow-sm flex items-center justify-between px-10 border-b border-gray-100 z-20 shrink-0">
+            <div class="flex items-center gap-5">
+                <div class="bg-blue-50 p-3 rounded-xl border border-blue-100">
+                    <span class="material-symbols-outlined text-primary text-3xl">water_drop</span>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight text-gray-900">10. Thông tin tỷ lệ thất thoát các DMA
+                    </h1>
+                    <p class="text-sm text-gray-500 font-medium">Giám sát hiệu suất mạng lưới cấp nước • Cập nhật: 10:45
+                        AM</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-8">
+                <div
+                    class="flex items-center gap-3 bg-green-50 px-5 py-2.5 rounded-full border border-green-200 shadow-sm">
+                    <div class="w-2.5 h-2.5 rounded-full bg-green-500 live-dot"></div>
+                    <span class="text-sm font-bold text-green-700">Hệ thống ổn định</span>
+                </div>
+                <div class="text-right border-l border-gray-200 pl-8">
+                    <div class="text-3xl font-bold font-mono leading-none text-gray-800">10:45:32</div>
+                    <div class="text-xs text-gray-500 font-bold mt-1 uppercase tracking-wide">Thứ Tư, 25/10/2023</div>
+                </div>
+            </div>
+        </header>
+        <main class="flex-1 flex overflow-hidden p-8 gap-8 bg-gray-50/50">
+            <section
+                class="w-[42%] flex flex-col bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-white">
+                    <h2 class="text-lg font-bold flex items-center gap-2 text-gray-800">
+                        <span class="material-symbols-outlined text-amber-500">leaderboard</span>
+                        Bảng Xếp Hạng DMA
+                    </h2>
+                    <div
+                        class="text-xs font-bold px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg border border-blue-100">
+                        Xếp theo: Thất thoát thấp nhất
+                    </div>
+                </div>
+                <div class="flex-1 overflow-y-auto overflow-x-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead
+                            class="sticky top-0 bg-gray-50 z-10 text-xs font-bold text-gray-500 uppercase tracking-wider shadow-sm">
+                            <tr>
+                                <th class="px-6 py-4 w-16 text-center border-b border-gray-200">TT</th>
+                                <th class="px-6 py-4 border-b border-gray-200">Khu vực DMA</th>
+                                <th class="px-6 py-4 text-right border-b border-gray-200">Tháng này</th>
+                                <th class="px-6 py-4 text-right border-b border-gray-200">3 Tháng</th>
+                                <th class="px-6 py-4 text-right border-b border-gray-200">KL ĐHT/ĐHKH</th>
+                                <th class="px-6 py-4 text-center border-b border-gray-200">Trend</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100 text-sm">
+                            <tr class="bg-green-50/70 hover:bg-green-100 transition-colors">
+                                <td class="px-6 py-4 text-center font-bold text-green-700 text-lg">1</td>
+                                <td class="px-6 py-4 font-bold text-gray-900">DMA-01 Tân Bình</td>
+                                <td class="px-6 py-4 text-right font-bold text-gray-900">4.2%</td>
+                                <td class="px-6 py-4 text-right text-gray-500">4.5%</td>
+                                <td class="px-6 py-4 text-right font-semibold text-gray-700">98.5%</td>
+                                <td class="px-6 py-4 text-center"><span
+                                        class="material-symbols-outlined text-green-600 text-xl align-middle">trending_down</span>
+                                </td>
+                            </tr>
+                            <tr class="bg-green-50/40 hover:bg-green-100 transition-colors">
+                                <td class="px-6 py-4 text-center font-bold text-green-700 text-lg">2</td>
+                                <td class="px-6 py-4 font-bold text-gray-900">DMA-04 Phú Nhuận</td>
+                                <td class="px-6 py-4 text-right font-bold text-gray-900">5.1%</td>
+                                <td class="px-6 py-4 text-right text-gray-500">5.8%</td>
+                                <td class="px-6 py-4 text-right font-semibold text-gray-700">96.2%</td>
+                                <td class="px-6 py-4 text-center"><span
+                                        class="material-symbols-outlined text-green-600 text-xl align-middle">trending_down</span>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 text-center font-bold text-gray-400">3</td>
+                                <td class="px-6 py-4 font-semibold text-gray-800">DMA-07 Gò Vấp</td>
+                                <td class="px-6 py-4 text-right font-bold text-gray-800">6.8%</td>
+                                <td class="px-6 py-4 text-right text-gray-500">6.5%</td>
+                                <td class="px-6 py-4 text-right font-semibold text-gray-700">94.8%</td>
+                                <td class="px-6 py-4 text-center"><span
+                                        class="material-symbols-outlined text-red-500 text-xl align-middle">trending_up</span>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 text-center font-bold text-gray-400">4</td>
+                                <td class="px-6 py-4 font-semibold text-gray-800">DMA-12 Bình Thạnh</td>
+                                <td class="px-6 py-4 text-right font-bold text-gray-800">7.2%</td>
+                                <td class="px-6 py-4 text-right text-gray-500">7.2%</td>
+                                <td class="px-6 py-4 text-right font-semibold text-gray-700">93.5%</td>
+                                <td class="px-6 py-4 text-center"><span
+                                        class="material-symbols-outlined text-gray-400 text-xl align-middle">remove</span>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 text-center font-bold text-gray-400">5</td>
+                                <td class="px-6 py-4 font-semibold text-gray-800">DMA-03 Quận 3</td>
+                                <td class="px-6 py-4 text-right font-bold text-gray-800">8.5%</td>
+                                <td class="px-6 py-4 text-right text-gray-500">9.1%</td>
+                                <td class="px-6 py-4 text-right font-semibold text-gray-700">91.2%</td>
+                                <td class="px-6 py-4 text-center"><span
+                                        class="material-symbols-outlined text-green-500 text-xl align-middle">trending_down</span>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 text-center font-bold text-gray-400">6</td>
+                                <td class="px-6 py-4 font-semibold text-gray-800">DMA-09 Quận 12</td>
+                                <td class="px-6 py-4 text-right font-bold text-gray-800">9.3%</td>
+                                <td class="px-6 py-4 text-right text-gray-500">8.9%</td>
+                                <td class="px-6 py-4 text-right font-semibold text-gray-700">89.7%</td>
+                                <td class="px-6 py-4 text-center"><span
+                                        class="material-symbols-outlined text-red-500 text-xl align-middle">trending_up</span>
+                                </td>
+                            </tr>
+                            <tr class="bg-red-50/60 hover:bg-red-100 transition-colors border-l-4 border-l-red-500">
+                                <td class="px-6 py-4 text-center font-bold text-red-700">7</td>
+                                <td class="px-6 py-4 font-bold text-gray-900">DMA-02 Tân Phú</td>
+                                <td class="px-6 py-4 text-right font-bold text-red-600">12.1%</td>
+                                <td class="px-6 py-4 text-right text-gray-500">10.5%</td>
+                                <td class="px-6 py-4 text-right font-semibold text-amber-600">85.3%</td>
+                                <td class="px-6 py-4 text-center"><span
+                                        class="material-symbols-outlined text-red-600 text-xl align-middle">trending_up</span>
+                                </td>
+                            </tr>
+                            <tr class="bg-red-50/80 hover:bg-red-100 transition-colors border-l-4 border-l-red-600">
+                                <td class="px-6 py-4 text-center font-bold text-red-700">8</td>
+                                <td class="px-6 py-4 font-bold text-gray-900">DMA-15 Thủ Đức</td>
+                                <td class="px-6 py-4 text-right font-bold text-red-600">14.8%</td>
+                                <td class="px-6 py-4 text-right text-gray-500">13.2%</td>
+                                <td class="px-6 py-4 text-right font-semibold text-red-600">82.1%</td>
+                                <td class="px-6 py-4 text-center"><span
+                                        class="material-symbols-outlined text-red-600 text-xl align-middle">trending_up</span>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 text-center font-bold text-gray-400">9</td>
+                                <td class="px-6 py-4 font-semibold text-gray-800">DMA-05 Quận 5</td>
+                                <td class="px-6 py-4 text-right font-bold text-gray-800">15.2%</td>
+                                <td class="px-6 py-4 text-right text-gray-500">15.0%</td>
+                                <td class="px-6 py-4 text-right font-semibold text-gray-700">88.4%</td>
+                                <td class="px-6 py-4 text-center"><span
+                                        class="material-symbols-outlined text-gray-400 text-xl align-middle">remove</span>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 text-center font-bold text-gray-400">10</td>
+                                <td class="px-6 py-4 font-semibold text-gray-800">DMA-08 Bình Tân</td>
+                                <td class="px-6 py-4 text-right font-bold text-gray-800">16.5%</td>
+                                <td class="px-6 py-4 text-right text-gray-500">17.1%</td>
+                                <td class="px-6 py-4 text-right font-semibold text-gray-700">90.8%</td>
+                                <td class="px-6 py-4 text-center"><span
+                                        class="material-symbols-outlined text-green-500 text-xl align-middle">trending_down</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="p-4 bg-gray-50 border-t border-gray-200">
+                    <div class="flex items-center justify-between text-xs text-gray-600 font-medium">
+                        <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-1.5"><span
+                                    class="w-2.5 h-2.5 rounded-full bg-green-500"></span> Tốt (&lt; 6%)</div>
+                            <div class="flex items-center gap-1.5"><span
+                                    class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span> TB (6-10%)</div>
+                            <div class="flex items-center gap-1.5"><span
+                                    class="w-2.5 h-2.5 rounded-full bg-red-500"></span> Cao (&gt; 10%)</div>
+                        </div>
+                        <span class="text-gray-400">Hiển thị 10/45 DMA</span>
+                    </div>
+                </div>
+            </section>
+            <section class="flex-1 flex flex-col gap-8">
+                <div class="grid grid-cols-3 gap-6 h-36">
+                    <div
+                        class="bg-white rounded-2xl shadow-sm p-6 flex flex-col justify-between border border-gray-200 border-l-4 border-l-blue-500 relative overflow-hidden group">
+                        <div
+                            class="absolute right-[-10px] top-[-10px] p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                            <span class="material-symbols-outlined text-8xl text-blue-600">water</span>
+                        </div>
+                        <div>
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Tổng Thất Thoát
+                                (TB)</span>
+                            <div class="flex items-end gap-3 mt-1">
+                                <span class="text-5xl font-bold text-gray-900 tracking-tight">9.8%</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span
+                                class="flex items-center text-xs font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded-full">
+                                <span class="material-symbols-outlined text-sm mr-1">trending_down</span> 0.4%
+                            </span>
+                            <span class="text-xs text-gray-400 font-medium">vs tháng trước (10.2%)</span>
+                        </div>
+                    </div>
+                    <div
+                        class="bg-white rounded-2xl shadow-sm p-6 flex flex-col justify-between border border-gray-200 border-l-4 border-l-cyan-400 relative overflow-hidden group">
+                        <div
+                            class="absolute right-[-10px] top-[-10px] p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                            <span class="material-symbols-outlined text-8xl text-cyan-500">speed</span>
+                        </div>
+                        <div>
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Khối Lượng
+                                ĐHT/ĐHKH</span>
+                            <div class="flex items-end gap-3 mt-1">
+                                <span class="text-5xl font-bold text-gray-900 tracking-tight">92.4%</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span
+                                class="flex items-center text-xs font-bold text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded-full">
+                                <span class="material-symbols-outlined text-sm mr-1">remove</span> 0.0%
+                            </span>
+                            <span class="text-xs text-gray-400 font-medium">Đạt chỉ tiêu kế hoạch</span>
+                        </div>
+                    </div>
+                    <div
+                        class="bg-white rounded-2xl shadow-sm p-6 flex flex-col justify-between border border-gray-200 border-l-4 border-l-red-500 relative overflow-hidden group">
+                        <div
+                            class="absolute right-[-10px] top-[-10px] p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                            <span class="material-symbols-outlined text-8xl text-red-500">warning</span>
+                        </div>
+                        <div>
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Cảnh Báo Vùng
+                                Đỏ</span>
+                            <div class="flex items-end gap-2 mt-1">
+                                <span class="text-5xl font-bold text-red-600 tracking-tight">4</span>
+                                <span class="text-lg font-bold text-gray-400 mb-1.5">DMA</span>
+                            </div>
+                        </div>
+                        <div class="w-full bg-red-50 rounded px-2 py-1">
+                            <span class="text-xs text-red-700 font-bold flex items-center">
+                                <span class="material-symbols-outlined text-sm mr-1">priority_high</span> Cần xử lý rò
+                                rỉ gấp
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-1 bg-white rounded-2xl shadow-sm border border-gray-200 p-8 flex flex-col relative">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-900">Xu hướng Tỷ lệ Thất thoát Nước</h2>
+                            <p class="text-sm text-gray-500 mt-1">So sánh Tháng hiện tại vs Trung bình 3 tháng (10 DMA
+                                cao nhất)</p>
+                        </div>
+                        <div class="flex items-center gap-4 bg-gray-50 p-2 rounded-lg border border-gray-100">
+                            <div class="flex items-center gap-2 text-sm font-semibold px-2">
+                                <span class="w-3 h-3 bg-blue-600 rounded-sm shadow-sm"></span>
+                                <span class="text-gray-700">Tháng này</span>
+                            </div>
+                            <div class="w-px h-4 bg-gray-300"></div>
+                            <div class="flex items-center gap-2 text-sm font-semibold px-2">
+                                <span class="w-3 h-3 bg-gray-300 rounded-sm shadow-sm"></span>
+                                <span class="text-gray-700">TB 3 Tháng</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="relative flex-1 w-full h-full min-h-0">
+                        <canvas id="lossRateChart"></canvas>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script>
+        // Initialize Chart.js with light mode specific styling
+        const ctx = document.getElementById('lossRateChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['DMA-01', 'DMA-04', 'DMA-07', 'DMA-12', 'DMA-03', 'DMA-09', 'DMA-02', 'DMA-15', 'DMA-05', 'DMA-08'],
+                datasets: [
+                    {
+                        label: 'Tháng này (%)',
+                        data: [4.2, 5.1, 6.8, 7.2, 8.5, 9.3, 12.1, 14.8, 15.2, 16.5],
+                        backgroundColor: '#2563EB', // Blue-600
+                        borderRadius: 4,
+                        barPercentage: 0.6,
+                        categoryPercentage: 0.8
+                    },
+                    {
+                        label: 'TB 3 Tháng (%)',
+                        data: [4.5, 5.8, 6.5, 7.2, 9.1, 8.9, 10.5, 13.2, 15.0, 17.1],
+                        backgroundColor: '#E5E7EB', // Gray-200
+                        borderRadius: 4,
+                        barPercentage: 0.6,
+                        categoryPercentage: 0.8,
+                        borderWidth: 1,
+                        borderColor: '#D1D5DB' // Gray-300 border
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)', // White background
+                        titleColor: '#1F2937', // Dark text
+                        bodyColor: '#4B5563',
+                        borderColor: '#E5E7EB',
+                        borderWidth: 1,
+                        padding: 12,
+                        titleFont: { size: 14, weight: 'bold', family: "'Inter', sans-serif" },
+                        bodyFont: { size: 13, family: "'Inter', sans-serif" },
+                        displayColors: true,
+                        boxPadding: 4,
+                        callbacks: {
+                            labelTextColor: function () {
+                                return '#374151';
+                            }
+                        },
+                        shadowOffsetX: 2,
+                        shadowOffsetY: 2,
+                        shadowBlur: 10,
+                        shadowColor: 'rgba(0,0,0,0.1)'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: '#F3F4F6', // Very light grid
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: '#6B7280',
+                            font: { size: 12, family: "'Inter', sans-serif" },
+                            callback: function (value) { return value + '%'; },
+                            padding: 10
+                        },
+                        border: { display: false }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: {
+                            color: '#374151', // Darker gray for labels
+                            font: { size: 12, weight: '600', family: "'Inter', sans-serif" }
+                        },
+                        border: { display: false }
+                    }
+                },
+                animation: {
+                    duration: 1200,
+                    easing: 'easeOutQuart'
+                }
+            }
+        });
+    </script>
+
+</body>
+
+</html>

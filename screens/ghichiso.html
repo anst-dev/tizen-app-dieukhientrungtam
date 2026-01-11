@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Water Station Dashboard</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#0ea5e9", // Sky blue for water theme
+                        "background-light": "#f1f5f9",
+                        "background-dark": "#0f172a",
+                        "card-light": "#ffffff",
+                        "card-dark": "#1e293b",
+                        "text-light": "#334155",
+                        "text-dark": "#e2e8f0",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.75rem",
+                    },
+                },
+            },
+        };
+    </script>
+    <style>
+        .radial-progress {
+            --size: 5rem;
+            --thickness: 6px;
+            --value: 0;
+            --bg-color: #ffffff;
+            --track-color: #e2e8f0;
+            width: var(--size);
+            height: var(--size);
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background:
+                radial-gradient(closest-side, var(--bg-color) 79%, transparent 80% 100%),
+                conic-gradient(var(--progress-color) calc(var(--value) * 1%), var(--track-color) 0);
+            position: relative;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark font-display min-h-screen p-4 md:p-8 flex flex-col">
+    <header class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+            <div class="flex items-center gap-3">
+                <span class="bg-primary/20 text-primary p-2 rounded-lg">
+                    <span class="material-icons-round text-3xl">water_drop</span>
+                </span>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+                        Kết Quả Ghi Chỉ Số Đồng Hồ
+                    </h1>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">
+                        Dữ liệu thời gian thực từ 10 Trạm cấp nước
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div
+            class="flex items-center gap-4 bg-white dark:bg-card-dark p-3 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
+            <div class="flex items-center gap-2 px-3 border-r border-slate-200 dark:border-slate-700">
+                <span class="material-icons-round text-emerald-500">check_circle</span>
+                <div class="flex flex-col">
+                    <span class="text-xs text-slate-500 dark:text-slate-400 uppercase font-semibold">Tổng Tiến Độ</span>
+                    <span class="font-bold text-lg leading-none">85.4%</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 px-3">
+                <span class="material-icons-round text-amber-500">trending_up</span>
+                <div class="flex flex-col">
+                    <span class="text-xs text-slate-500 dark:text-slate-400 uppercase font-semibold">Dự Kiến</span>
+                    <span class="font-bold text-lg leading-none">98.2%</span>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 flex-grow">
+        <div
+            class="bg-card-light dark:bg-card-dark rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col hover:shadow-xl transition-shadow duration-300">
+            <div class="p-5 flex-grow">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="font-bold text-lg text-slate-800 dark:text-white truncate pr-2" title="Trạm Anh Sơn">Trạm
+                        Anh Sơn</h3>
+                    <span
+                        class="px-2 py-1 rounded bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-semibold">
+                        #01
+                    </span>
+                </div>
+                <div class="flex justify-between items-center mb-6">
+                    <div class="space-y-3 w-1/2">
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium">Kế hoạch</p>
+                            <p class="text-lg font-semibold text-slate-700 dark:text-slate-200">1,250</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium">Thực hiện</p>
+                            <p class="text-lg font-bold text-primary">1,105</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium">Tỷ lệ HT</p>
+                            <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">88.4%</p>
+                        </div>
+                    </div>
+                    <div class="light dark w-1/2 flex justify-end">
+                        <div class="radial-progress" style="--value: 88; --progress-color: #0ea5e9;">
+                            <span class="text-sm font-bold text-slate-800 dark:text-white">88%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="bg-slate-50 dark:bg-slate-800/50 p-3 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">Dự kiến HT</span>
+                <div class="flex items-center gap-1">
+                    <span class="material-icons-round text-amber-500 text-sm">auto_graph</span>
+                    <span class="text-sm font-bold text-slate-700 dark:text-slate-200">95%</span>
+                </div>
+            </div>
+        </div>
+        <div
+            class="bg-card-light dark:bg-card-dark rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col hover:shadow-xl transition-shadow duration-300">
+            <div class="p-5 flex-grow">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="font-bold text-lg text-slate-800 dark:text-white truncate pr-2">Trạm Con Cuông</h3>
+                    <span
+                        class="px-2 py-1 rounded bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-semibold">#02</span>
+                </div>
+                <div class="flex justify-between items-center mb-6">
+                    <div class="space-y-3 w-1/2">
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium">Kế hoạch</p>
+                            <p class="text-lg font-semibold text-slate-700 dark:text-slate-200">980</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium">Thực hiện</p>
+                            <p class="text-lg font-bold text-primary">450</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium">Tỷ lệ HT</p>
+                            <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">45.9%</p>
+                        </div>
+                    </div>
+                    <div class="light dark w-1/2 flex justify-end">
+                        <div class="radial-progress" style="--value: 46; --progress-color: #eab308;">
+                            <span class="text-sm font-bold text-slate-800 dark:text-white">46%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="bg-slate-50 dark:bg-slate-800/50 p-3 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">Dự kiến HT</span>
+                <div class="flex items-center gap-1">
+                    <span class="material-icons-round text-amber-500 text-sm">auto_graph</span>
+                    <span class="text-sm font-bold text-slate-700 dark:text-slate-200">60%</span>
+                </div>
+            </div>
+        </div>
+        <div
+            class="bg-card-light dark:bg-card-dark rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col hover:shadow-xl transition-shadow duration-300">
+            <div class="p-5 flex-grow">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="font-bold text-lg text-slate-800 dark:text-white truncate pr-2">Trạm Đô Lương</h3>
+                    <span
+                        class="px-2 py-1 rounded bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-semibold">#03</span>
+                </div>
+                <div class="flex justify-between items-center mb-6">
+                    <div class="space-y-3 w-1/2">
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium">Kế hoạch</p>
+                            <p class="text-lg font-semibold text-slate-700 dark:text-slate-200">2,100</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium">Thực hiện</p>
+                            <p class="text-lg font-bold text-primary">2,100</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium">Tỷ lệ HT</p>
+                            <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">100%</p>
+                        </div>
+                    </div>
+                    <div class="light dark w-1/2 flex justify-end">
+                        <div class="radial-progress" style="--value: 100; --progress-color: #10b981;">
+                            <span class="text-sm font-bold text-slate-800 dark:text-white">100%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="bg-slate-50 dark:bg-slate-800/50 p-3 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">Dự kiến HT</span>
+                <div class="flex items-center gap-1">
+                    <span class="material-icons-round text-emerald-500 text-sm">check_circle</span>
+                    <span class="text-sm font-bold text-slate-700 dark:text-slate-200">100%</span>
+                </div>
+            </div>
+        </div>
+        <div
+            class="bg-card-light dark:bg-card-dark rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col hover:shadow-xl transition-shadow duration-300">
+            <div class="p-5 flex-grow">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="font-bold text-lg text-slate-800 dark:text-white truncate pr-2">Trạm Tân Kỳ</h3>
+                    <span
+                        class="px-2 py-1 rounded bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-semibold">#04</span>
+                </div>
+                <div class="flex justify-between items-center mb-6">
+                    <div class="space-y-3 w-1/2">
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium">Kế hoạch</p>
+                            <p class="text-lg font-semibold text-slate-700 dark:text-slate-200">1,500</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium">Thực hiện</p>
+                            <p class="text-lg font-bold text-primary">1,120</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium">Tỷ lệ HT</p>
+                            <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">74.7%</p>
+                        </div>
+                    </div>
+                    <div class="light dark w-1/2 flex justify-end">
+                        <div class="radial-progress" style="--value: 75; --progress-color: #0ea5e9;">
+                            <span class="text-sm font-bold text-slate-800 dark:text-white">75%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="bg-slate-50 dark:bg-slate-800/50 p-3 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">Dự kiến HT</span>
+                <div class="flex items-center gap-1">
+                    <span class="material-icons-round text-amber-500 text-sm">auto_graph</span>
+                    <span class="text-sm font-bold text-slate-700 dark:text-slate-200">92%</span>
+                </div>
+            </div>
+        </div>
+        <div
+            class="bg-card-light dark:bg-card-dark rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col hover:shadow-xl transition-shadow duration-300">
+            <div class="p-5 flex-grow">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="font-bold text-lg text-slate-800 dark:text-white truncate pr-2">Trạm Thanh Chương</h3>
+                    <span
+                        class="px-2 py-1 rounded bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-semibold">#05</span>
+                </div>
+                <div class="flex justify-between items-center mb-6">
+                    <div class="space-y-3 w-1/2">
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium">Kế hoạch</p>
+                            <p class="text-lg font-semibold text-slate-700 dark:text-slate-200">800</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium">Thực hiện</p>
+                            <p class="text-lg font-bold text-primary">760</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium">Tỷ lệ HT</p>
+                            <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">95.0%</p>
+                        </div>
+                    </div>
+                    <div class="light dark w-1/2 flex justify-end">
+                        <div class="radial-progress" style="--value: 95; --progress-color: #10b981;">
+                            <span class="text-sm font-bold text-slate-800 dark:text-white">95%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="bg-slate-50 dark:bg-slate-800/50 p-3 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">Dự kiến HT</span>
+                <div class="flex items-center gap-1">
+                    <span class="material-icons-round text-amber-500 text-sm">auto_graph</span>
+                    <span class="text-sm font-bold text-slate-700 dark:text-slate-200">100%</span>
+                </div>
+            </div>
+        </div>
+        <div
+            class="bg-card-light dark:bg-card-dark rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col hover:shadow-xl transition-shadow duration-300">
+            <div class="p-5 flex-grow">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="font-bold text-lg text-slate-800 dark:text-white truncate pr-2">Trạm Nam Đàn</h3>
+                    <span
+                        class="px-2 py-1 rounded bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-semibold">#06</span>
+                </div>
+                <div class="flex justify-between items-center mb-6">
+                    <div class="space-y-3 w-1/2">
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium">Kế hoạch</p>
+                            <p class="text-lg font-semibold text-slate-700 dark:text-slate-200">3,200</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium">Thực hiện</p>
+                            <p class="text-lg font-bold text-primary">1,600</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium">Tỷ lệ HT</p>
+                            <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">50.0%</p>
+                        </div>
+                    </div>
+                    <div class="light dark w-1/2 flex justify-end">
+                        <div class="radial-progress" style="--value: 50; --progress-color: #eab308;">
+                            <span class="text-sm font-bold text-slate-800 dark:text-white">50%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="bg-slate-50 dark:bg-slate-800/50 p-3 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">Dự kiến HT</span>
+                <div class="flex items-center gap-1">
+                    <span class="material-icons-round text-amber-500 text-sm">auto_graph</span>
+                    <span class="text-sm font-bold text-slate-700 dark:text-slate-200">75%</span>
+                </div>
+            </div>
+        </div>
+        <div
+            class="bg-card-light dark:bg-card-dark rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col hover:shadow-xl transition-shadow duration-300">
+            <div class="p-5 flex-grow">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="font-bold text-lg text-slate-800 dark:text-white truncate pr-2">Trạm Quỳ Hợp</h3>
+                    <span
+                        class="px-2 py-1 rounded bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-semibold">#07</span>
+                </div>
+                <div class="flex justify-between items-center mb-6">
+                    <div class="space-y-3 w-1/2">
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium">Kế hoạch</p>
+                            <p class="text-lg font-semibold text-slate-700 dark:text-slate-200">1,100</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium">Thực hiện</p>
+                            <p class="text-lg font-bold text-primary">330</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium">Tỷ lệ HT</p>
+                            <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">30.0%</p>
+                        </div>
+                    </div>
+                    <div class="light dark w-1/2 flex justify-end">
+                        <div class="radial-progress" style="--value: 30; --progress-color: #ef4444;">
+                            <span class="text-sm font-bold text-slate-800 dark:text-white">30%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="bg-slate-50 dark:bg-slate-800/50 p-3 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">Dự kiến HT</span>
+                <div class="flex items-center gap-1">
+                    <span class="material-icons-round text-amber-500 text-sm">auto_graph</span>
+                    <span class="text-sm font-bold text-slate-700 dark:text-slate-200">45%</span>
+                </div>
+            </div>
+        </div>
+        <div
+            class="bg-card-light dark:bg-card-dark rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col hover:shadow-xl transition-shadow duration-300">
+            <div class="p-5 flex-grow">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="font-bold text-lg text-slate-800 dark:text-white truncate pr-2">Trạm Quỳ Châu</h3>
+                    <span
+                        class="px-2 py-1 rounded bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-semibold">#08</span>
+                </div>
+                <div class="flex justify-between items-center mb-6">
+                    <div class="space-y-3 w-1/2">
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium">Kế hoạch</p>
+                            <p class="text-lg font-semibold text-slate-700 dark:text-slate-200">650</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium">Thực hiện</p>
+                            <p class="text-lg font-bold text-primary">585</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium">Tỷ lệ HT</p>
+                            <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">90.0%</p>
+                        </div>
+                    </div>
+                    <div class="light dark w-1/2 flex justify-end">
+                        <div class="radial-progress" style="--value: 90; --progress-color: #10b981;">
+                            <span class="text-sm font-bold text-slate-800 dark:text-white">90%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="bg-slate-50 dark:bg-slate-800/50 p-3 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">Dự kiến HT</span>
+                <div class="flex items-center gap-1">
+                    <span class="material-icons-round text-amber-500 text-sm">auto_graph</span>
+                    <span class="text-sm font-bold text-slate-700 dark:text-slate-200">98%</span>
+                </div>
+            </div>
+        </div>
+        <div
+            class="bg-card-light dark:bg-card-dark rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col hover:shadow-xl transition-shadow duration-300">
+            <div class="p-5 flex-grow">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="font-bold text-lg text-slate-800 dark:text-white truncate pr-2">Trạm Tương Dương</h3>
+                    <span
+                        class="px-2 py-1 rounded bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-semibold">#09</span>
+                </div>
+                <div class="flex justify-between items-center mb-6">
+                    <div class="space-y-3 w-1/2">
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium">Kế hoạch</p>
+                            <p class="text-lg font-semibold text-slate-700 dark:text-slate-200">400</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium">Thực hiện</p>
+                            <p class="text-lg font-bold text-primary">80</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium">Tỷ lệ HT</p>
+                            <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">20.0%</p>
+                        </div>
+                    </div>
+                    <div class="light dark w-1/2 flex justify-end">
+                        <div class="radial-progress" style="--value: 20; --progress-color: #ef4444;">
+                            <span class="text-sm font-bold text-slate-800 dark:text-white">20%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="bg-slate-50 dark:bg-slate-800/50 p-3 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">Dự kiến HT</span>
+                <div class="flex items-center gap-1">
+                    <span class="material-icons-round text-amber-500 text-sm">auto_graph</span>
+                    <span class="text-sm font-bold text-slate-700 dark:text-slate-200">25%</span>
+                </div>
+            </div>
+        </div>
+        <div
+            class="bg-card-light dark:bg-card-dark rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col hover:shadow-xl transition-shadow duration-300">
+            <div class="p-5 flex-grow">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="font-bold text-lg text-slate-800 dark:text-white truncate pr-2">Trạm Kỳ Sơn</h3>
+                    <span
+                        class="px-2 py-1 rounded bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-semibold">#10</span>
+                </div>
+                <div class="flex justify-between items-center mb-6">
+                    <div class="space-y-3 w-1/2">
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium">Kế hoạch</p>
+                            <p class="text-lg font-semibold text-slate-700 dark:text-slate-200">550</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium">Thực hiện</p>
+                            <p class="text-lg font-bold text-primary">550</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium">Tỷ lệ HT</p>
+                            <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">100%</p>
+                        </div>
+                    </div>
+                    <div class="light dark w-1/2 flex justify-end">
+                        <div class="radial-progress" style="--value: 100; --progress-color: #10b981;">
+                            <span class="text-sm font-bold text-slate-800 dark:text-white">100%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="bg-slate-50 dark:bg-slate-800/50 p-3 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">Dự kiến HT</span>
+                <div class="flex items-center gap-1">
+                    <span class="material-icons-round text-emerald-500 text-sm">check_circle</span>
+                    <span class="text-sm font-bold text-slate-700 dark:text-slate-200">100%</span>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer
+        class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs md:text-sm text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-700 pt-4">
+        <div>
+            <p><strong>Công thức tính:</strong> Tỷ lệ HT = Thực hiện / Kế hoạch * 100%</p>
+        </div>
+        <div class="md:text-right">
+            <p>Dữ liệu được cập nhật tự động mỗi 15 phút.</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>
