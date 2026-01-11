@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Water Quality Monitoring Dashboard</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#0ea5e9", // Sky blue for water theme
+                        secondary: "#6366f1", // Indigo
+                        "background-light": "#f0f4f8",
+                        "background-dark": "#0f172a",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1e293b",
+                        "text-light": "#334155",
+                        "text-dark": "#e2e8f0",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.5rem",
+                    },
+                },
+            },
+        };
+    </script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .dark .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* TV optimized table styles */
+        .tv-table th,
+        .tv-table td {
+            padding: 0.25rem 0.5rem !important;
+            font-size: 0.75rem !important;
+        }
+
+        .tv-table .section-header td {
+            padding: 0.15rem 0.5rem !important;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-text-light dark:text-text-dark min-h-screen transition-colors duration-300 overflow-hidden flex flex-col gap-6 mx-auto"
+    style="width: 97%; max-width: 97%; padding: 1.5vh 0;">
+    <header class="flex justify-between items-center mb-2 shrink-0">
+        <div>
+            <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+                Water Quality Monitoring Center
+            </h1>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Real-time Dashboard • Hưng Nguyên, Hưng Vĩnh, Cầu
+                Bạch, Sông Đào</p>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="glass-panel px-4 py-2 rounded-full flex items-center gap-2 text-sm font-medium shadow-sm">
+                <span class="relative flex h-3 w-3">
+                    <span
+                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                </span>
+                Live Updates
+            </div>
+            <div class="text-right">
+                <div class="text-2xl font-semibold" id="clock">14:30:05</div>
+                <div class="text-xs text-slate-500 dark:text-slate-400">October 24, 2023</div>
+            </div>
+        </div>
+    </header>
+    <section class="grid grid-cols-4 gap-3 shrink-0 h-[18vh]">
+        <div
+            class="glass-panel rounded-xl p-3 shadow-lg flex flex-col justify-between border-l-4 border-l-primary relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <span class="material-icons text-8xl text-primary">water_drop</span>
+            </div>
+            <div class="flex items-center gap-2 mb-2 z-10">
+                <span class="material-icons text-primary">location_on</span>
+                <h2 class="text-xl font-bold tracking-wide">Hưng Nguyên</h2>
+            </div>
+            <div class="grid grid-cols-2 gap-4 z-10">
+                <div>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 uppercase font-semibold">Current NTU</p>
+                    <div class="text-5xl font-bold text-slate-800 dark:text-white mt-1">0.45</div>
+                    <div class="text-xs text-green-500 flex items-center mt-1">
+                        <span class="material-icons text-sm mr-1">arrow_downward</span> -0.02%
+                    </div>
+                </div>
+                <div>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 uppercase font-semibold">Current pH</p>
+                    <div class="text-5xl font-bold text-slate-800 dark:text-white mt-1">7.2</div>
+                    <div class="text-xs text-slate-400 flex items-center mt-1">
+                        <span class="material-icons text-sm mr-1">remove</span> Stable
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div
+            class="glass-panel rounded-xl p-3 shadow-lg flex flex-col justify-between border-l-4 border-l-purple-500 relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <span class="material-icons text-8xl text-purple-500">water_drop</span>
+            </div>
+            <div class="flex items-center gap-2 mb-2 z-10">
+                <span class="material-icons text-purple-500">location_on</span>
+                <h2 class="text-xl font-bold tracking-wide">Hưng Vĩnh</h2>
+            </div>
+            <div class="grid grid-cols-2 gap-4 z-10">
+                <div>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 uppercase font-semibold">Current NTU</p>
+                    <div class="text-5xl font-bold text-slate-800 dark:text-white mt-1">0.52</div>
+                    <div class="text-xs text-red-500 flex items-center mt-1">
+                        <span class="material-icons text-sm mr-1">arrow_upward</span> +0.05%
+                    </div>
+                </div>
+                <div>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 uppercase font-semibold">Current pH</p>
+                    <div class="text-5xl font-bold text-slate-800 dark:text-white mt-1">7.4</div>
+                    <div class="text-xs text-green-500 flex items-center mt-1">
+                        <span class="material-icons text-sm mr-1">check_circle</span> Optimal
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div
+            class="glass-panel rounded-xl p-3 shadow-lg flex flex-col justify-between border-l-4 border-l-teal-500 relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <span class="material-icons text-8xl text-teal-500">water_drop</span>
+            </div>
+            <div class="flex items-center gap-2 mb-2 z-10">
+                <span class="material-icons text-teal-500">location_on</span>
+                <h2 class="text-xl font-bold tracking-wide">Cầu Bạch</h2>
+            </div>
+            <div class="grid grid-cols-2 gap-4 z-10">
+                <div>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 uppercase font-semibold">Current NTU</p>
+                    <div class="text-5xl font-bold text-slate-800 dark:text-white mt-1">0.38</div>
+                    <div class="text-xs text-green-500 flex items-center mt-1">
+                        <span class="material-icons text-sm mr-1">arrow_downward</span> -0.01%
+                    </div>
+                </div>
+                <div>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 uppercase font-semibold">Current pH</p>
+                    <div class="text-5xl font-bold text-slate-800 dark:text-white mt-1">7.1</div>
+                    <div class="text-xs text-slate-400 flex items-center mt-1">
+                        <span class="material-icons text-sm mr-1">remove</span> Stable
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div
+            class="glass-panel rounded-xl p-3 shadow-lg flex flex-col justify-between border-l-4 border-l-orange-500 relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <span class="material-icons text-8xl text-orange-500">waves</span>
+            </div>
+            <div class="flex items-center gap-2 mb-2 z-10">
+                <span class="material-icons text-orange-500">location_on</span>
+                <h2 class="text-xl font-bold tracking-wide">Sông Đào</h2>
+            </div>
+            <div class="grid grid-cols-2 gap-4 z-10">
+                <div>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 uppercase font-semibold">Current NTU</p>
+                    <div class="text-5xl font-bold text-slate-800 dark:text-white mt-1">12.5</div>
+                    <div class="text-xs text-orange-500 flex items-center mt-1 font-medium">
+                        <span class="material-icons text-sm mr-1">warning</span> High Input
+                    </div>
+                </div>
+                <div>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 uppercase font-semibold">Current pH</p>
+                    <div class="text-5xl font-bold text-slate-800 dark:text-white mt-1">6.8</div>
+                    <div class="text-xs text-slate-400 flex items-center mt-1">
+                        <span class="material-icons text-sm mr-1">remove</span> Stable
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="flex-1 grid grid-cols-4 gap-3 min-h-0">
+        <div class="glass-panel rounded-xl shadow-lg flex flex-col overflow-hidden h-full">
+            <div class="bg-primary/10 p-2 border-b border-primary/20 flex justify-between items-center">
+                <h3 class="font-bold text-primary">Hưng Nguyên Details</h3>
+                <span class="text-xs bg-primary/20 text-primary px-2 py-1 rounded">Live</span>
+            </div>
+            <div class="overflow-hidden flex-1 p-0">
+                <table class="w-full text-left text-sm tv-table">
+                    <thead
+                        class="bg-slate-100 dark:bg-slate-800 text-xs uppercase font-semibold text-slate-500 dark:text-slate-400 sticky top-0 z-10">
+                        <tr>
+                            <th class="px-4 py-3">Param</th>
+                            <th class="px-4 py-3 text-right">Value</th>
+                            <th class="px-4 py-3 text-right">Time</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+                        <tr class="bg-slate-50/50 dark:bg-slate-800/30">
+                            <td class="px-4 py-2 font-bold text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider"
+                                colspan="3">Jartest Results</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">Vôi</td>
+                            <td class="px-4 py-3 text-right">15 mg/l</td>
+                            <td class="px-4 py-3 text-right text-slate-500">14:00</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">PAC</td>
+                            <td class="px-4 py-3 text-right">30 mg/l</td>
+                            <td class="px-4 py-3 text-right text-slate-500">14:00</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">Polyme</td>
+                            <td class="px-4 py-3 text-right">0.05 mg/l</td>
+                            <td class="px-4 py-3 text-right text-slate-500">14:00</td>
+                        </tr>
+                        <tr class="bg-slate-50/50 dark:bg-slate-800/30">
+                            <td class="px-4 py-2 font-bold text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider"
+                                colspan="3">Operations</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">Vôi (Op)</td>
+                            <td class="px-4 py-3 text-right">14 mg/l</td>
+                            <td class="px-4 py-3 text-right text-slate-500">14:15</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">PAC (Op)</td>
+                            <td class="px-4 py-3 text-right">28 mg/l</td>
+                            <td class="px-4 py-3 text-right text-slate-500">14:15</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">KMnO4</td>
+                            <td class="px-4 py-3 text-right">0.02 mg/l</td>
+                            <td class="px-4 py-3 text-right text-slate-500">14:15</td>
+                        </tr>
+                        <tr class="bg-slate-50/50 dark:bg-slate-800/30">
+                            <td class="px-4 py-2 font-bold text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider"
+                                colspan="3">Quality (Final)</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">Sau lọc NTU</td>
+                            <td class="px-4 py-3 text-right font-bold text-primary">0.45</td>
+                            <td class="px-4 py-3 text-right text-slate-500">14:25</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">Sau lọc pH</td>
+                            <td class="px-4 py-3 text-right font-bold text-primary">7.2</td>
+                            <td class="px-4 py-3 text-right text-slate-500">14:25</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">Clo Dư</td>
+                            <td class="px-4 py-3 text-right">0.6</td>
+                            <td class="px-4 py-3 text-right text-slate-500">14:25</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">Mangan</td>
+                            <td class="px-4 py-3 text-right">0.01</td>
+                            <td class="px-4 py-3 text-right text-slate-500">14:25</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="glass-panel rounded-xl shadow-lg flex flex-col overflow-hidden h-full">
+            <div class="bg-purple-500/10 p-2 border-b border-purple-500/20 flex justify-between items-center">
+                <h3 class="font-bold text-purple-600 dark:text-purple-400">Hưng Vĩnh Details</h3>
+                <span
+                    class="text-xs bg-purple-500/20 text-purple-600 dark:text-purple-400 px-2 py-1 rounded">Live</span>
+            </div>
+            <div class="overflow-hidden flex-1 p-0">
+                <table class="w-full text-left text-sm tv-table">
+                    <thead
+                        class="bg-slate-100 dark:bg-slate-800 text-xs uppercase font-semibold text-slate-500 dark:text-slate-400 sticky top-0 z-10">
+                        <tr>
+                            <th class="px-4 py-3">Param</th>
+                            <th class="px-4 py-3 text-right">Value</th>
+                            <th class="px-4 py-3 text-right">Time</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+                        <tr class="bg-slate-50/50 dark:bg-slate-800/30">
+                            <td class="px-4 py-2 font-bold text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider"
+                                colspan="3">Jartest Results</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">Vôi</td>
+                            <td class="px-4 py-3 text-right">12 mg/l</td>
+                            <td class="px-4 py-3 text-right text-slate-500">13:55</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">PAC</td>
+                            <td class="px-4 py-3 text-right">32 mg/l</td>
+                            <td class="px-4 py-3 text-right text-slate-500">13:55</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">Polyme</td>
+                            <td class="px-4 py-3 text-right">0.04 mg/l</td>
+                            <td class="px-4 py-3 text-right text-slate-500">13:55</td>
+                        </tr>
+                        <tr class="bg-slate-50/50 dark:bg-slate-800/30">
+                            <td class="px-4 py-2 font-bold text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider"
+                                colspan="3">Operations</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">Vôi (Op)</td>
+                            <td class="px-4 py-3 text-right">12 mg/l</td>
+                            <td class="px-4 py-3 text-right text-slate-500">14:10</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">PAC (Op)</td>
+                            <td class="px-4 py-3 text-right">31 mg/l</td>
+                            <td class="px-4 py-3 text-right text-slate-500">14:10</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">KMnO4</td>
+                            <td class="px-4 py-3 text-right">-</td>
+                            <td class="px-4 py-3 text-right text-slate-500">-</td>
+                        </tr>
+                        <tr class="bg-slate-50/50 dark:bg-slate-800/30">
+                            <td class="px-4 py-2 font-bold text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider"
+                                colspan="3">Quality (Final)</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">Sau lọc NTU</td>
+                            <td class="px-4 py-3 text-right font-bold text-purple-500">0.52</td>
+                            <td class="px-4 py-3 text-right text-slate-500">14:20</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">Sau lọc pH</td>
+                            <td class="px-4 py-3 text-right font-bold text-purple-500">7.4</td>
+                            <td class="px-4 py-3 text-right text-slate-500">14:20</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">Clo Dư</td>
+                            <td class="px-4 py-3 text-right">0.55</td>
+                            <td class="px-4 py-3 text-right text-slate-500">14:20</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">Mangan</td>
+                            <td class="px-4 py-3 text-right">0.02</td>
+                            <td class="px-4 py-3 text-right text-slate-500">14:20</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="glass-panel rounded-xl shadow-lg flex flex-col overflow-hidden h-full">
+            <div class="bg-teal-500/10 p-2 border-b border-teal-500/20 flex justify-between items-center">
+                <h3 class="font-bold text-teal-600 dark:text-teal-400">Cầu Bạch Details</h3>
+                <span class="text-xs bg-teal-500/20 text-teal-600 dark:text-teal-400 px-2 py-1 rounded">Live</span>
+            </div>
+            <div class="overflow-hidden flex-1 p-0">
+                <table class="w-full text-left text-sm tv-table">
+                    <thead
+                        class="bg-slate-100 dark:bg-slate-800 text-xs uppercase font-semibold text-slate-500 dark:text-slate-400 sticky top-0 z-10">
+                        <tr>
+                            <th class="px-4 py-3">Param</th>
+                            <th class="px-4 py-3 text-right">Value</th>
+                            <th class="px-4 py-3 text-right">Time</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+                        <tr class="bg-slate-50/50 dark:bg-slate-800/30">
+                            <td class="px-4 py-2 font-bold text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider"
+                                colspan="3">Jartest Results</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">Vôi</td>
+                            <td class="px-4 py-3 text-right">10 mg/l</td>
+                            <td class="px-4 py-3 text-right text-slate-500">14:05</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">PAC</td>
+                            <td class="px-4 py-3 text-right">25 mg/l</td>
+                            <td class="px-4 py-3 text-right text-slate-500">14:05</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">Polyme</td>
+                            <td class="px-4 py-3 text-right">0.03 mg/l</td>
+                            <td class="px-4 py-3 text-right text-slate-500">14:05</td>
+                        </tr>
+                        <tr class="bg-slate-50/50 dark:bg-slate-800/30">
+                            <td class="px-4 py-2 font-bold text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider"
+                                colspan="3">Operations</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">Vôi (Op)</td>
+                            <td class="px-4 py-3 text-right">10 mg/l</td>
+                            <td class="px-4 py-3 text-right text-slate-500">14:20</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">PAC (Op)</td>
+                            <td class="px-4 py-3 text-right">24 mg/l</td>
+                            <td class="px-4 py-3 text-right text-slate-500">14:20</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">KMnO4</td>
+                            <td class="px-4 py-3 text-right">-</td>
+                            <td class="px-4 py-3 text-right text-slate-500">-</td>
+                        </tr>
+                        <tr class="bg-slate-50/50 dark:bg-slate-800/30">
+                            <td class="px-4 py-2 font-bold text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider"
+                                colspan="3">Quality (Final)</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">Sau lọc NTU</td>
+                            <td class="px-4 py-3 text-right font-bold text-teal-500">0.38</td>
+                            <td class="px-4 py-3 text-right text-slate-500">14:30</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">Sau lọc pH</td>
+                            <td class="px-4 py-3 text-right font-bold text-teal-500">7.1</td>
+                            <td class="px-4 py-3 text-right text-slate-500">14:30</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">Clo Dư</td>
+                            <td class="px-4 py-3 text-right">0.5</td>
+                            <td class="px-4 py-3 text-right text-slate-500">14:30</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">Mangan</td>
+                            <td class="px-4 py-3 text-right">0.01</td>
+                            <td class="px-4 py-3 text-right text-slate-500">14:30</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="glass-panel rounded-xl shadow-lg flex flex-col overflow-hidden h-full">
+            <div class="bg-orange-500/10 p-2 border-b border-orange-500/20 flex justify-between items-center">
+                <h3 class="font-bold text-orange-600 dark:text-orange-400">Sông Đào Details</h3>
+                <span class="text-xs bg-orange-500/20 text-orange-600 dark:text-orange-400 px-2 py-1 rounded">Raw</span>
+            </div>
+            <div class="overflow-hidden flex-1 p-0">
+                <table class="w-full text-left text-sm tv-table">
+                    <thead
+                        class="bg-slate-100 dark:bg-slate-800 text-xs uppercase font-semibold text-slate-500 dark:text-slate-400 sticky top-0 z-10">
+                        <tr>
+                            <th class="px-4 py-3">Param</th>
+                            <th class="px-4 py-3 text-right">Value</th>
+                            <th class="px-4 py-3 text-right">Time</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+                        <tr class="bg-slate-50/50 dark:bg-slate-800/30">
+                            <td class="px-4 py-2 font-bold text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider"
+                                colspan="3">Raw Input Quality</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">Nước nguồn NTU</td>
+                            <td class="px-4 py-3 text-right font-bold text-orange-500">12.5</td>
+                            <td class="px-4 py-3 text-right text-slate-500">14:00</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">Nước nguồn TCU</td>
+                            <td class="px-4 py-3 text-right">45</td>
+                            <td class="px-4 py-3 text-right text-slate-500">14:00</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">Nước nguồn pH</td>
+                            <td class="px-4 py-3 text-right">6.8</td>
+                            <td class="px-4 py-3 text-right text-slate-500">14:00</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">Mangan (Raw)</td>
+                            <td class="px-4 py-3 text-right">0.05</td>
+                            <td class="px-4 py-3 text-right text-slate-500">14:00</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">COD</td>
+                            <td class="px-4 py-3 text-right">2.5</td>
+                            <td class="px-4 py-3 text-right text-slate-500">14:00</td>
+                        </tr>
+                        <tr class="bg-slate-50/50 dark:bg-slate-800/30">
+                            <td class="px-4 py-2 font-bold text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider"
+                                colspan="3">Treatment Plan</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">Rec. Vôi</td>
+                            <td class="px-4 py-3 text-right">18 mg/l</td>
+                            <td class="px-4 py-3 text-right text-slate-500">-</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">Rec. PAC</td>
+                            <td class="px-4 py-3 text-right">35 mg/l</td>
+                            <td class="px-4 py-3 text-right text-slate-500">-</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-medium">Rec. Clorine</td>
+                            <td class="px-4 py-3 text-right">1.5 mg/l</td>
+                            <td class="px-4 py-3 text-right text-slate-500">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+    <footer class="mt-auto pt-2 shrink-0 flex justify-between text-xs text-slate-500 dark:text-slate-400">
+        <div>System Status: <span class="text-green-500 font-bold">Operational</span></div>
+        <div>Last Full Sync: 2 seconds ago</div>
+    </footer>
+    <script>
+        // Simple Clock
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { hour12: false });
+            document.getElementById('clock').textContent = timeString;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+
+</body>
+
+</html>
