@@ -6,7 +6,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Water Quality Monitoring Dashboard</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
         rel="stylesheet" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <script>
@@ -65,483 +65,1004 @@
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* TV optimized table styles */
+        /* TV optimized table styles - compact for TV display */
         .tv-table th,
         .tv-table td {
-            padding: 0.25rem 0.5rem !important;
-            font-size: 0.75rem !important;
+            padding: 0.1rem 0.35rem !important;
+            font-size: 0.6rem !important;
+            line-height: 1.2 !important;
         }
 
         .tv-table .section-header td {
-            padding: 0.15rem 0.5rem !important;
+            padding: 0.05rem 0.35rem !important;
+            font-size: 0.55rem !important;
+            font-weight: 700;
+        }
+
+        /* Highlight labels */
+        .param-label {
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .dark .param-label {
+            color: #94a3b8;
         }
     </style>
 </head>
 
 <body
-    class="bg-background-light dark:bg-background-dark font-display text-text-light dark:text-text-dark min-h-screen transition-colors duration-300 overflow-hidden flex flex-col gap-6 mx-auto"
-    style="width: 97%; max-width: 97%; padding: 1.5vh 0;">
-    <header class="flex justify-between items-center mb-2 shrink-0">
+    class="bg-background-light dark:bg-background-dark font-display text-text-light dark:text-text-dark min-h-screen transition-colors duration-300 overflow-hidden flex flex-col gap-4 mx-auto"
+    style="width: 98%; max-width: 98%; padding: 1vh 0;">
+    <header class="flex justify-between items-center mb-1 shrink-0">
         <div>
-            <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
-                Water Quality Monitoring Center
-            </h1>
-            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Real-time Dashboard • Hưng Nguyên, Hưng Vĩnh, Cầu
-                Bạch, Sông Đào</p>
+            <h1 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+                <h1 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+                    Water Quality Monitoring Center
+                </h1>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Real-time Dashboard • Hưng Nguyên, Hưng Vĩnh, Cầu
+                    Bạch</p>
         </div>
         <div class="flex items-center gap-4">
-            <div class="glass-panel px-4 py-2 rounded-full flex items-center gap-2 text-sm font-medium shadow-sm">
-                <span class="relative flex h-3 w-3">
+            <div class="glass-panel px-3 py-1.5 rounded-full flex items-center gap-2 text-xs font-medium shadow-sm">
+                <span class="relative flex h-2 w-2" id="live-indicator">
                     <span
                         class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                 </span>
-                Live Updates
+                <span id="live-status">Live Updates</span>
             </div>
             <div class="text-right">
-                <div class="text-2xl font-semibold" id="clock">14:30:05</div>
-                <div class="text-xs text-slate-500 dark:text-slate-400">October 24, 2023</div>
+                <div class="text-xl font-semibold" id="clock">14:30:05</div>
+                <div class="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-tighter"
+                    id="current-date">October 24, 2023</div>
             </div>
         </div>
     </header>
-    <section class="grid grid-cols-4 gap-3 shrink-0 h-[18vh]">
-        <div
-            class="glass-panel rounded-xl p-3 shadow-lg flex flex-col justify-between border-l-4 border-l-primary relative overflow-hidden">
-            <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                <span class="material-icons text-8xl text-primary">water_drop</span>
-            </div>
-            <div class="flex items-center gap-2 mb-2 z-10">
-                <span class="material-icons text-primary">location_on</span>
-                <h2 class="text-xl font-bold tracking-wide">Hưng Nguyên</h2>
-            </div>
-            <div class="grid grid-cols-2 gap-4 z-10">
-                <div>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 uppercase font-semibold">Current NTU</p>
-                    <div class="text-5xl font-bold text-slate-800 dark:text-white mt-1">0.45</div>
-                    <div class="text-xs text-green-500 flex items-center mt-1">
-                        <span class="material-icons text-sm mr-1">arrow_downward</span> -0.02%
-                    </div>
-                </div>
-                <div>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 uppercase font-semibold">Current pH</p>
-                    <div class="text-5xl font-bold text-slate-800 dark:text-white mt-1">7.2</div>
-                    <div class="text-xs text-slate-400 flex items-center mt-1">
-                        <span class="material-icons text-sm mr-1">remove</span> Stable
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div
-            class="glass-panel rounded-xl p-3 shadow-lg flex flex-col justify-between border-l-4 border-l-purple-500 relative overflow-hidden">
-            <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                <span class="material-icons text-8xl text-purple-500">water_drop</span>
-            </div>
-            <div class="flex items-center gap-2 mb-2 z-10">
-                <span class="material-icons text-purple-500">location_on</span>
-                <h2 class="text-xl font-bold tracking-wide">Hưng Vĩnh</h2>
-            </div>
-            <div class="grid grid-cols-2 gap-4 z-10">
-                <div>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 uppercase font-semibold">Current NTU</p>
-                    <div class="text-5xl font-bold text-slate-800 dark:text-white mt-1">0.52</div>
-                    <div class="text-xs text-red-500 flex items-center mt-1">
-                        <span class="material-icons text-sm mr-1">arrow_upward</span> +0.05%
-                    </div>
-                </div>
-                <div>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 uppercase font-semibold">Current pH</p>
-                    <div class="text-5xl font-bold text-slate-800 dark:text-white mt-1">7.4</div>
-                    <div class="text-xs text-green-500 flex items-center mt-1">
-                        <span class="material-icons text-sm mr-1">check_circle</span> Optimal
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div
-            class="glass-panel rounded-xl p-3 shadow-lg flex flex-col justify-between border-l-4 border-l-teal-500 relative overflow-hidden">
-            <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                <span class="material-icons text-8xl text-teal-500">water_drop</span>
-            </div>
-            <div class="flex items-center gap-2 mb-2 z-10">
-                <span class="material-icons text-teal-500">location_on</span>
-                <h2 class="text-xl font-bold tracking-wide">Cầu Bạch</h2>
-            </div>
-            <div class="grid grid-cols-2 gap-4 z-10">
-                <div>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 uppercase font-semibold">Current NTU</p>
-                    <div class="text-5xl font-bold text-slate-800 dark:text-white mt-1">0.38</div>
-                    <div class="text-xs text-green-500 flex items-center mt-1">
-                        <span class="material-icons text-sm mr-1">arrow_downward</span> -0.01%
-                    </div>
-                </div>
-                <div>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 uppercase font-semibold">Current pH</p>
-                    <div class="text-5xl font-bold text-slate-800 dark:text-white mt-1">7.1</div>
-                    <div class="text-xs text-slate-400 flex items-center mt-1">
-                        <span class="material-icons text-sm mr-1">remove</span> Stable
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div
-            class="glass-panel rounded-xl p-3 shadow-lg flex flex-col justify-between border-l-4 border-l-orange-500 relative overflow-hidden">
-            <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                <span class="material-icons text-8xl text-orange-500">waves</span>
-            </div>
-            <div class="flex items-center gap-2 mb-2 z-10">
-                <span class="material-icons text-orange-500">location_on</span>
-                <h2 class="text-xl font-bold tracking-wide">Sông Đào</h2>
-            </div>
-            <div class="grid grid-cols-2 gap-4 z-10">
-                <div>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 uppercase font-semibold">Current NTU</p>
-                    <div class="text-5xl font-bold text-slate-800 dark:text-white mt-1">12.5</div>
-                    <div class="text-xs text-orange-500 flex items-center mt-1 font-medium">
-                        <span class="material-icons text-sm mr-1">warning</span> High Input
-                    </div>
-                </div>
-                <div>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 uppercase font-semibold">Current pH</p>
-                    <div class="text-5xl font-bold text-slate-800 dark:text-white mt-1">6.8</div>
-                    <div class="text-xs text-slate-400 flex items-center mt-1">
-                        <span class="material-icons text-sm mr-1">remove</span> Stable
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <section class="flex-1 grid grid-cols-4 gap-3 min-h-0">
+
+    <!-- Detail Tables Section -->
+    <section class="flex-1 grid grid-cols-3 gap-3 min-h-0 overflow-hidden">
+        <!-- Hưng Nguyên Details -->
         <div class="glass-panel rounded-xl shadow-lg flex flex-col overflow-hidden h-full">
             <div class="bg-primary/10 p-2 border-b border-primary/20 flex justify-between items-center">
-                <h3 class="font-bold text-primary">Hưng Nguyên Details</h3>
-                <span class="text-xs bg-primary/20 text-primary px-2 py-1 rounded">Live</span>
+                <h3 class="font-bold text-primary text-sm uppercase">NMN Hưng Nguyên</h3>
+                <span class="text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded uppercase font-bold">Live</span>
             </div>
-            <div class="overflow-hidden flex-1 p-0">
-                <table class="w-full text-left text-sm tv-table">
-                    <thead
-                        class="bg-slate-100 dark:bg-slate-800 text-xs uppercase font-semibold text-slate-500 dark:text-slate-400 sticky top-0 z-10">
-                        <tr>
-                            <th class="px-4 py-3">Param</th>
-                            <th class="px-4 py-3 text-right">Value</th>
-                            <th class="px-4 py-3 text-right">Time</th>
-                        </tr>
-                    </thead>
+            <div class="overflow-y-auto flex-1 p-0">
+                <table class="w-full text-left tv-table">
                     <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
-                        <tr class="bg-slate-50/50 dark:bg-slate-800/30">
-                            <td class="px-4 py-2 font-bold text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider"
-                                colspan="3">Jartest Results</td>
+                        <!-- 1. Jartest Section -->
+                        <tr class="bg-slate-200/50 dark:bg-slate-800/80 section-header">
+                            <td class="px-4 py-1 text-primary uppercase" colspan="4">Kết quả Jartest</td>
+                        </tr>
+                        <tr class="bg-slate-50/50 dark:bg-slate-900/50 text-[10px] uppercase text-slate-400 font-bold">
+                            <td class="px-4 py-1">Chỉ tiêu</td>
+                            <td class="px-4 py-1 text-right" colspan="2">Thời gian: <span id="hn-j-time">--</span></td>
+                            <td class="px-4 py-1 text-right">Giá trị</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-medium">Vôi</td>
-                            <td class="px-4 py-3 text-right">15 mg/l</td>
-                            <td class="px-4 py-3 text-right text-slate-500">14:00</td>
+                            <td class="px-4 py-1 param-label">Vôi</td>
+                            <td class="px-4 py-1 text-right" colspan="2"></td>
+                            <td class="px-4 py-1 text-right font-medium" id="hn-j-voi">-- g/m3</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-medium">PAC</td>
-                            <td class="px-4 py-3 text-right">30 mg/l</td>
-                            <td class="px-4 py-3 text-right text-slate-500">14:00</td>
+                            <td class="px-4 py-1 param-label">PAC</td>
+                            <td class="px-4 py-1 text-right" colspan="2"></td>
+                            <td class="px-4 py-1 text-right font-medium" id="hn-j-pac">-- g/m3</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-medium">Polyme</td>
-                            <td class="px-4 py-3 text-right">0.05 mg/l</td>
-                            <td class="px-4 py-3 text-right text-slate-500">14:00</td>
+                            <td class="px-4 py-1 param-label">Polyme</td>
+                            <td class="px-4 py-1 text-right" colspan="2"></td>
+                            <td class="px-4 py-1 text-right font-medium" id="hn-j-polyme">-- g/m3</td>
                         </tr>
-                        <tr class="bg-slate-50/50 dark:bg-slate-800/30">
-                            <td class="px-4 py-2 font-bold text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider"
-                                colspan="3">Operations</td>
+
+                        <!-- 2. Operations Section -->
+                        <tr class="bg-slate-200/50 dark:bg-slate-800/80 section-header">
+                            <td class="px-4 py-1 text-primary uppercase" colspan="4">Thông tin vận hành</td>
                         </tr>
-                        <tr>
-                            <td class="px-4 py-3 font-medium">Vôi (Op)</td>
-                            <td class="px-4 py-3 text-right">14 mg/l</td>
-                            <td class="px-4 py-3 text-right text-slate-500">14:15</td>
-                        </tr>
-                        <tr>
-                            <td class="px-4 py-3 font-medium">PAC (Op)</td>
-                            <td class="px-4 py-3 text-right">28 mg/l</td>
-                            <td class="px-4 py-3 text-right text-slate-500">14:15</td>
+                        <tr class="bg-slate-50/50 dark:bg-slate-900/50 text-[10px] uppercase text-slate-400 font-bold">
+                            <td class="px-4 py-1">Thiết bị</td>
+                            <td class="px-4 py-1 text-right" colspan="2">Thời gian: <span id="hn-f-time">--</span></td>
+                            <td class="px-4 py-1 text-right">Giá trị</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-medium">KMnO4</td>
-                            <td class="px-4 py-3 text-right">0.02 mg/l</td>
-                            <td class="px-4 py-3 text-right text-slate-500">14:15</td>
-                        </tr>
-                        <tr class="bg-slate-50/50 dark:bg-slate-800/30">
-                            <td class="px-4 py-2 font-bold text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider"
-                                colspan="3">Quality (Final)</td>
+                            <td class="px-4 py-1 param-label">Vôi</td>
+                            <td class="px-4 py-1 text-right" colspan="2"></td>
+                            <td class="px-4 py-1 text-right font-medium" id="hn-f-voi">-- l/h</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-medium">Sau lọc NTU</td>
-                            <td class="px-4 py-3 text-right font-bold text-primary">0.45</td>
-                            <td class="px-4 py-3 text-right text-slate-500">14:25</td>
+                            <td class="px-4 py-1 param-label">PAC</td>
+                            <td class="px-4 py-1 text-right" colspan="2"></td>
+                            <td class="px-4 py-1 text-right font-medium" id="hn-f-pac">-- l/h</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-medium">Sau lọc pH</td>
-                            <td class="px-4 py-3 text-right font-bold text-primary">7.2</td>
-                            <td class="px-4 py-3 text-right text-slate-500">14:25</td>
+                            <td class="px-4 py-1 param-label">Than hoạt tính</td>
+                            <td class="px-4 py-1 text-right" colspan="2"></td>
+                            <td class="px-4 py-1 text-right font-medium" id="hn-f-than">-- l/h</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-medium">Clo Dư</td>
-                            <td class="px-4 py-3 text-right">0.6</td>
-                            <td class="px-4 py-3 text-right text-slate-500">14:25</td>
+                            <td class="px-4 py-1 param-label">KMnO4</td>
+                            <td class="px-4 py-1 text-right" colspan="2"></td>
+                            <td class="px-4 py-1 text-right font-medium" id="hn-f-kmno4">-- l/h</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-medium">Mangan</td>
-                            <td class="px-4 py-3 text-right">0.01</td>
-                            <td class="px-4 py-3 text-right text-slate-500">14:25</td>
+                            <td class="px-4 py-1 param-label">Polyme</td>
+                            <td class="px-4 py-1 text-right" colspan="2"></td>
+                            <td class="px-4 py-1 text-right font-medium" id="hn-f-polyme">-- l/h</td>
+                        </tr>
+
+                        <!-- 3. Quality Section -->
+                        <tr class="bg-slate-200/50 dark:bg-slate-800/80 section-header">
+                            <td class="px-4 py-1 text-primary uppercase" colspan="4">Kết quả chất lượng nước</td>
+                        </tr>
+                        <tr
+                            class="bg-slate-100 dark:bg-slate-800 text-[9px] uppercase font-bold text-slate-500 dark:text-slate-400 sticky top-0 z-10">
+                            <th class="px-4 py-1">Chỉ tiêu</th>
+                            <th class="px-4 py-1 text-right">Giờ</th>
+                            <th class="px-4 py-1 text-right">Lần</th>
+                            <th class="px-4 py-1 text-right">Giá trị</th>
+                        </tr>
+                    <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+                        <!-- Quality Sections -->
+                        <!-- 1. Nước nguồn -->
+                        <tr class="bg-blue-50/50 dark:bg-blue-900/20 section-header">
+                            <td class="px-4 py-1 text-blue-600 dark:text-blue-400" colspan="4">1. NƯỚC NGUỒN</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">NTU</td>
+                            <td class="px-4 py-1 text-right" id="hn-nguon-ntu-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-nguon-ntu-count">--</td>
+                            <td class="px-4 py-1 text-right font-bold text-primary" id="hn-nguon-ntu">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">pH</td>
+                            <td class="px-4 py-1 text-right" id="hn-nguon-ph-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-nguon-ph-count">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-nguon-ph">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">NH4</td>
+                            <td class="px-4 py-1 text-right" id="hn-nguon-nh4-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-nguon-nh4-count">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-nguon-nh4">--</td>
+                        </tr>
+
+                        <!-- 2. NGĂN PHÂN CHIA LƯU LƯỢNG -->
+                        <tr class="bg-blue-50/50 dark:bg-blue-900/20 section-header">
+                            <td class="px-4 py-1 text-blue-600 dark:text-blue-400" colspan="4">2. NGĂN PHÂN CHIA LƯU
+                                LƯỢNG</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">pH</td>
+                            <td class="px-4 py-1 text-right" id="hn-pcll-ph-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-pcll-ph-count">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-pcll-ph">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">Clo dư</td>
+                            <td class="px-4 py-1 text-right" id="hn-pcll-clo-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-pcll-clo-count">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-pcll-clo">--</td>
+                        </tr>
+
+                        <!-- 3. Sau lắng -->
+                        <tr class="bg-blue-50/50 dark:bg-blue-900/20 section-header">
+                            <td class="px-4 py-1 text-blue-600 dark:text-blue-400" colspan="4">3. SAU LẮNG</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">NTU</td>
+                            <td class="px-4 py-1 text-right" id="hn-slang-ntu-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-slang-ntu-count">--</td>
+                            <td class="px-4 py-1 text-right font-bold text-primary" id="hn-slang-ntu">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">TCU</td>
+                            <td class="px-4 py-1 text-right" id="hn-slang-tcu-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-slang-tcu-count">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-slang-tcu">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">pH</td>
+                            <td class="px-4 py-1 text-right" id="hn-slang-ph-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-slang-ph-count">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-slang-ph">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">Clo dư</td>
+                            <td class="px-4 py-1 text-right" id="hn-slang-clo-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-slang-clo-count">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-slang-clo">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">NH4</td>
+                            <td class="px-4 py-1 text-right" id="hn-slang-nh4-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-slang-nh4-count">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-slang-nh4">--</td>
+                        </tr>
+
+                        <!-- 4. Sau lọc -->
+                        <tr class="bg-blue-50/50 dark:bg-blue-900/20 section-header">
+                            <td class="px-4 py-1 text-blue-600 dark:text-blue-400" colspan="4">4. SAU LỌC</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">NTU</td>
+                            <td class="px-4 py-1 text-right" id="hn-sloc-ntu-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-sloc-ntu-count">--</td>
+                            <td class="px-4 py-1 text-right font-bold text-primary" id="hn-sloc-ntu">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">TCU</td>
+                            <td class="px-4 py-1 text-right" id="hn-sloc-tcu-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-sloc-tcu-count">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-sloc-tcu">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">pH</td>
+                            <td class="px-4 py-1 text-right" id="hn-sloc-ph-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-sloc-ph-count">--</td>
+                            <td class="px-4 py-1 text-right font-bold text-primary" id="hn-sloc-ph">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">Clo dư</td>
+                            <td class="px-4 py-1 text-right" id="hn-sloc-clo-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-sloc-clo-count">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-sloc-clo">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">NH4</td>
+                            <td class="px-4 py-1 text-right" id="hn-sloc-nh4-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-sloc-nh4-count">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-sloc-nh4">--</td>
+                        </tr>
+
+                        <!-- 5. Bơm cấp 2 -->
+                        <tr class="bg-blue-50/50 dark:bg-blue-900/20 section-header">
+                            <td class="px-4 py-1 text-blue-600 dark:text-blue-400" colspan="4">5. BƠM CẤP 2</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">NTU</td>
+                            <td class="px-4 py-1 text-right" id="hn-bomc2-ntu-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-bomc2-ntu-count">--</td>
+                            <td class="px-4 py-1 text-right font-bold text-primary" id="hn-bomc2-ntu">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">TCU</td>
+                            <td class="px-4 py-1 text-right" id="hn-bomc2-tcu-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-bomc2-tcu-count">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-bomc2-tcu">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">pH</td>
+                            <td class="px-4 py-1 text-right" id="hn-bomc2-ph-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-bomc2-ph-count">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-bomc2-ph">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">Clo dư</td>
+                            <td class="px-4 py-1 text-right" id="hn-bomc2-clo-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-bomc2-clo-count">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-bomc2-clo">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">NH4</td>
+                            <td class="px-4 py-1 text-right" id="hn-bomc2-nh4-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-bomc2-nh4-count">--</td>
+                            <td class="px-4 py-1 text-right" id="hn-bomc2-nh4">--</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
+
+        <!-- Hưng Vĩnh Details -->
         <div class="glass-panel rounded-xl shadow-lg flex flex-col overflow-hidden h-full">
             <div class="bg-purple-500/10 p-2 border-b border-purple-500/20 flex justify-between items-center">
-                <h3 class="font-bold text-purple-600 dark:text-purple-400">Hưng Vĩnh Details</h3>
+                <h3 class="font-bold text-purple-600 dark:text-purple-400 text-sm uppercase">NMN Hưng Vĩnh</h3>
                 <span
-                    class="text-xs bg-purple-500/20 text-purple-600 dark:text-purple-400 px-2 py-1 rounded">Live</span>
+                    class="text-[10px] bg-purple-500/20 text-purple-600 dark:text-purple-400 px-2 py-0.5 rounded uppercase font-bold">Live</span>
             </div>
-            <div class="overflow-hidden flex-1 p-0">
-                <table class="w-full text-left text-sm tv-table">
-                    <thead
-                        class="bg-slate-100 dark:bg-slate-800 text-xs uppercase font-semibold text-slate-500 dark:text-slate-400 sticky top-0 z-10">
-                        <tr>
-                            <th class="px-4 py-3">Param</th>
-                            <th class="px-4 py-3 text-right">Value</th>
-                            <th class="px-4 py-3 text-right">Time</th>
-                        </tr>
-                    </thead>
+            <div class="overflow-y-auto flex-1 p-0">
+                <table class="w-full text-left tv-table">
                     <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
-                        <tr class="bg-slate-50/50 dark:bg-slate-800/30">
-                            <td class="px-4 py-2 font-bold text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider"
-                                colspan="3">Jartest Results</td>
+                        <!-- 1. Jartest Section -->
+                        <tr class="bg-slate-200/50 dark:bg-slate-800/80 section-header">
+                            <td class="px-4 py-1 text-purple-600 dark:text-purple-400 uppercase" colspan="4">Kết quả
+                                Jartest</td>
+                        </tr>
+                        <tr class="bg-slate-50/50 dark:bg-slate-900/50 text-[10px] uppercase text-slate-400 font-bold">
+                            <td class="px-4 py-1">Chỉ tiêu</td>
+                            <td class="px-4 py-1 text-right" colspan="2">Thời gian: <span id="hv-j-time">--</span></td>
+                            <td class="px-4 py-1 text-right">Giá trị</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-medium">Vôi</td>
-                            <td class="px-4 py-3 text-right">12 mg/l</td>
-                            <td class="px-4 py-3 text-right text-slate-500">13:55</td>
+                            <td class="px-4 py-1 param-label">Vôi</td>
+                            <td class="px-4 py-1 text-right" colspan="2"></td>
+                            <td class="px-4 py-1 text-right font-medium" id="hv-j-voi">-- g/m3</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-medium">PAC</td>
-                            <td class="px-4 py-3 text-right">32 mg/l</td>
-                            <td class="px-4 py-3 text-right text-slate-500">13:55</td>
+                            <td class="px-4 py-1 param-label">PAC</td>
+                            <td class="px-4 py-1 text-right" colspan="2"></td>
+                            <td class="px-4 py-1 text-right font-medium" id="hv-j-pac">-- g/m3</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-medium">Polyme</td>
-                            <td class="px-4 py-3 text-right">0.04 mg/l</td>
-                            <td class="px-4 py-3 text-right text-slate-500">13:55</td>
+                            <td class="px-4 py-1 param-label">Polyme</td>
+                            <td class="px-4 py-1 text-right" colspan="2"></td>
+                            <td class="px-4 py-1 text-right font-medium" id="hv-j-polyme">-- g/m3</td>
                         </tr>
-                        <tr class="bg-slate-50/50 dark:bg-slate-800/30">
-                            <td class="px-4 py-2 font-bold text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider"
-                                colspan="3">Operations</td>
+
+                        <!-- 2. Operations Section -->
+                        <tr class="bg-slate-200/50 dark:bg-slate-800/80 section-header">
+                            <td class="px-4 py-1 text-purple-600 dark:text-purple-400 uppercase" colspan="4">Thông tin
+                                vận hành</td>
                         </tr>
-                        <tr>
-                            <td class="px-4 py-3 font-medium">Vôi (Op)</td>
-                            <td class="px-4 py-3 text-right">12 mg/l</td>
-                            <td class="px-4 py-3 text-right text-slate-500">14:10</td>
-                        </tr>
-                        <tr>
-                            <td class="px-4 py-3 font-medium">PAC (Op)</td>
-                            <td class="px-4 py-3 text-right">31 mg/l</td>
-                            <td class="px-4 py-3 text-right text-slate-500">14:10</td>
+                        <tr class="bg-slate-50/50 dark:bg-slate-900/50 text-[10px] uppercase text-slate-400 font-bold">
+                            <td class="px-4 py-1">Thiết bị</td>
+                            <td class="px-4 py-1 text-right" colspan="2">Thời gian: <span id="hv-f-time">--</span></td>
+                            <td class="px-4 py-1 text-right">Giá trị</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-medium">KMnO4</td>
-                            <td class="px-4 py-3 text-right">-</td>
-                            <td class="px-4 py-3 text-right text-slate-500">-</td>
-                        </tr>
-                        <tr class="bg-slate-50/50 dark:bg-slate-800/30">
-                            <td class="px-4 py-2 font-bold text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider"
-                                colspan="3">Quality (Final)</td>
+                            <td class="px-4 py-1 param-label">Vôi</td>
+                            <td class="px-4 py-1 text-right" colspan="2"></td>
+                            <td class="px-4 py-1 text-right font-medium" id="hv-f-voi">-- l/h</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-medium">Sau lọc NTU</td>
-                            <td class="px-4 py-3 text-right font-bold text-purple-500">0.52</td>
-                            <td class="px-4 py-3 text-right text-slate-500">14:20</td>
+                            <td class="px-4 py-1 param-label">PAC</td>
+                            <td class="px-4 py-1 text-right" colspan="2"></td>
+                            <td class="px-4 py-1 text-right font-medium" id="hv-f-pac">-- l/h</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-medium">Sau lọc pH</td>
-                            <td class="px-4 py-3 text-right font-bold text-purple-500">7.4</td>
-                            <td class="px-4 py-3 text-right text-slate-500">14:20</td>
+                            <td class="px-4 py-1 param-label">Than hoạt tính</td>
+                            <td class="px-4 py-1 text-right" colspan="2"></td>
+                            <td class="px-4 py-1 text-right font-medium" id="hv-f-than">-- l/h</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-medium">Clo Dư</td>
-                            <td class="px-4 py-3 text-right">0.55</td>
-                            <td class="px-4 py-3 text-right text-slate-500">14:20</td>
+                            <td class="px-4 py-1 param-label">KMnO4</td>
+                            <td class="px-4 py-1 text-right" colspan="2"></td>
+                            <td class="px-4 py-1 text-right font-medium" id="hv-f-kmno4">-- l/h</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-medium">Mangan</td>
-                            <td class="px-4 py-3 text-right">0.02</td>
-                            <td class="px-4 py-3 text-right text-slate-500">14:20</td>
+                            <td class="px-4 py-1 param-label">Polyme</td>
+                            <td class="px-4 py-1 text-right" colspan="2"></td>
+                            <td class="px-4 py-1 text-right font-medium" id="hv-f-polyme">-- l/h</td>
+                        </tr>
+
+                        <!-- 3. Quality Section -->
+                        <tr class="bg-slate-200/50 dark:bg-slate-800/80 section-header">
+                            <td class="px-4 py-1 text-purple-600 dark:text-purple-400 uppercase" colspan="4">Kết quả
+                                chất lượng nước</td>
+                        </tr>
+                        <tr
+                            class="bg-slate-100 dark:bg-slate-800 text-[9px] uppercase font-bold text-slate-500 dark:text-slate-400 sticky top-0 z-10">
+                            <th class="px-4 py-1">Chỉ tiêu</th>
+                            <th class="px-4 py-1 text-right">Giờ</th>
+                            <th class="px-4 py-1 text-right">Lần</th>
+                            <th class="px-4 py-1 text-right">Giá trị</th>
+                        </tr>
+                    <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+                        <!-- Quality Sections -->
+                        <!-- 1. Nước nguồn -->
+                        <tr class="bg-purple-50/50 dark:bg-purple-900/20 section-header">
+                            <td class="px-4 py-1 text-purple-600 dark:text-purple-400" colspan="4">1. NƯỚC NGUỒN</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">NTU</td>
+                            <td class="px-4 py-1 text-right" id="hv-nguon-ntu-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-nguon-ntu-count">--</td>
+                            <td class="px-4 py-1 text-right font-bold text-purple-500" id="hv-nguon-ntu">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">pH</td>
+                            <td class="px-4 py-1 text-right" id="hv-nguon-ph-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-nguon-ph-count">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-nguon-ph">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">NH4</td>
+                            <td class="px-4 py-1 text-right" id="hv-nguon-nh4-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-nguon-nh4-count">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-nguon-nh4">--</td>
+                        </tr>
+
+                        <!-- 2. NGĂN PHÂN CHIA LƯU LƯỢNG -->
+                        <tr class="bg-purple-50/50 dark:bg-purple-900/20 section-header">
+                            <td class="px-4 py-1 text-purple-600 dark:text-purple-400" colspan="4">2. NGĂN PHÂN CHIA LƯU
+                                LƯỢNG</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">pH</td>
+                            <td class="px-4 py-1 text-right" id="hv-pcll-ph-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-pcll-ph-count">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-pcll-ph">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">Clo dư</td>
+                            <td class="px-4 py-1 text-right" id="hv-pcll-clo-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-pcll-clo-count">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-pcll-clo">--</td>
+                        </tr>
+
+                        <tr class="bg-purple-50/50 dark:bg-purple-900/20 section-header">
+                            <td class="px-4 py-1 text-purple-600 dark:text-purple-400" colspan="4">3. SAU LẮNG</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">NTU</td>
+                            <td class="px-4 py-1 text-right" id="hv-slang-ntu-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-slang-ntu-count">--</td>
+                            <td class="px-4 py-1 text-right font-bold text-purple-500" id="hv-slang-ntu">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">TCU</td>
+                            <td class="px-4 py-1 text-right" id="hv-slang-tcu-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-slang-tcu-count">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-slang-tcu">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">pH</td>
+                            <td class="px-4 py-1 text-right" id="hv-slang-ph-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-slang-ph-count">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-slang-ph">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">Clo dư</td>
+                            <td class="px-4 py-1 text-right" id="hv-slang-clo-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-slang-clo-count">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-slang-clo">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">NH4</td>
+                            <td class="px-4 py-1 text-right" id="hv-slang-nh4-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-slang-nh4-count">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-slang-nh4">--</td>
+                        </tr>
+
+                        <tr class="bg-purple-50/50 dark:bg-purple-900/20 section-header">
+                            <td class="px-4 py-1 text-purple-600 dark:text-purple-400" colspan="4">4. SAU LỌC</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">NTU</td>
+                            <td class="px-4 py-1 text-right" id="hv-sloc-ntu-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-sloc-ntu-count">--</td>
+                            <td class="px-4 py-1 text-right font-bold text-purple-500" id="hv-sloc-ntu">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">TCU</td>
+                            <td class="px-4 py-1 text-right" id="hv-sloc-tcu-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-sloc-tcu-count">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-sloc-tcu">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">pH</td>
+                            <td class="px-4 py-1 text-right" id="hv-sloc-ph-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-sloc-ph-count">--</td>
+                            <td class="px-4 py-1 text-right font-bold text-purple-500" id="hv-sloc-ph">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">Clo dư</td>
+                            <td class="px-4 py-1 text-right" id="hv-sloc-clo-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-sloc-clo-count">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-sloc-clo">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">NH4</td>
+                            <td class="px-4 py-1 text-right" id="hv-sloc-nh4-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-sloc-nh4-count">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-sloc-nh4">--</td>
+                        </tr>
+
+
+                        <tr class="bg-purple-50/50 dark:bg-purple-900/20 section-header">
+                            <td class="px-4 py-1 text-purple-600 dark:text-purple-400" colspan="4">5. BƠM CẤP 2</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">NTU</td>
+                            <td class="px-4 py-1 text-right" id="hv-bomc2-ntu-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-bomc2-ntu-count">--</td>
+                            <td class="px-4 py-1 text-right font-bold text-purple-500" id="hv-bomc2-ntu">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">TCU</td>
+                            <td class="px-4 py-1 text-right" id="hv-bomc2-tcu-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-bomc2-tcu-count">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-bomc2-tcu">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">pH</td>
+                            <td class="px-4 py-1 text-right" id="hv-bomc2-ph-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-bomc2-ph-count">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-bomc2-ph">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">Clo dư</td>
+                            <td class="px-4 py-1 text-right" id="hv-bomc2-clo-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-bomc2-clo-count">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-bomc2-clo">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">NH4</td>
+                            <td class="px-4 py-1 text-right" id="hv-bomc2-nh4-time">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-bomc2-nh4-count">--</td>
+                            <td class="px-4 py-1 text-right" id="hv-bomc2-nh4">--</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
+
+        <!-- Cầu Bạch Details -->
         <div class="glass-panel rounded-xl shadow-lg flex flex-col overflow-hidden h-full">
             <div class="bg-teal-500/10 p-2 border-b border-teal-500/20 flex justify-between items-center">
-                <h3 class="font-bold text-teal-600 dark:text-teal-400">Cầu Bạch Details</h3>
-                <span class="text-xs bg-teal-500/20 text-teal-600 dark:text-teal-400 px-2 py-1 rounded">Live</span>
+                <h3 class="font-bold text-teal-600 dark:text-teal-400 text-sm uppercase">NMN Cầu Bạch</h3>
+                <span
+                    class="text-[10px] bg-teal-500/20 text-teal-600 dark:text-teal-400 px-2 py-0.5 rounded uppercase font-bold">Live</span>
             </div>
-            <div class="overflow-hidden flex-1 p-0">
-                <table class="w-full text-left text-sm tv-table">
-                    <thead
-                        class="bg-slate-100 dark:bg-slate-800 text-xs uppercase font-semibold text-slate-500 dark:text-slate-400 sticky top-0 z-10">
-                        <tr>
-                            <th class="px-4 py-3">Param</th>
-                            <th class="px-4 py-3 text-right">Value</th>
-                            <th class="px-4 py-3 text-right">Time</th>
-                        </tr>
-                    </thead>
+            <div class="overflow-y-auto flex-1 p-0">
+                <table class="w-full text-left tv-table">
                     <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
-                        <tr class="bg-slate-50/50 dark:bg-slate-800/30">
-                            <td class="px-4 py-2 font-bold text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider"
-                                colspan="3">Jartest Results</td>
+                        <!-- 1. Jartest Section -->
+                        <tr class="bg-slate-200/50 dark:bg-slate-800/80 section-header">
+                            <td class="px-4 py-1 text-teal-600 dark:text-teal-400 uppercase" colspan="4">Kết quả Jartest
+                            </td>
+                        </tr>
+                        <tr class="bg-slate-50/50 dark:bg-slate-900/50 text-[10px] uppercase text-slate-400 font-bold">
+                            <td class="px-4 py-1">Chỉ tiêu</td>
+                            <td class="px-4 py-1 text-right" colspan="2">Thời gian: <span id="cb-j-time">--</span></td>
+                            <td class="px-4 py-1 text-right">Giá trị</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-medium">Vôi</td>
-                            <td class="px-4 py-3 text-right">10 mg/l</td>
-                            <td class="px-4 py-3 text-right text-slate-500">14:05</td>
+                            <td class="px-4 py-1 param-label">Vôi</td>
+                            <td class="px-4 py-1 text-right" colspan="2"></td>
+                            <td class="px-4 py-1 text-right font-medium" id="cb-j-voi">-- g/m3</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-medium">PAC</td>
-                            <td class="px-4 py-3 text-right">25 mg/l</td>
-                            <td class="px-4 py-3 text-right text-slate-500">14:05</td>
+                            <td class="px-4 py-1 param-label">PAC</td>
+                            <td class="px-4 py-1 text-right" colspan="2"></td>
+                            <td class="px-4 py-1 text-right font-medium" id="cb-j-pac">-- g/m3</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-medium">Polyme</td>
-                            <td class="px-4 py-3 text-right">0.03 mg/l</td>
-                            <td class="px-4 py-3 text-right text-slate-500">14:05</td>
+                            <td class="px-4 py-1 param-label">Polyme</td>
+                            <td class="px-4 py-1 text-right" colspan="2"></td>
+                            <td class="px-4 py-1 text-right font-medium" id="cb-j-polyme">-- g/m3</td>
                         </tr>
-                        <tr class="bg-slate-50/50 dark:bg-slate-800/30">
-                            <td class="px-4 py-2 font-bold text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider"
-                                colspan="3">Operations</td>
+
+                        <!-- 2. Operations Section -->
+                        <tr class="bg-slate-200/50 dark:bg-slate-800/80 section-header">
+                            <td class="px-4 py-1 text-teal-600 dark:text-teal-400 uppercase" colspan="4">Thông tin vận
+                                hành</td>
                         </tr>
-                        <tr>
-                            <td class="px-4 py-3 font-medium">Vôi (Op)</td>
-                            <td class="px-4 py-3 text-right">10 mg/l</td>
-                            <td class="px-4 py-3 text-right text-slate-500">14:20</td>
-                        </tr>
-                        <tr>
-                            <td class="px-4 py-3 font-medium">PAC (Op)</td>
-                            <td class="px-4 py-3 text-right">24 mg/l</td>
-                            <td class="px-4 py-3 text-right text-slate-500">14:20</td>
+                        <tr class="bg-slate-50/50 dark:bg-slate-900/50 text-[10px] uppercase text-slate-400 font-bold">
+                            <td class="px-4 py-1">Thiết bị</td>
+                            <td class="px-4 py-1 text-right" colspan="2">Thời gian: <span id="cb-f-time">--</span></td>
+                            <td class="px-4 py-1 text-right">Giá trị</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-medium">KMnO4</td>
-                            <td class="px-4 py-3 text-right">-</td>
-                            <td class="px-4 py-3 text-right text-slate-500">-</td>
-                        </tr>
-                        <tr class="bg-slate-50/50 dark:bg-slate-800/30">
-                            <td class="px-4 py-2 font-bold text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider"
-                                colspan="3">Quality (Final)</td>
+                            <td class="px-4 py-1 param-label">Vôi</td>
+                            <td class="px-4 py-1 text-right" colspan="2"></td>
+                            <td class="px-4 py-1 text-right font-medium" id="cb-f-voi">-- l/h</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-medium">Sau lọc NTU</td>
-                            <td class="px-4 py-3 text-right font-bold text-teal-500">0.38</td>
-                            <td class="px-4 py-3 text-right text-slate-500">14:30</td>
+                            <td class="px-4 py-1 param-label">PAC</td>
+                            <td class="px-4 py-1 text-right" colspan="2"></td>
+                            <td class="px-4 py-1 text-right font-medium" id="cb-f-pac">-- l/h</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-medium">Sau lọc pH</td>
-                            <td class="px-4 py-3 text-right font-bold text-teal-500">7.1</td>
-                            <td class="px-4 py-3 text-right text-slate-500">14:30</td>
+                            <td class="px-4 py-1 param-label">Than hoạt tính</td>
+                            <td class="px-4 py-1 text-right" colspan="2"></td>
+                            <td class="px-4 py-1 text-right font-medium" id="cb-f-than">-- l/h</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-medium">Clo Dư</td>
-                            <td class="px-4 py-3 text-right">0.5</td>
-                            <td class="px-4 py-3 text-right text-slate-500">14:30</td>
+                            <td class="px-4 py-1 param-label">KMnO4</td>
+                            <td class="px-4 py-1 text-right" colspan="2"></td>
+                            <td class="px-4 py-1 text-right font-medium" id="cb-f-kmno4">-- l/h</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-medium">Mangan</td>
-                            <td class="px-4 py-3 text-right">0.01</td>
-                            <td class="px-4 py-3 text-right text-slate-500">14:30</td>
+                            <td class="px-4 py-1 param-label">Polyme</td>
+                            <td class="px-4 py-1 text-right" colspan="2"></td>
+                            <td class="px-4 py-1 text-right font-medium" id="cb-f-polyme">-- l/h</td>
+                        </tr>
+
+                        <!-- 3. Quality Section -->
+                        <tr class="bg-slate-200/50 dark:bg-slate-800/80 section-header">
+                            <td class="px-4 py-1 text-teal-600 dark:text-teal-400 uppercase" colspan="4">Kết quả chất
+                                lượng nước</td>
+                        </tr>
+                        <tr
+                            class="bg-slate-100 dark:bg-slate-800 text-[9px] uppercase font-bold text-slate-500 dark:text-slate-400 sticky top-0 z-10">
+                            <th class="px-4 py-1">Chỉ tiêu</th>
+                            <th class="px-4 py-1 text-right">Giờ</th>
+                            <th class="px-4 py-1 text-right">Lần</th>
+                            <th class="px-4 py-1 text-right">Giá trị</th>
+                        </tr>
+                        <!-- 1. Nước nguồn -->
+                        <tr class="bg-teal-50/50 dark:bg-teal-900/20 section-header">
+                            <td class="px-4 py-1 text-teal-600 dark:text-teal-400" colspan="4">1. NƯỚC NGUỒN</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">NTU</td>
+                            <td class="px-4 py-1 text-right" id="cb-nguon-ntu-time">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-nguon-ntu-count">--</td>
+                            <td class="px-4 py-1 text-right font-bold text-teal-500" id="cb-nguon-ntu">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">pH</td>
+                            <td class="px-4 py-1 text-right" id="cb-nguon-ph-time">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-nguon-ph-count">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-nguon-ph">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">NH4</td>
+                            <td class="px-4 py-1 text-right" id="cb-nguon-nh4-time">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-nguon-nh4-count">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-nguon-nh4">--</td>
+                        </tr>
+                        <!-- 2. NGĂN PHÂN CHIA LƯU LƯỢNG -->
+                        <tr class="bg-teal-50/50 dark:bg-teal-900/20 section-header">
+                            <td class="px-4 py-1 text-teal-600 dark:text-teal-400" colspan="4">2. NGĂN PHÂN CHIA LƯU
+                                LƯỢNG</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">pH</td>
+                            <td class="px-4 py-1 text-right" id="cb-pcll-ph-time">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-pcll-ph-count">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-pcll-ph">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">Clo dư</td>
+                            <td class="px-4 py-1 text-right" id="cb-pcll-clo-time">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-pcll-clo-count">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-pcll-clo">--</td>
+                        </tr>
+                        <!-- 3. Sau lắng -->
+                        <tr class="bg-teal-50/50 dark:bg-teal-900/20 section-header">
+                            <td class="px-4 py-1 text-teal-600 dark:text-teal-400" colspan="4">3. SAU LẮNG</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">NTU</td>
+                            <td class="px-4 py-1 text-right" id="cb-slang-ntu-time">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-slang-ntu-count">--</td>
+                            <td class="px-4 py-1 text-right font-bold text-teal-500" id="cb-slang-ntu">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">TCU</td>
+                            <td class="px-4 py-1 text-right" id="cb-slang-tcu-time">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-slang-tcu-count">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-slang-tcu">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">pH</td>
+                            <td class="px-4 py-1 text-right" id="cb-slang-ph-time">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-slang-ph-count">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-slang-ph">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">Clo dư</td>
+                            <td class="px-4 py-1 text-right" id="cb-slang-clo-time">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-slang-clo-count">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-slang-clo">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">NH4</td>
+                            <td class="px-4 py-1 text-right" id="cb-slang-nh4-time">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-slang-nh4-count">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-slang-nh4">--</td>
+                        </tr>
+                        <!-- 4. Sau lọc -->
+                        <tr class="bg-teal-50/50 dark:bg-teal-900/20 section-header">
+                            <td class="px-4 py-1 text-teal-600 dark:text-teal-400" colspan="4">4. SAU LỌC</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">NTU</td>
+                            <td class="px-4 py-1 text-right" id="cb-sloc-ntu-time">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-sloc-ntu-count">--</td>
+                            <td class="px-4 py-1 text-right font-bold text-teal-500" id="cb-sloc-ntu">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">TCU</td>
+                            <td class="px-4 py-1 text-right" id="cb-sloc-tcu-time">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-sloc-tcu-count">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-sloc-tcu">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">pH</td>
+                            <td class="px-4 py-1 text-right" id="cb-sloc-ph-time">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-sloc-ph-count">--</td>
+                            <td class="px-4 py-1 text-right font-bold text-teal-500" id="cb-sloc-ph">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">Clo dư</td>
+                            <td class="px-4 py-1 text-right" id="cb-sloc-clo-time">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-sloc-clo-count">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-sloc-clo">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">NH4</td>
+                            <td class="px-4 py-1 text-right" id="cb-sloc-nh4-time">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-sloc-nh4-count">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-sloc-nh4">--</td>
+                        </tr>
+                        <!-- 5. Bơm cấp 2 -->
+                        <tr class="bg-teal-50/50 dark:bg-teal-900/20 section-header">
+                            <td class="px-4 py-1 text-teal-600 dark:text-teal-400" colspan="4">5. BƠM CẤP 2</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">NTU</td>
+                            <td class="px-4 py-1 text-right" id="cb-bomc2-ntu-time">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-bomc2-ntu-count">--</td>
+                            <td class="px-4 py-1 text-right font-bold text-teal-500" id="cb-bomc2-ntu">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">TCU</td>
+                            <td class="px-4 py-1 text-right" id="cb-bomc2-tcu-time">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-bomc2-tcu-count">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-bomc2-tcu">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">pH</td>
+                            <td class="px-4 py-1 text-right" id="cb-bomc2-ph-time">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-bomc2-ph-count">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-bomc2-ph">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">Clo dư</td>
+                            <td class="px-4 py-1 text-right" id="cb-bomc2-clo-time">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-bomc2-clo-count">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-bomc2-clo">--</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">NH4</td>
+                            <td class="px-4 py-1 text-right" id="cb-bomc2-nh4-time">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-bomc2-nh4-count">--</td>
+                            <td class="px-4 py-1 text-right" id="cb-bomc2-nh4">--</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
+
+        <!-- Sông Đào Details - HIDDEN
         <div class="glass-panel rounded-xl shadow-lg flex flex-col overflow-hidden h-full">
-            <div class="bg-orange-500/10 p-2 border-b border-orange-500/20 flex justify-between items-center">
-                <h3 class="font-bold text-orange-600 dark:text-orange-400">Sông Đào Details</h3>
-                <span class="text-xs bg-orange-500/20 text-orange-600 dark:text-orange-400 px-2 py-1 rounded">Raw</span>
+            <div class="bg-blue-600/10 p-2 border-b border-blue-600/20 flex justify-between items-center">
+                <h3 class="font-bold text-blue-700 dark:text-blue-400 text-sm uppercase">Sông Đào</h3>
+                <span
+                    class="text-[10px] bg-blue-600/20 text-blue-600 dark:text-blue-400 px-2 py-0.5 rounded uppercase font-bold">Raw</span>
             </div>
-            <div class="overflow-hidden flex-1 p-0">
-                <table class="w-full text-left text-sm tv-table">
-                    <thead
-                        class="bg-slate-100 dark:bg-slate-800 text-xs uppercase font-semibold text-slate-500 dark:text-slate-400 sticky top-0 z-10">
-                        <tr>
-                            <th class="px-4 py-3">Param</th>
-                            <th class="px-4 py-3 text-right">Value</th>
-                            <th class="px-4 py-3 text-right">Time</th>
-                        </tr>
-                    </thead>
+            <div class="overflow-y-auto flex-1 p-0">
+                <table class="w-full text-left tv-table">
                     <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
-                        <tr class="bg-slate-50/50 dark:bg-slate-800/30">
-                            <td class="px-4 py-2 font-bold text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider"
-                                colspan="3">Raw Input Quality</td>
+                        <tr class="bg-slate-200/50 dark:bg-slate-800/80 section-header">
+                            <td class="px-4 py-1 text-blue-700 dark:text-blue-400 uppercase" colspan="2">Kết quả chất
+                                lượng nước</td>
+                        </tr>
+                        <tr class="bg-blue-50/50 dark:bg-blue-900/20 section-header">
+                            <td class="px-4 py-1 text-blue-700 dark:text-blue-400 font-bold" colspan="2" id="sd-vitri">
+                                - -</td>
+                        </tr>
+                        <tr class="bg-blue-50/50 dark:bg-blue-900/20">
+                            <td class="px-4 py-1 text-slate-600 dark:text-slate-400" colspan="2">Thời gian lấy mẫu:
+                                <span id="sd-time">- -</span>
+                            </td>
+                        </tr>
+                        <tr
+                            class="bg-slate-100 dark:bg-slate-800 text-[9px] uppercase font-bold text-slate-500 dark:text-slate-400 sticky top-0 z-10">
+                            <th class="px-4 py-1">Chỉ tiêu</th>
+                            <th class="px-4 py-1 text-right">Giá trị</th>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-medium">Nước nguồn NTU</td>
-                            <td class="px-4 py-3 text-right font-bold text-orange-500">12.5</td>
-                            <td class="px-4 py-3 text-right text-slate-500">14:00</td>
+                            <td class="px-4 py-1 param-label">NTU</td>
+                            <td class="px-4 py-1 text-right font-bold text-blue-600" id="sd-ntu">- -</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-medium">Nước nguồn TCU</td>
-                            <td class="px-4 py-3 text-right">45</td>
-                            <td class="px-4 py-3 text-right text-slate-500">14:00</td>
+                            <td class="px-4 py-1 param-label">pH</td>
+                            <td class="px-4 py-1 text-right" id="sd-ph">- -</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-medium">Nước nguồn pH</td>
-                            <td class="px-4 py-3 text-right">6.8</td>
-                            <td class="px-4 py-3 text-right text-slate-500">14:00</td>
+                            <td class="px-4 py-1 param-label">NH4</td>
+                            <td class="px-4 py-1 text-right" id="sd-nh4">- -</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-medium">Mangan (Raw)</td>
-                            <td class="px-4 py-3 text-right">0.05</td>
-                            <td class="px-4 py-3 text-right text-slate-500">14:00</td>
+                            <td class="px-4 py-1 param-label">Clo</td>
+                            <td class="px-4 py-1 text-right" id="sd-clo">- -</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-medium">COD</td>
-                            <td class="px-4 py-3 text-right">2.5</td>
-                            <td class="px-4 py-3 text-right text-slate-500">14:00</td>
-                        </tr>
-                        <tr class="bg-slate-50/50 dark:bg-slate-800/30">
-                            <td class="px-4 py-2 font-bold text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider"
-                                colspan="3">Treatment Plan</td>
+                            <td class="px-4 py-1 param-label">Fe</td>
+                            <td class="px-4 py-1 text-right" id="sd-fe">- -</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-medium">Rec. Vôi</td>
-                            <td class="px-4 py-3 text-right">18 mg/l</td>
-                            <td class="px-4 py-3 text-right text-slate-500">-</td>
+                            <td class="px-4 py-1 param-label">NO2</td>
+                            <td class="px-4 py-1 text-right" id="sd-no2">- -</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-medium">Rec. PAC</td>
-                            <td class="px-4 py-3 text-right">35 mg/l</td>
-                            <td class="px-4 py-3 text-right text-slate-500">-</td>
+                            <td class="px-4 py-1 param-label">NO3</td>
+                            <td class="px-4 py-1 text-right" id="sd-no3">- -</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-medium">Rec. Clorine</td>
-                            <td class="px-4 py-3 text-right">1.5 mg/l</td>
-                            <td class="px-4 py-3 text-right text-slate-500">-</td>
+                            <td class="px-4 py-1 param-label">Ecoli</td>
+                            <td class="px-4 py-1 text-right" id="sd-ecoli">- -</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">Coliform</td>
+                            <td class="px-4 py-1 text-right" id="sd-coliform">- -</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">Tình trạng dòng chảy</td>
+                            <td class="px-4 py-1 text-right" id="sd-dongchay">- -</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-1 param-label">Tình trạng ô nhiễm</td>
+                            <td class="px-4 py-1 text-right" id="sd-onhiem">- -</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
+        -->
     </section>
-    <footer class="mt-auto pt-2 shrink-0 flex justify-between text-xs text-slate-500 dark:text-slate-400">
-        <div>System Status: <span class="text-green-500 font-bold">Operational</span></div>
-        <div>Last Full Sync: 2 seconds ago</div>
+
+    <footer class="mt-auto pt-1 shrink-0 flex justify-between text-[10px] text-slate-500 dark:text-slate-400">
+        <div>System Status: <span class="font-bold" id="system-status">Connecting...</span></div>
+        <div class="flex gap-4">
+            <div>Last Sync: <span id="last-sync-time"
+                    class="font-medium text-slate-600 dark:text-slate-300">Never</span></div>
+            <div>© 2024 NAWASCO</div>
+        </div>
     </footer>
+
     <script>
-        // Simple Clock
+        // ============================================
+        // CONFIGURATION
+        // ============================================
+        const API_HOST = 'https://unsupercilious-leonarda-unreaving.ngrok-free.dev';
+        const REFRESH_INTERVAL = 60000; // 60 seconds
+        const AUTH_TOKEN = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjQ0MiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJuc3RhbmgiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJuc3RhbmhAbmF3YXNjby5jb20udm4iLCJBc3BOZXQuSWRlbnRpdHkuU2VjdXJpdHlTdGFtcCI6IlJNRFdIVExXTU1LUzdZNElGM1FMVlEyRUU2Q1ZRNjJRIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjpbIkFkbWluIiwixJDEg25nIGvDvSBuZ2jhu4kiXSwic3ViIjoiNDQyIiwianRpIjoiOWJlYmU0NzMtMmM5OC00NTczLTk2OGYtMzlmZjRmY2IzYTdkIiwiaWF0IjoxNzM3NTUyMTI5LCJuYmYiOjE3Mzc1NTIxMjksImV4cCI6MjA1MjkxMjEyOSwiaXNzIjoiRVJQIiwiYXVkIjoiRVJQIn0.i5NWUse89skdwOKFXnaBAYJA-JQBkNDYyO5ucfbVHi4';
+        const XSRF_TOKEN = 'CfDJ8Jj_fLMZXdVGiF7LaxJKgH7rtmNxloOR4GtoJyOM9wdV5gFtV9WvA4QIrQpdAutf7Z5plIPUJ8C32vPSArUEwE2sEYOceeUuX-iP4qDcThuZYuZOFafo8sDx49F6eG3dkJgzqS2oIdu1LcMAX4uALVuS4cc6DvF_lTBa3w6VlvJwnqRf0jz3DWXIIHXyFKf0yQ';
+
+        const API_ENDPOINTS = {
+            hn: { j: `ChatLuongHungNguyen/GetLastestJartest`, t: `ChatLuongHungNguyen/GetLastestTongHop`, f: `ChatLuongHungNguyen/GetLastestFlow` },
+            hv: { j: `ChatLuongHungVinh/GetLastestJartest`, t: `ChatLuongHungVinh/GetLastestTongHop`, f: `ChatLuongHungVinh/GetLastestFlow` },
+            cb: { j: `ChatLuongCauBach/GetLastestJartest`, t: `ChatLuongCauBach/GetLastestTongHop`, f: `ChatLuongCauBach/GetLastestFlow` }
+        };
+        const SD_API = `MauLayNuoc/GetAllViTriLayMau`;
+
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+
+        const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+        const formatVal = (v, d = null) => {
+            if (v === null || v === undefined || v === 'NULL') return '--';
+            if (d === null) return String(v);
+            return isNaN(v) ? '--' : Number(v).toFixed(d);
+        };
+        const formatTime = (s) => s ? new Date(s).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : '--';
+
+        async function fetchAPI(url) {
+            if (!url) return null;
+            try {
+                const fullUrl = url.startsWith('http') ? url : `${API_HOST}/api/services/app/${url}`;
+                const res = await fetch(fullUrl, { headers: { 'Authorization': AUTH_TOKEN, 'X-XSRF-TOKEN': XSRF_TOKEN, 'ngrok-skip-browser-warning': 'true' } });
+                const data = await res.json();
+                return data.result || data;
+            } catch (e) { return null; }
+        }
+
+        // ============================================
+        // UPDATE FUNCTIONS
+        // ============================================
+
+        function updateUI(prefix, data) {
+            const { j, t, f } = data;
+
+            // 1. Jartest
+            if (j) {
+                setVal(`${prefix}-j-time`, formatTime(j.creationTime));
+                setVal(`${prefix}-j-voi`, formatVal(j.voi) + ' g/m3');
+                setVal(`${prefix}-j-pac`, formatVal(j.pac) + ' g/m3');
+                setVal(`${prefix}-j-polyme`, formatVal(j.polyme) + ' g/m3');
+            }
+
+            // 2. Flow (Operations)
+            if (f) {
+                setVal(`${prefix}-f-time`, formatTime(f.creationTime));
+                setVal(`${prefix}-f-voi`, formatVal(f.flow_2) + ' l/h');
+                setVal(`${prefix}-f-pac`, formatVal(f.flow_1) + ' l/h');
+                setVal(`${prefix}-f-than`, formatVal(f.flow_4) + ' l/h');
+                setVal(`${prefix}-f-kmno4`, formatVal(f.flow_5) + ' l/h');
+                setVal(`${prefix}-f-polyme`, formatVal(f.flow_3) + ' l/h');
+            } else {
+                setVal(`${prefix}-f-time`, '--');
+                setVal(`${prefix}-f-voi`, '-- l/h');
+                setVal(`${prefix}-f-pac`, '-- l/h');
+                setVal(`${prefix}-f-than`, '-- l/h');
+                setVal(`${prefix}-f-kmno4`, '-- l/h');
+                setVal(`${prefix}-f-polyme`, '-- l/h');
+            }
+
+            // 3. Quality
+            if (t) {
+                const baseTime = formatTime(t.creationTime);
+                const map = (p, v, timeField, countField) => {
+                    setVal(`${prefix}-${p}`, formatVal(v));
+                    setVal(`${prefix}-${p}-time`, formatTime(t[timeField]) || baseTime);
+                    setVal(`${prefix}-${p}-count`, t[countField] || 1);
+                };
+
+                map('nguon-ntu', t.nguon_NTU, 'ntU_ThoiGianNhap', 'nguon_NTU_Count');
+                map('nguon-ph', t.nguon_pH, 'ntU_ThoiGianNhap', 'nguon_pH_Count');
+                map('nguon-nh4', t.nguon_NH4, 'nguon_NH4_ThoiGianNhap', 'nguon_NH4_Count');
+
+                map('pcll-ph', t.pclL_pH, 'ntU_ThoiGianNhap', 'pclL_pH_Count');
+                map('pcll-clo', t.pclL_Clo, 'ntU_ThoiGianNhap', 'pclL_Clo_Count');
+
+                map('slang-ntu', t.sLang_NTU, 'ntU_ThoiGianNhap', 'sLang_NTU_Count');
+                map('slang-tcu', t.sLang_TCU, 'sLang_TCU_ThoiGianNhap', 'sLang_TCU_Count');
+                map('slang-ph', t.sLang_pH, 'ntU_ThoiGianNhap', 'sLang_pH_Count');
+                map('slang-clo', t.sLang_Clo, 'ntU_ThoiGianNhap', 'sLang_Clo_Count');
+                map('slang-nh4', t.sLang_NH4, 'sLang_NH4_ThoiGianNhap', 'sLang_NH4_Count');
+
+                map('sloc-ntu', t.sLoc_NTU, 'ntU_ThoiGianNhap', 'sLoc_NTU_Count');
+                map('sloc-tcu', t.sLoc_TCU, 'sLoc_TCU_ThoiGianNhap', 'sLoc_TCU_Count');
+                map('sloc-ph', t.sLoc_pH, 'ntU_ThoiGianNhap', 'sLoc_pH_Count');
+                map('sloc-clo', t.sLoc_Clo, 'ntU_ThoiGianNhap', 'sLoc_Clo_Count');
+                map('sloc-nh4', t.sLoc_NH4, 'sLoc_NH4_ThoiGianNhap', 'sLoc_NH4_Count');
+
+                map('bomc2-ntu', t.bomC2_NTU, 'ntU_ThoiGianNhap', 'bomC2_NTU_Count');
+                map('bomc2-tcu', t.bomC2_TCU, 'bomC2_TCU_ThoiGianNhap', 'bomC2_TCU_Count');
+                map('bomc2-ph', t.bomC2_pH, 'ntU_ThoiGianNhap', 'bomC2_pH_Count');
+                map('bomc2-clo', t.bomC2_Clo, 'ntU_ThoiGianNhap', 'bomC2_Clo_Count');
+                map('bomc2-nh4', t.bomC2_NH4, 'bomC2_NH4_ThoiGianNhap', 'bomC2_NH4_Count');
+            }
+        }
+
+        async function refresh() {
+            setVal('system-status', 'Updating...');
+            const results = await Promise.all(Object.keys(API_ENDPOINTS).map(async k => {
+                const ep = API_ENDPOINTS[k];
+                const [j, t, f] = await Promise.all([fetchAPI(ep.j), fetchAPI(ep.t), fetchAPI(ep.f)]);
+                updateUI(k, { j, t, f });
+                return !!t;
+            }));
+
+            // Sông Đào - API riêng - HIDDEN
+            /*
+            try {
+                const sdData = await fetchAPI(SD_API);
+                if (sdData && sdData.length > 0) {
+                    const d = sdData[0];
+                    setVal('sd-vitri', d.tenViTri || d.maViTriLayMauNuoc || '--');
+                    if (d.thoiGianLayMau) {
+                        const dt = new Date(d.thoiGianLayMau);
+                        const formatted = dt.toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                        setVal('sd-time', formatted);
+                    }
+                    const showVal = (v) => (v === null || v === undefined) ? '--' : String(v);
+                    setVal('sd-ntu', showVal(d.doDuc));
+                    setVal('sd-ph', showVal(d.ph));
+                    setVal('sd-nh4', showVal(d.amoni));
+                    setVal('sd-clo', showVal(d.cl));
+                    setVal('sd-fe', showVal(d.fe));
+                    setVal('sd-no2', showVal(d.nO2));
+                    setVal('sd-no3', showVal(d.nO3));
+                    setVal('sd-ecoli', showVal(d.ecoli));
+                    setVal('sd-coliform', showVal(d.coliform));
+                    setVal('sd-dongchay', d.tinhTrangDongChay || '--');
+                    setVal('sd-onhiem', d.tinhTrangONhiem || '--');
+                }
+            } catch (e) { console.log('Sông Đào API error:', e); }
+            */
+
+            setVal('system-status', results.some(r => r) ? 'Online' : 'Error');
+            setVal('last-sync-time', new Date().toLocaleTimeString('vi-VN'));
+        }
+
         function updateClock() {
             const now = new Date();
-            const timeString = now.toLocaleTimeString('en-US', { hour12: false });
-            document.getElementById('clock').textContent = timeString;
+            setVal('clock', now.toLocaleTimeString('vi-VN', { hour12: false }));
+            setVal('current-date', now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }));
         }
-        setInterval(updateClock, 1000);
-        updateClock();
-    </script>
 
+        setInterval(updateClock, 1000);
+        setInterval(refresh, REFRESH_INTERVAL);
+        updateClock(); refresh();
+    </script>
 </body>
 
 </html>
