@@ -4,358 +4,253 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Water Station Dashboard</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
+    <title>Production Dashboard - Metric First</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap"
         rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
-    <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        primary: "#0ea5e9", // Sky blue for water theme
-                        "background-light": "#f1f5f9",
-                        "background-dark": "#0f172a",
-                        "card-light": "#ffffff",
-                        "card-dark": "#1e293b",
-                        "text-light": "#334155",
-                        "text-dark": "#e2e8f0",
-                    },
-                    fontFamily: {
-                        display: ["Inter", "sans-serif"],
-                    },
-                    borderRadius: {
-                        DEFAULT: "0.75rem",
-                    },
-                },
-            },
-        };
-    </script>
-    <style>
-        .radial-progress {
-            --size: 5rem;
-            --thickness: 6px;
-            --value: 0;
-            --bg-color: #ffffff;
-            --track-color: #e2e8f0;
-            width: var(--size);
-            height: var(--size);
-            border-radius: 50%;
-            display: grid;
-            place-items: center;
-            background:
-                radial-gradient(closest-side, var(--bg-color) 79%, transparent 80% 100%),
-                conic-gradient(var(--progress-color) calc(var(--value) * 1%), var(--track-color) 0);
-            position: relative;
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <style type="text/tailwindcss">
+        :root {
+            --success-color: #16a34a;
+            --warning-color: #ea580c;
+            --primary-black: #000000;
+            --label-gray: #6b7280;
         }
-
-        .radial-progress span {
-            position: relative;
-            z-index: 1;
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+        }
+        .metric-value {
+            font-size: 120pt;
+            line-height: 0.9;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+        }
+        @media (max-width: 1536px) {
+            .metric-value {
+                font-size: 100pt;
+            }
+        }
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .loading-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 5px solid #E2E8F0;
+            border-top-color: #16a34a;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
 
-<body
-    class="bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark font-display h-[97vh] p-3 flex flex-col overflow-hidden">
-    <header class="mb-2 flex flex-row justify-between items-center gap-4">
-        <div>
-            <div class="flex items-center gap-3">
-                <span class="bg-primary/20 text-primary p-2 rounded-lg">
-                    <span class="material-icons-round text-3xl">water_drop</span>
-                </span>
-                <div>
-                    <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-                        Kết Quả Ghi Chỉ Số Đồng Hồ
-                    </h1>
-                    <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">
-                        Dữ liệu thời gian thực từ 10 Trạm cấp nước
-                    </p>
-                </div>
-            </div>
-        </div>
-        <div
-            class="flex items-center gap-4 bg-white dark:bg-card-dark p-3 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
-            <div class="flex items-center gap-2 px-3 border-r border-slate-200 dark:border-slate-700">
-                <span class="material-icons-round text-emerald-500">check_circle</span>
-                <div class="flex flex-col">
-                    <span class="text-xs text-slate-500 dark:text-slate-400 uppercase font-semibold">Tổng Tiến Độ</span>
-                    <span class="font-bold text-lg leading-none">85.4%</span>
-                </div>
-            </div>
-            <div class="flex items-center gap-2 px-3">
-                <span class="material-icons-round text-amber-500">trending_up</span>
-                <div class="flex flex-col">
-                    <span class="text-xs text-slate-500 dark:text-slate-400 uppercase font-semibold">Dự Kiến</span>
-                    <span class="font-bold text-lg leading-none">98.2%</span>
-                </div>
-            </div>
-        </div>
-    </header>
+<body class="text-black h-screen w-screen flex flex-col overflow-hidden">
     <!-- Loading Overlay -->
-    <div id="loading"
-        class="fixed inset-0 bg-white/90 dark:bg-slate-900/90 flex flex-col items-center justify-center z-50">
-        <div class="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
-        <p class="mt-4 text-slate-600 dark:text-slate-400 font-medium">Đang tải dữ liệu...</p>
+    <div id="loading" class="loading-overlay active">
+        <div class="spinner"></div>
+        <p style="margin-top: 1rem; font-weight: 600; color: #64748B; font-size: 18px;">Đang tải dữ liệu...</p>
     </div>
 
-    <main id="cards-container" class="flex flex-col gap-2 flex-grow">
-        <!-- Row 1: Vinh summary card (horizontal layout) -->
-        <div id="vinh-row" class="w-full">
-            <!-- Vinh card will be rendered here -->
+    <header class="border-b border-gray-100 px-10 py-3 flex justify-between items-end flex-shrink-0">
+        <div>
+            <h1 class="text-3xl font-black uppercase tracking-tight">Kết quả sản lượng ghi chỉ số theo tháng</h1>
+            <p class="text-lg text-gray-500 font-medium mt-1" id="display-time">Tính đến: --/--/---- --:--</p>
         </div>
-        <!-- Row 2: First 5 stations -->
-        <div id="row-2" class="grid grid-cols-5 gap-3">
-            <!-- 5 stations will be rendered here -->
+    </header>
+    <main class="flex-1 flex flex-col px-10 py-1 gap-1 overflow-hidden">
+        <div class="flex-1 flex flex-col justify-center border-b border-gray-100 pb-3">
+            <div class="grid grid-cols-2 gap-8 items-center">
+                <div class="flex flex-col items-center text-center">
+                    <span class="text-2xl font-black uppercase tracking-tighter text-gray-400 mb-2">Vinh</span>
+                    <span id="vinh-percent" class="metric-value text-[var(--success-color)]">--%</span>
+                </div>
+                <div class="flex flex-col gap-3">
+                    <div class="flex flex-col">
+                        <span class="text-lg uppercase font-bold text-gray-400 tracking-widest">Thực hiện</span>
+                        <span id="vinh-thuchien" class="text-5xl font-extrabold tracking-tighter">--</span>
+                    </div>
+                    <div class="flex flex-col border-t border-gray-100 pt-2">
+                        <span class="text-lg uppercase font-bold text-gray-400 tracking-widest">Kế hoạch</span>
+                        <span id="vinh-kehoach" class="text-4xl font-bold tracking-tighter text-gray-500">--</span>
+                    </div>
+                </div>
+            </div>
         </div>
-        <!-- Row 3: Remaining 5 stations -->
-        <div id="row-3" class="grid grid-cols-5 gap-3">
-            <!-- 5 stations will be rendered here -->
+        <div class="flex-1 flex flex-col justify-center border-b border-gray-100 pb-3">
+            <div class="grid grid-cols-2 gap-8 items-center">
+                <div class="flex flex-col items-center text-center">
+                    <span class="text-2xl font-black uppercase tracking-tighter text-gray-400 mb-2">Miền Tây</span>
+                    <span id="mt-percent" class="metric-value text-[var(--warning-color)]">--%</span>
+                </div>
+                <div class="flex flex-col gap-3">
+                    <div class="flex flex-col">
+                        <span class="text-lg uppercase font-bold text-gray-400 tracking-widest">Thực hiện</span>
+                        <span id="mt-thuchien" class="text-5xl font-extrabold tracking-tighter">--</span>
+                    </div>
+                    <div class="flex flex-col border-t border-gray-100 pt-2">
+                        <span class="text-lg uppercase font-bold text-gray-400 tracking-widest">Kế hoạch</span>
+                        <span id="mt-kehoach" class="text-4xl font-bold tracking-tighter text-gray-500">--</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="flex-1 flex flex-col justify-center pb-1">
+            <div class="grid grid-cols-2 gap-8 items-center">
+                <div class="flex flex-col items-center text-center">
+                    <span class="text-2xl font-black uppercase tracking-tighter text-gray-400 mb-2">Tổng cộng</span>
+                    <span id="tong-percent" class="metric-value text-[var(--success-color)]">--%</span>
+                </div>
+                <div class="flex flex-col gap-3">
+                    <div class="flex flex-col">
+                        <span class="text-lg uppercase font-bold text-gray-400 tracking-widest">Thực hiện</span>
+                        <span id="tong-thuchien" class="text-5xl font-extrabold tracking-tighter">--</span>
+                    </div>
+                    <div class="flex flex-col border-t border-gray-100 pt-2">
+                        <span class="text-lg uppercase font-bold text-gray-400 tracking-widest">Kế hoạch</span>
+                        <span id="tong-kehoach" class="text-4xl font-bold tracking-tighter text-gray-500">--</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
-    <footer
-        class="mt-2 grid grid-cols-2 gap-4 text-xs text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-700 pt-2">
-        <div>
-            <p><strong>Công thức tính:</strong> Tỷ lệ HT = Thực hiện / Kế hoạch * 100%</p>
-        </div>
-        <div class="text-right">
-            <p id="last-update">Dữ liệu được cập nhật tự động mỗi 30 giây.</p>
+    <footer class="bg-black text-white px-10 py-2 flex justify-between items-center flex-shrink-0">
+        <div class="flex gap-8 text-sm font-bold uppercase tracking-[0.2em]">
+            <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-green-500"></span> Đạt mục tiêu
+                (&gt;70%)</span>
+            <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-orange-500"></span> Cảnh báo
+                (&lt;70%)</span>
         </div>
     </footer>
 
     <script>
         // CONFIG
-        const API_URL = 'http://localhost:44311/api/services/app/Report/GetReportDataNoCount';
+        const API_HOST = 'https://unsupercilious-leonarda-unreaving.ngrok-free.dev';
         const AUTH_TOKEN = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjQ0MiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJuc3RhbmgiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJuc3RhbmhAbmF3YXNjby5jb20udm4iLCJBc3BOZXQuSWRlbnRpdHkuU2VjdXJpdHlTdGFtcCI6IlJNRFdIVExXTU1LUzdZNElGM1FMVlEyRUU2Q1ZRNjJRIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjpbIkFkbWluIiwixJDEg25nIGvDvSBuZ2jhu4kiXSwic3ViIjoiNDQyIiwianRpIjoiOWJlYmU0NzMtMmM5OC00NTczLTk2OGYtMzlmZjRmY2IzYTdkIiwiaWF0IjoxNzM3NTUyMTI5LCJuYmYiOjE3Mzc1NTIxMjksImV4cCI6MjA1MjkxMjEyOSwiaXNzIjoiRVJQIiwiYXVkIjoiRVJQIn0.i5NWUse89skdwOKFXnaBAYJA-JQBkNDYyO5ucfbVHi4';
-        const PAYLOAD = {
-            "reportPath": "tt.dktt_BaoCaoKetQuaGhiChiSoDongHos",
-            "page": 0,
-            "format": "html",
-            "parameters": {}
-        };
+        const XSRF_TOKEN = 'CfDJ8Jj_fLMZXdVGiF7LaxJKgH4TR7qPGmCyUN5NeEMWt69UgzqXsxJm8hlicgf8BlwvE0QM7v9G1HxjGGbzuB7mpXxQbaV59Kk_ZOolujbrbNvNJWNYomY7_x9QGggzmjWBYxYQRtYyV7JSGRfuDe1kAtbyLpBPDMG-jLT-mbeWIy5sfXmCLD-UcqDXX4TUu2XQ5g';
 
-        // DOM Elements
-        const vinhContainer = document.getElementById('vinh-row');
-        const row2Container = document.getElementById('row-2');
-        const row3Container = document.getElementById('row-3');
-        const loadingOverlay = document.getElementById('loading');
-        const lastUpdateEl = document.getElementById('last-update');
+        // HELPERS
+        const $ = (id) => document.getElementById(id);
+        const formatNumber = (num) => num ? Math.round(num).toLocaleString('vi-VN') : '0';
 
-        // Helper: Get progress color based on percentage
-        function getProgressColor(percent) {
-            if (percent >= 80) return '#10b981'; // Green
-            if (percent >= 50) return '#0ea5e9'; // Blue
-            if (percent >= 30) return '#eab308'; // Yellow
-            return '#ef4444'; // Red
+        // Format DateTime từ API
+        function formatDateTime(dateString) {
+            if (!dateString) return 'Tính đến: --/--/---- --:--';
+            const date = new Date(dateString);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `Tính đến: ${day}/${month}/${year} ${hours}:${minutes}`;
         }
 
-        // Helper: Get badge icon based on percentage
-        function getBadgeIcon(percent) {
-            if (percent >= 95) return 'check_circle';
-            return 'auto_graph';
+        // Lấy màu dựa trên tỷ lệ
+        function getColorClass(percentage) {
+            return percentage >= 70 ? 'var(--success-color)' : 'var(--warning-color)';
         }
 
-        // Helper: Get badge icon color based on percentage
-        function getBadgeIconColor(percent) {
-            if (percent >= 95) return 'text-emerald-500';
-            return 'text-amber-500';
-        }
+        // RENDER DATA
+        function renderData(data) {
+            // Cập nhật thời gian
+            $('display-time').textContent = formatDateTime(data.thoiGianTinh);
 
-        // CREATE VINH CARD HTML (horizontal layout)
-        function createVinhCardHTML(item) {
-            const tyLeHT = item.TyLeHT || 0;
-            const tyLeDuKien = item.TyLeHT_DuKien || 0;
-            const progressColor = getProgressColor(tyLeHT);
-            const roundedPercent = Math.round(tyLeHT);
+            // === KHU VỰC VINH ===
+            const vinhPercent = data.tiLeThucHien_SanLuong_Vinh;
+            $('vinh-percent').textContent = vinhPercent + '%';
+            $('vinh-percent').style.color = getColorClass(vinhPercent);
+            $('vinh-thuchien').textContent = formatNumber(data.ketQua_SLuong_Vinh);
+            $('vinh-kehoach').textContent = formatNumber(data.keHoach_SLuong_Vinh);
 
-            return `
-                <div class="bg-gradient-to-r from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 rounded-xl shadow-lg border-2 border-primary/30 overflow-hidden">
-                    <div class="p-4 flex items-center gap-8">
-                        <!-- Title Section -->
-                        <div class="flex items-center gap-3 min-w-[200px]">
-                            <span class="bg-primary/20 text-primary p-2 rounded-lg">
-                                <span class="material-icons-round text-2xl">location_city</span>
-                            </span>
-                            <div>
-                                <h3 class="font-bold text-xl text-slate-800 dark:text-white">${item.DiaBan}</h3>
-                                <p class="text-xs text-slate-500 dark:text-slate-400">Tổng hợp toàn tỉnh</p>
-                            </div>
-                        </div>
-                        
-                        <!-- Metrics Section (horizontal) -->
-                        <div class="flex items-center gap-8 flex-grow">
-                            <div class="text-center px-4 border-r border-slate-200 dark:border-slate-600">
-                                <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium mb-1">Kế hoạch</p>
-                                <p class="text-2xl font-bold text-slate-700 dark:text-slate-200">${item.KeHoach.toLocaleString('vi-VN')}</p>
-                            </div>
-                            <div class="text-center px-4 border-r border-slate-200 dark:border-slate-600">
-                                <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium mb-1">Thực hiện</p>
-                                <p class="text-2xl font-bold text-primary">${item.ThucHien.toLocaleString('vi-VN')}</p>
-                            </div>
-                            <div class="text-center px-4 border-r border-slate-200 dark:border-slate-600">
-                                <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium mb-1">Tỷ lệ HT</p>
-                                <p class="text-2xl font-bold" style="color: ${progressColor}">${tyLeHT.toFixed(2)}%</p>
-                            </div>
-                            <div class="text-center px-4">
-                                <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium mb-1">Dự kiến HT</p>
-                                <p class="text-2xl font-bold text-amber-500">${tyLeDuKien.toFixed(2)}%</p>
-                            </div>
-                        </div>
-                        
-                        <!-- Progress Circle -->
-                        <div class="flex items-center gap-4">
-                            <div class="radial-progress" style="--size: 5rem; --value: ${roundedPercent}; --progress-color: ${progressColor};">
-                                <span class="text-lg font-bold text-slate-800">${roundedPercent}%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
+            // === KHU VỰC MIỀN TÂY ===
+            const mtPercent = data.tiLeThucHien_SanLuong_MT;
+            $('mt-percent').textContent = mtPercent + '%';
+            $('mt-percent').style.color = getColorClass(mtPercent);
+            $('mt-thuchien').textContent = formatNumber(data.ketQua_SLuong_MT);
+            $('mt-kehoach').textContent = formatNumber(data.keHoach_SLuong_MT);
 
-        // CREATE STATION CARD HTML
-        function createCardHTML(item, index) {
-            const tyLeHT = item.TyLeHT || 0;
-            const tyLeDuKien = item.TyLeHT_DuKien || 0;
-            const progressColor = getProgressColor(tyLeHT);
-            const roundedPercent = Math.round(tyLeHT);
+            // === TỔNG CỘNG ===
+            const tongPercent = data.tiLeThucHien_SanLuong_Tong;
+            $('tong-percent').textContent = tongPercent + '%';
+            $('tong-percent').style.color = getColorClass(tongPercent);
+            $('tong-thuchien').textContent = formatNumber(data.ketQua_SLuong_Tong);
+            $('tong-kehoach').textContent = formatNumber(data.keHoach_SLuong_Tong);
 
-            return `
-                <div class="bg-card-light dark:bg-card-dark rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col hover:shadow-xl transition-shadow duration-300">
-                    <div class="p-5 flex-grow">
-                        <div class="flex justify-between items-start mb-4">
-                            <h3 class="font-bold text-lg text-slate-800 dark:text-white truncate pr-2" title="${item.DiaBan}">${item.DiaBan}</h3>
-                            <span class="px-2 py-1 rounded bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-semibold">
-                                #${String(index).padStart(2, '0')}
-                            </span>
-                        </div>
-                        <div class="flex justify-between items-center mb-6">
-                            <div class="space-y-3 w-1/2">
-                                <div>
-                                    <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium">Kế hoạch</p>
-                                    <p class="text-lg font-semibold text-slate-700 dark:text-slate-200">${item.KeHoach.toLocaleString('vi-VN')}</p>
-                                </div>
-                                <div>
-                                    <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium">Thực hiện</p>
-                                    <p class="text-lg font-bold text-primary">${item.ThucHien.toLocaleString('vi-VN')}</p>
-                                </div>
-                                <div>
-                                    <p class="text-xs text-slate-500 dark:text-slate-400 uppercase font-medium">Tỷ lệ HT</p>
-                                    <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">${tyLeHT.toFixed(2)}%</p>
-                                </div>
-                            </div>
-                            <div class="light dark w-1/2 flex justify-end">
-                                <div class="radial-progress" style="--value: ${roundedPercent}; --progress-color: ${progressColor};">
-                                    <span class="text-sm font-bold text-slate-800">${roundedPercent}%</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-slate-50 dark:bg-slate-800/50 p-3 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center">
-                        <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">Dự kiến HT</span>
-                        <div class="flex items-center gap-1">
-                            <span class="material-icons-round ${getBadgeIconColor(tyLeDuKien)} text-sm">${getBadgeIcon(tyLeDuKien)}</span>
-                            <span class="text-sm font-bold text-slate-700 dark:text-slate-200">${tyLeDuKien.toFixed(2)}%</span>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        // RENDER CARDS - Row 1: Vinh, Row 2: 5 stations, Row 3: 5 stations
-        function renderCards(items) {
-            // Sort by ThuTu (ascending)
-            const sortedItems = items.sort((a, b) => a.ThuTu - b.ThuTu);
-
-            // First item is Vinh (ThuTu = 0)
-            const vinhItem = sortedItems.find(item => item.ThuTu === 0);
-
-            // Remaining items are stations (ThuTu > 0)
-            const stations = sortedItems.filter(item => item.ThuTu > 0);
-
-            // Render Vinh card
-            if (vinhItem) {
-                vinhContainer.innerHTML = createVinhCardHTML(vinhItem);
-            }
-
-            // Split stations into 2 rows: first 5 items, remaining 5 items
-            const row2Items = stations.slice(0, 5);
-            const row3Items = stations.slice(5, 10);
-
-            row2Container.innerHTML = row2Items.map((item, index) => createCardHTML(item, index + 1)).join('');
-            row3Container.innerHTML = row3Items.map((item, index) => createCardHTML(item, index + 6)).join('');
-        }
-
-        // UPDATE HEADER SUMMARY
-        function updateHeaderSummary(items) {
-            // Find summary row (ThuTu = 0)
-            const summary = items.find(item => item.ThuTu === 0);
-            if (summary) {
-                const tongTienDoEl = document.querySelector('header .flex.items-center.gap-2.px-3.border-r .font-bold.text-lg');
-                const duKienEl = document.querySelector('header .flex.items-center.gap-2.px-3:last-child .font-bold.text-lg');
-
-                if (tongTienDoEl) {
-                    tongTienDoEl.textContent = `${summary.TyLeHT.toFixed(2)}%`;
-                }
-                if (duKienEl) {
-                    duKienEl.textContent = `${summary.TyLeHT_DuKien.toFixed(2)}%`;
-                }
-            }
+            console.log('[SanLuong] Data rendered successfully');
         }
 
         // FETCH DATA
         async function fetchData() {
             try {
-                if (vinhContainer.children.length === 0) {
-                    loadingOverlay.classList.remove('hidden');
-                    loadingOverlay.style.display = 'flex';
-                }
+                // Lấy tháng và năm hiện tại
+                const now = new Date();
+                const thang = now.getMonth() + 1;
+                const nam = now.getFullYear();
 
-                const res = await fetch(API_URL, {
-                    method: 'POST',
+                const url = `${API_HOST}/api/services/app/Dashboard/GetKetQuaSanLuong?thang=${thang}&nam=${nam}`;
+                const res = await fetch(url, {
                     headers: {
-                        'accept': 'text/plain',
-                        'Content-Type': 'application/json',
-                        'Authorization': AUTH_TOKEN
-                    },
-                    body: JSON.stringify(PAYLOAD)
+                        'Authorization': AUTH_TOKEN,
+                        'X-XSRF-TOKEN': XSRF_TOKEN,
+                        'ngrok-skip-browser-warning': 'true'
+                    }
                 });
 
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
                 const data = await res.json();
 
-                if (data.success && data.result?.items) {
-                    renderCards(data.result.items);
-                    updateHeaderSummary(data.result.items);
-                    lastUpdateEl.textContent = `Cập nhật lúc: ${new Date().toLocaleTimeString('vi-VN')}`;
+                if (data.success && data.result) {
+                    renderData(data.result);
+                    console.log('[SanLuong] Fetched data:', data.result);
                 } else {
-                    throw new Error('Invalid Data Format');
+                    throw new Error('Dữ liệu không hợp lệ');
                 }
-
             } catch (err) {
-                console.error('Fetch error:', err);
-                if (vinhContainer.children.length === 0) {
-                    vinhContainer.innerHTML = `
-                        <div class="text-center py-10">
-                            <span class="material-icons-round text-4xl text-red-500 mb-2">error_outline</span>
-                            <p class="text-red-600 font-medium">Không thể tải dữ liệu. Kiểm tra kết nối API.</p>
-                            <p class="text-slate-500 text-sm mt-1">${err.message}</p>
-                        </div>
-                    `;
-                }
+                console.error('[SanLuong] Error:', err);
             } finally {
-                loadingOverlay.style.display = 'none';
+                $('loading').classList.remove('active');
             }
         }
 
-        // INIT
-        window.addEventListener('DOMContentLoaded', () => {
-            fetchData();
-            setInterval(fetchData, 30000); // Refresh every 30 seconds
+        // NAVIGATION HANDLER - Xử lý phím ESC/Back
+        window.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' || e.keyCode === 10009 || e.key === 'Back') {
+                window.parent.postMessage({ type: 'back' }, '*');
+                e.preventDefault();
+            }
         });
+
+        // INIT
+        fetchData();
+        setInterval(fetchData, 60000); // Refresh mỗi 60 giây
     </script>
 
 </body>
