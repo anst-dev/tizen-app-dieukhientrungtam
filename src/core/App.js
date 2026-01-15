@@ -14,7 +14,7 @@ class App {
         // Components
         this.mapFullscreen = null;
         this.dashboardGrid = null;
-        
+
         // State
         this.isInitialized = false;
         this.currentView = 'loading';
@@ -70,11 +70,11 @@ class App {
 
         // Router (keep for compatibility)
         this.router = new Router();
-        
+
         // New simplified Routes system
         this.routes = new Routes();
         this.routes.init();
-        
+
         // Setup protection against unwanted content injection
         this.setupWidgetProtection();
     }
@@ -101,10 +101,10 @@ class App {
         setTimeout(() => {
             const widgets = document.querySelectorAll('.widget-content');
             widgets.forEach(widget => {
-                observer.observe(widget, { 
-                    childList: true, 
+                observer.observe(widget, {
+                    childList: true,
                     characterData: true,
-                    subtree: true 
+                    subtree: true
                 });
             });
         }, 1000);
@@ -193,6 +193,13 @@ class App {
                 this.handleTizenKey(e);
             });
         }
+
+        // Handle messages from iframes (e.g., back navigation)
+        window.addEventListener('message', (e) => {
+            if (e.data && e.data.type === 'back') {
+                this.handleNavigateBack({ to: 'dashboard' });
+            }
+        });
     }
 
     /**
@@ -207,18 +214,18 @@ class App {
         setTimeout(() => {
             this.apiService.startPolling(Config.API.POLLING_INTERVAL);
         }, 2000);
-        
+
         // For testing: check URL hash
         if (window.location.hash === '#dashboard') {
             setTimeout(() => {
                 // Force show dashboard with mock data
                 const mockScreens = [
-                    {STT: 0, TenManHinh: "M0: Màn hình Bản đồ", isActive: true, LoaiManHinh: "map"},
-                    {STT: 4, TenManHinh: "M4: Màn hình bản đồ đường ống", isActive: true},
-                    {STT: 5, TenManHinh: "M5: Màn hình thông tin điểm chảy", isActive: true},
-                    {STT: 6, TenManHinh: "M6: Màn hình lắp đặt mới", isActive: true},
-                    {STT: 8, TenManHinh: "M8: Màn hình chỉ số đồng hồ", isActive: true},
-                    {STT: 9, TenManHinh: "M9: Màn hình công nợ", isActive: true}
+                    { STT: 0, TenManHinh: "M0: Màn hình Bản đồ", isActive: true, LoaiManHinh: "map" },
+                    { STT: 4, TenManHinh: "M4: Màn hình bản đồ đường ống", isActive: true },
+                    { STT: 5, TenManHinh: "M5: Màn hình thông tin điểm chảy", isActive: true },
+                    { STT: 6, TenManHinh: "M6: Màn hình lắp đặt mới", isActive: true },
+                    { STT: 8, TenManHinh: "M8: Màn hình chỉ số đồng hồ", isActive: true },
+                    { STT: 9, TenManHinh: "M9: Màn hình công nợ", isActive: true }
                 ];
                 this.handleAPIUpdate(mockScreens);
             }, 1500);
@@ -242,7 +249,7 @@ class App {
                 Layout: null,
                 Theme: null
             };
-            
+
             // Check if M0 already exists
             const hasM0 = screens.some(s => s.STT === 0);
             if (!hasM0) {
@@ -284,8 +291,8 @@ class App {
                 break;
             case 'dashboard':
                 this.unlockMapView();
-                this.router.navigate('/dashboard', { 
-                    screens: detail.screens || this.screenManager.getActiveScreens() 
+                this.router.navigate('/dashboard', {
+                    screens: detail.screens || this.screenManager.getActiveScreens()
                 });
                 break;
             case 'detail':
@@ -388,7 +395,7 @@ class App {
      */
     showMapView() {
         this.hideLoading();
-        
+
         // Hide dashboard container
         const dashboardContainer = document.getElementById('dashboard-container');
         if (dashboardContainer) {
@@ -398,7 +405,7 @@ class App {
 
         // Hide detail container
         this.hideDetailView(true);
-        
+
         // Show map container
         const mapContainer = document.getElementById('map-fullscreen-container');
         if (mapContainer) {
@@ -407,7 +414,7 @@ class App {
             mapContainer.offsetHeight;
             mapContainer.classList.add('active');
         }
-        
+
         this.dashboardGrid.hide();
         this.mapFullscreen.show();
         this.navigationManager.currentView = 'map';
@@ -419,7 +426,7 @@ class App {
      */
     showDashboardView(screens) {
         this.unlockMapView();
-        
+
         // Don't redirect to map if M0 is with other screens
         // Only redirect if ONLY M0 exists and no other screens
         const nonM0Screens = screens ? screens.filter(s => s.STT !== 0) : [];
@@ -427,11 +434,11 @@ class App {
             this.showMapView();
             return;
         }
-        
+
         this.hideLoading();
         this.mapFullscreen.hide();
         this.hideDetailView(true);
-        
+
         // Ensure dashboard container is visible
         const dashboardContainer = document.getElementById('dashboard-container');
         if (dashboardContainer) {
@@ -440,7 +447,7 @@ class App {
             dashboardContainer.offsetHeight;
             dashboardContainer.classList.add('active');
         }
-        
+
         this.dashboardGrid.show();
         this.dashboardGrid.render(screens || []);
         this.navigationManager.currentView = 'dashboard';
@@ -654,7 +661,7 @@ class App {
         // Reset managers
         this.screenManager?.reset();
         this.navigationManager?.destroy();
-        
+
         // Clear router
         this.router?.clear();
 
@@ -667,7 +674,7 @@ class App {
 document.addEventListener('DOMContentLoaded', () => {
     // Create global app instance
     window.app = new App();
-    
+
     // Initialize application
     window.app.init().catch(error => {
         console.error('Failed to initialize app:', error);
