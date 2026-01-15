@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="https://openlayers.org/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GIS Nawasco - Bản đồ đường ống</title>
+    <script type="module" crossorigin src="./assets/index-CfCldC_Z.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-B6_aiYry.css">
+  </head>
+  <body>
+    <div id="map">
+      <!-- Feature info tooltip -->
+      <div id="info" class="info-tooltip"></div>
+    </div>
+    
+    <!-- Bảng chú thích màu sắc đường ống -->
+    <div id="legend" class="legend">
+      <div class="legend-header">
+        <h3>Chú thích đường ống</h3>
+        <button id="legend-toggle" class="legend-toggle-btn" title="Thu gọn">−</button>
+      </div>
+      <div id="legend-content" class="legend-content">
+        <!-- Section: Theo vật liệu -->
+        <div class="legend-section">
+          <h4>Theo vật liệu</h4>
+          <div class="legend-item">
+            <span class="legend-line" style="background-color: #FF0000;"></span>
+            <span class="legend-label">Thép</span>
+          </div>
+        </div>
+        
+        <!-- Section: HDPE theo đường kính -->
+        <div class="legend-section">
+          <h4>HDPE theo đường kính</h4>
+          <div class="legend-item">
+            <span class="legend-line" style="background-color: #00FF00;"></span>
+            <span class="legend-label">HDPE Ø110mm</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-line" style="background-color: #00FFFF;"></span>
+            <span class="legend-label">HDPE Ø90mm</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-line" style="background-color: #0000FF;"></span>
+            <span class="legend-label">HDPE Ø63mm</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-line" style="background-color: #F56A80;"></span>
+            <span class="legend-label">HDPE Ø50mm</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-line" style="background-color: #FFFF00;"></span>
+            <span class="legend-label">HDPE &lt; Ø50mm</span>
+          </div>
+        </div>
+        
+        <!-- Section: Theo đường kính (tất cả vật liệu) -->
+        <div class="legend-section">
+          <h4>Theo đường kính (tất cả vật liệu)</h4>
+          <div class="legend-item">
+            <span class="legend-line legend-line-thick" style="background-color: #FFA500;"></span>
+            <span class="legend-label">&gt; Ø250mm</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-line legend-line-medium" style="background-color: #800080;"></span>
+            <span class="legend-label">Ø150mm - Ø250mm</span>
+          </div>
+        </div>
+        
+        <!-- Section: Loại đường ống đặc biệt -->
+        <div class="legend-section">
+          <h4>Loại đường ống đặc biệt</h4>
+          <div class="legend-item">
+            <span class="legend-line" style="background-color: #00FF00;"></span>
+            <span class="legend-label">Đường ống nghiệm thu</span>
+          </div>
+        </div>
+        
+        <!-- Section: Khác -->
+        <div class="legend-section">
+          <h4>Khác</h4>
+          <div class="legend-item">
+            <span class="legend-line" style="background-color: #8B4513;"></span>
+            <span class="legend-label">Trường hợp còn lại</span>
+          </div>
+        </div>
+        
+        <!-- Section: Quy tắc hiển thị label -->
+        <div class="legend-section legend-section-info">
+          <h4>Quy tắc hiển thị label</h4>
+          <div class="legend-info-text">
+            <p>• Ø700-1200mm: Hiển thị ở zoom xa</p>
+            <p>• Ø350-700mm: Hiển thị khi zoom gần hơn</p>
+            <p>• Ø160-350mm: Hiển thị khi zoom trung bình</p>
+            <p>• Ø80-160mm: Hiển thị khi zoom gần</p>
+            <p>• Ø40-80mm: Hiển thị khi zoom rất gần</p>
+            <p>• Ø15-40mm: Chỉ hiển thị khi zoom cực gần</p>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    
+    <!-- Loading indicator -->
+    <div id="loading" class="loading-overlay" style="display: none;">
+      <div class="loading-spinner"></div>
+      <span>Đang tải dữ liệu...</span>
+    </div>
+    
+    
+  </body>
+</html>

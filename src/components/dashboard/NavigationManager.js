@@ -275,16 +275,14 @@ class NavigationManager {
      * Navigate trong dashboard view
      */
     navigateInDashboard(direction) {
-        Config.log('debug', `navigateInDashboard called: direction=${direction}, currentView=${this.currentView}`);
-
         const currentElement = document.activeElement;
 
         // Nếu chưa có focus, focus vào màn hình đầu tiên
         if (!currentElement || !currentElement.classList.contains('screen-tile')) {
-            Config.log('debug', 'No focused screen tile, focusing first screen');
             const firstScreen = document.querySelector('.screen-tile');
             if (firstScreen) {
-                this.moveFocus(firstScreen);
+                firstScreen.focus();
+                this.currentFocus = firstScreen;
             }
             return;
         }
@@ -293,8 +291,6 @@ class NavigationManager {
         const navAttr = `data-nav-${direction}`;
         const targetIndex = currentElement.getAttribute(navAttr);
         let targetElement = null;
-
-        Config.log('debug', `Current element:`, currentElement, `Target index: ${targetIndex}`);
 
         if (targetIndex && targetIndex !== '-1') {
             targetElement = document.querySelector(`.screen-tile[data-index="${targetIndex}"]`);
@@ -308,10 +304,7 @@ class NavigationManager {
         }
 
         if (targetElement) {
-            Config.log('debug', `Moving focus to target element:`, targetElement);
             this.moveFocus(targetElement);
-        } else {
-            Config.log('debug', `No target element found for direction: ${direction}`);
         }
     }
     /**

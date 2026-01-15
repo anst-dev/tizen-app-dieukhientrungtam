@@ -4,65 +4,65 @@
 
 class Routes {
     constructor() {
-        // Định nghĩa tất cả màn hình có sẵn (M0 - M11)
+        // Định nghĩa tất cả màn hình có sẵn (M4-M11 theo database)
         this.SCREENS = {
             0: {
                 name: 'Bản đồ toàn màn hình',
-                type: 'component',
-                component: 'MapFullscreen'
+                type: 'iframe',
+                url: 'screens/gis/index.html',
             },
             1: {
-                name: 'Vận hành NMN Hưng Nguyên',
+                name: 'Bản đồ toàn màn hình',
                 type: 'iframe',
-                url: 'screens/van-hanh-nmn-hung-nguyen.html'
+                url: 'screens/gis/index.html',
             },
             2: {
-                name: 'Vận hành NMN Cầu Bạch',
+                name: 'Bản đồ toàn màn hình',
                 type: 'iframe',
-                url: 'screens/van-hanh-nmn-cau-bach.html'
+                url: 'screens/gis/index.html',
             },
             3: {
-                name: 'Trạm bơm tăng áp',
+                name: 'Bản đồ toàn màn hình',
                 type: 'iframe',
-                url: 'screens/tram-bom-tang-ap.html'
+                url: 'screens/gis/index.html',
             },
             4: {
-                name: 'Bản đồ đường ống, SCADA',
+                name: 'M4: Bản đồ đường ống, tín hiệu áp lực SCADA, vị trí các điểm chảy',
                 type: 'iframe',
-                url: 'screens/M4banDoDuongOng.html'
+                url: 'screens/gis/index.html',
             },
             5: {
-                name: 'Chi tiết điểm chảy',
+                name: 'M5: Thông tin điểm chảy',
                 type: 'iframe',
                 url: 'screens/M5thongTinDiemChay.html'
             },
             6: {
-                name: 'Lắp đặt mới, thay đồng hồ',
+                name: 'M6: Thông tin lắp đặt mới, thay thế đồng hồ',
                 type: 'iframe',
                 url: 'screens/M6thongTinLapDatMoiThayTheDongHo.html'
             },
             7: {
-                name: 'Tiến độ thi công đường ống',
+                name: 'M7: Thông tin tiến độ thi công mạng đường ống cấp 1, cấp 2',
                 type: 'iframe',
                 url: 'screens/M7thongTinTienDoThiCongMangDuongOngCap12.html'
             },
             8: {
-                name: 'Ghi chỉ số đồng hồ',
+                name: 'M8: Thông tin kết quả ghi chỉ số đồng hồ',
                 type: 'iframe',
                 url: 'screens/M8thongTinKetQuaGhiChiSoDongHo.html'
             },
             9: {
-                name: 'Công nợ',
+                name: 'M9: Thông tin kết quả công nợ',
                 type: 'iframe',
                 url: 'screens/M9thongTinKetQuaCongNo.html'
             },
             10: {
-                name: 'Thất thoát DMA',
+                name: 'M10: Thông tin tỷ lệ thất thoát các DMA',
                 type: 'iframe',
                 url: 'screens/M10thongTinTyLeThaThoatCacDMA.html'
             },
             11: {
-                name: 'Chất lượng nước',
+                name: 'M11: Thông tin chất lượng nước tại các nhà máy nước Hưng Nguyên, Hưng Hoà',
                 type: 'iframe',
                 url: 'screens/M11thongTinChatLuongNuoc.html'
             }
