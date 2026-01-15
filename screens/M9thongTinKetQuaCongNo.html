@@ -348,6 +348,15 @@
             }
         }
 
+        // BACK NAVIGATION
+        window.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' || e.keyCode === 10009 || e.key === 'Back') {
+                window.parent.postMessage({ type: 'back' }, '*');
+                e.preventDefault();
+                return;
+            }
+        });
+
         // INIT
         fetchData();
         setInterval(fetchData, 60000); // Refresh mỗi 60 giây
