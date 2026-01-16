@@ -184,16 +184,6 @@
                     <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Chưa nghiệm thu</p>
                     <p class="text-4xl font-black text-accent-warning mt-1" id="val-pending">--</p>
                 </div>
-                <div
-                    class="flex-1 bg-white rounded-2xl p-4 shadow-lg border border-slate-100 flex flex-col justify-center">
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">SL Nghe Dò trong tháng</p>
-                    <p class="text-4xl font-black text-accent-purple mt-1" id="val-listening-count">--</p>
-                </div>
-                <div
-                    class="flex-1 bg-white rounded-2xl p-4 shadow-lg border border-slate-100 flex flex-col justify-center">
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">SL Điểm Đang Nghe Dò</p>
-                    <p class="text-4xl font-black text-accent-purple mt-1" id="val-listening-loc">--</p>
-                </div>
             </div>
 
             <!-- Right Column: 2 Tables -->
@@ -332,13 +322,11 @@
         async function reloadData() {
             document.getElementById('loading').classList.add('active');
 
-            // Gọi song song 3 API:
+            // Gọi song song 2 API:
             // 1. API mới cho điểm chảy tháng (SoDiemChay, DaNghiemThu, ChuaNghiemThu)
-            // 2. API cũ để lấy 2 trường nghe dò
-            // 3. API chi tiết điểm chảy chưa hoàn thành
-            const [diemChayList, summaryData, detailData] = await Promise.all([
+            // 2. API chi tiết điểm chảy chưa hoàn thành
+            const [diemChayList, detailData] = await Promise.all([
                 fetchDiemChayTongHop(),
-                fetchReport('tt.dktt_TongHopDiemChays'),
                 fetchReport('tt.dktt_TongHopDiemChayChuaHoanThanhs')
             ]);
 
@@ -349,17 +337,9 @@
                 ChuaNghiemThu: diemChayList.reduce((sum, item) => sum + (item.ChuaNghiemThu || 0), 0)
             };
 
-            // Lấy 2 trường nghe dò từ API cũ
-            const summary = summaryData[0] || {
-                SoLuongNgheDoTrongThang: 0,
-                SoLuongViTriDangNgheDo: 0
-            };
-
             const total = tongHop.SoDiemChay;
             const done = tongHop.DaNghiemThu;
             const pending = tongHop.ChuaNghiemThu;
-            const listeningCount = summary.SoLuongNgheDoTrongThang || 0;
-            const listeningLocs = summary.SoLuongViTriDangNgheDo || 0;
 
             const validDetails = detailData.filter(i => i.MaDiemChay);
             validDetails.sort((a, b) => new Date(a.ThoiGianTiepNhan) - new Date(b.ThoiGianTiepNhan));
@@ -369,8 +349,6 @@
             document.getElementById('val-total').innerText = total;
             document.getElementById('val-done').innerText = done;
             document.getElementById('val-pending').innerText = pending;
-            document.getElementById('val-listening-count').innerText = listeningCount;
-            document.getElementById('val-listening-loc').innerText = listeningLocs;
 
             // Render All Items Table
             const allBody = document.getElementById('all-body');
