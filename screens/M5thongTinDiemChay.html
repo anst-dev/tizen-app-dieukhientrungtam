@@ -198,34 +198,7 @@
 
             <!-- Right Column: 2 Tables -->
             <div class="col-span-8 flex flex-col gap-4 h-full overflow-hidden">
-                <!-- Top Table: Top 5 -->
-                <div class="bg-white rounded-2xl shadow-lg border border-slate-100 flex flex-col overflow-hidden"
-                    style="height: 35%;">
-                    <div class="px-4 py-3 border-b border-slate-50 flex items-center justify-between bg-slate-50/50">
-                        <h2 class="text-xl font-black text-slate-900 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-red-500">warning</span>
-                            Top 5 Chờ Xử Lý Lâu Nhất
-                        </h2>
-                        <span class="text-xs font-bold text-slate-400">Ưu tiên xử lý ngay</span>
-                    </div>
-                    <div class="flex-grow overflow-y-auto tv-scrollbar p-2">
-                        <table class="w-full text-left border-separate border-spacing-y-1">
-                            <thead>
-                                <tr class="text-xs uppercase tracking-wider text-slate-400 font-bold">
-                                    <th class="px-3 py-2">Mã điểm chảy</th>
-                                    <th class="px-3 py-2">Vị trí điểm chảy</th>
-                                    <th class="px-3 py-2">Số điện thoại</th>
-                                    <th class="px-3 py-2">Thời gian tiếp nhận</th>
-                                    <th class="px-3 py-2">Nhân viên kỹ thuật</th>
-                                    <th class="px-3 py-2 text-center">Trạng thái xử lý</th>
-                                </tr>
-                            </thead>
-                            <tbody id="top5-body" class="text-sm">
-                                <!-- Rendered via JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+
 
                 <!-- Bottom Table: All Items -->
                 <div
@@ -241,9 +214,10 @@
                         <table class="w-full text-left border-separate border-spacing-y-1">
                             <thead class="sticky top-0 z-10 bg-white">
                                 <tr class="text-xs uppercase tracking-wider text-slate-400 font-bold">
+                                    <th class="px-3 py-2 text-center">STT</th>
                                     <th class="px-3 py-2">Mã điểm chảy</th>
                                     <th class="px-3 py-2">Vị trí điểm chảy</th>
-                                    <th class="px-3 py-2">Số điện thoại</th>
+                                    <th class="px-3 py-2">Số điện thoại người báo tin</th>
                                     <th class="px-3 py-2">Thời gian tiếp nhận</th>
                                     <th class="px-3 py-2">Nhân viên kỹ thuật</th>
                                     <th class="px-3 py-2 text-center">Trạng thái xử lý</th>
@@ -261,7 +235,7 @@
 
     <script>
         // --- CONSTANTS ---
-        const API_BASE = 'http://localhost:44311/api/services/app/Report/GetReportDataNoCount';
+        const API_BASE = 'https://unsupercilious-leonarda-unreaving.ngrok-free.dev';
         const AUTH_TOKEN = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjQ0MiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJuc3RhbmgiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJuc3RhbmhAbmF3YXNjby5jb20udm4iLCJBc3BOZXQuSWRlbnRpdHkuU2VjdXJpdHlTdGFtcCI6IlJNRFdIVExXTU1LUzdZNElGM1FMVlEyRUU2Q1ZRNjJRIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjpbIkFkbWluIiwixJDEg25nIGvDvSBuZ2jhu4kiXSwic3ViIjoiNDQyIiwianRpIjoiOWJlYmU0NzMtMmM5OC00NTczLTk2OGYtMzlmZjRmY2IzYTdkIiwiaWF0IjoxNzM3NTUyMTI5LCJuYmYiOjE3Mzc1NTIxMjksImV4cCI6MjA1MjkxMjEyOSwiaXNzIjoiRVJQIiwiYXVkIjoiRVJQIn0.i5NWUse89skdwOKFXnaBAYJA-JQBkNDYyO5ucfbVHi4';
         const XSRF_TOKEN = 'CfDJ8Jj_fLMZXdVGiF7LaxJKgH67zIadLPmx1rQUBmngplHfSzqmbvtWTw6wRiTBlIDSLmpo1XHvWPM0an_N6ktkr8iNrRtYQAqWPvfHKMhityf02HYc46dwr46xGnnRjVT_Qad-BzC-MxYcOeazYY9iP44swyLUZg6AJ6TjBiiYt7mjKgu8QoRHgIciWuKMrH8V1Q';
 
@@ -280,13 +254,15 @@
         // --- API HELPER ---
         async function fetchReport(reportPath) {
             try {
-                const res = await fetch(API_BASE, {
+                const url = `${API_BASE}/api/services/app/Report/GetReportDataNoCount`;
+                const res = await fetch(url, {
                     method: 'POST',
                     headers: {
-                        'accept': 'text/plain',
+                        'accept': 'application/json',
                         'Content-Type': 'application/json',
                         'Authorization': AUTH_TOKEN,
-                        'X-XSRF-TOKEN': XSRF_TOKEN
+                        'X-XSRF-TOKEN': XSRF_TOKEN,
+                        'ngrok-skip-browser-warning': 'true'
                     },
                     body: JSON.stringify({
                         reportPath: reportPath,
@@ -296,7 +272,11 @@
                     })
                 });
 
-                if (!res.ok) throw new Error('API Error');
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    console.error('API Error Response:', errorText);
+                    throw new Error(`API Error: ${res.status}`);
+                }
                 const data = await res.json();
                 return data?.result?.items || [];
             } catch (e) {
@@ -331,7 +311,6 @@
             const validDetails = detailData.filter(i => i.MaDiemChay);
             validDetails.sort((a, b) => new Date(a.ThoiGianTiepNhan) - new Date(b.ThoiGianTiepNhan));
             allLeakPoints = validDetails;
-            const top5 = validDetails.slice(0, 5);
 
             // Update UI - Stats
             document.getElementById('val-total').innerText = total;
@@ -340,25 +319,18 @@
             document.getElementById('val-listening-count').innerText = listeningCount;
             document.getElementById('val-listening-loc').innerText = listeningLocs;
 
-            // Render Top 5 Table
-            const top5Body = document.getElementById('top5-body');
-            top5Body.innerHTML = '';
-            top5.forEach(item => {
-                top5Body.appendChild(createRow(item));
-            });
-
             // Render All Items Table
             const allBody = document.getElementById('all-body');
             allBody.innerHTML = '';
-            validDetails.forEach(item => {
-                allBody.appendChild(createRow(item));
+            validDetails.forEach((item, index) => {
+                allBody.appendChild(createRow(item, index + 1));
             });
             document.getElementById('all-count').innerText = `Tổng: ${validDetails.length}`;
 
             document.getElementById('loading').classList.remove('active');
         }
 
-        function createRow(item) {
+        function createRow(item, stt) {
             const tr = document.createElement('tr');
             tr.className = "group transition-all duration-200 hover:bg-blue-50/50";
             const isOverdue = item.QuaHanKhaoSat === 1;
@@ -373,16 +345,19 @@
             const technician = item.MaNhanVienKyThuat || 'N/A';
 
             const bgCell = "bg-slate-50/50 group-hover:bg-transparent transition-colors";
+            // STT từ 1-5 màu đỏ, còn lại màu xám
+            const sttColor = stt <= 5 ? 'text-red-600' : 'text-slate-500';
 
             tr.innerHTML = `
-                <td class="px-3 py-2 font-bold text-slate-900 rounded-l-xl ${bgCell}">${item.MaDiemChay}</td>
-                <td class="${bgCell}"><div class="truncate max-w-[25vw]" title="${item.ViTri}">${item.ViTri}</div></td>
+                <td class="px-3 py-2 text-center font-bold ${sttColor} rounded-l-xl ${bgCell}">${stt}</td>
+                <td class="px-3 py-2 font-bold text-slate-900 ${bgCell}">${item.MaDiemChay}</td>
+                <td class="px-3 py-2 ${bgCell}"><div class="max-w-[25vw]" title="${item.ViTri}">${item.ViTri}</div></td>
                 <td class="${bgCell} text-slate-600">${item.SoDienThoai || 'N/A'}</td>
                 <td class="${bgCell} text-slate-500 font-medium">${formattedDate}</td>
                 <td class="${bgCell} text-slate-700 font-semibold">${technician}</td>
                 <td class="px-3 py-2 text-center rounded-r-xl ${bgCell}">
                     <span class="px-2 py-1 rounded-full text-xs font-bold ${isOverdue ? 'bg-red-100 text-red-600 badge-overdue' : 'bg-amber-100 text-amber-600'}">
-                        ${isOverdue ? 'QUÁ HẠN' : 'Đang xử lý'}
+                        ${isOverdue ? 'Quá hạn khảo sát' : 'Chưa nghiệm thu'}
                     </span>
                 </td>
             `;
