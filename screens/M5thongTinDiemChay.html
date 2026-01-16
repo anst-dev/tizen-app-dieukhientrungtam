@@ -143,49 +143,19 @@
         <p class="mt-4 font-semibold text-slate-500 text-lg">Đang tải dữ liệu...</p>
     </div>
 
-    <!-- Modal Structure -->
-    <div id="all-modal" class="fixed inset-0 z-[1000] hidden items-center justify-center bg-black/60 backdrop-blur-sm">
-        <div class="bg-white border border-blue-500 rounded-3xl w-[90%] h-[90%] flex flex-col shadow-2xl p-8 relative overflow-hidden">
-            <div class="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
-                <h2 class="text-3xl font-extrabold text-slate-900 flex items-center gap-3">
-                    <span class="material-symbols-outlined text-4xl text-blue-600">list_alt</span>
-                    Tất Cả Điểm Chảy Chưa Hoàn Thành
-                </h2>
-                <span class="text-slate-400 font-medium">Nhấn [Back] hoặc [ESC] để đóng</span>
-            </div>
-            <div class="flex-grow overflow-y-auto tv-scrollbar">
-                <table id="all-table" class="w-full text-left border-separate border-spacing-y-2">
-                    <thead class="sticky top-0 z-10 bg-white shadow-sm">
-                        <tr class="text-sm uppercase tracking-wider text-slate-400 font-bold">
-                            <th class="px-4 py-3">Mã ĐC</th>
-                            <th class="px-4 py-3">Vị Trí</th>
-                            <th class="px-4 py-3">Số Điện Thoại</th>
-                            <th class="px-4 py-3">Ngày Tiếp Nhận</th>
-                            <th class="px-4 py-3">Thời gian (Phút)</th>
-                            <th class="px-4 py-3">Trạng Thái</th>
-                        </tr>
-                    </thead>
-                    <tbody id="all-body" class="text-lg">
-                        <!-- Filled by JS -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+    <!-- Modal đã bỏ theo yêu cầu -->
 
-    <div class="w-[97vw] h-[97vh] flex flex-col gap-6 relative">
+    <div class="w-[97vw] h-[97vh] flex flex-col gap-4 relative">
         <header class="flex-shrink-0 flex items-center justify-between px-2 pb-2">
             <div class="flex items-center gap-6">
-                <div class="h-16 w-16 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-xl shadow-blue-500/20">
+                <div
+                    class="h-16 w-16 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-xl shadow-blue-500/20">
                     <span class="material-symbols-outlined text-4xl">water_damage</span>
                 </div>
                 <div>
                     <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight leading-tight">
                         Thông tin điểm chảy
                     </h1>
-                    <button id="btn-view-all" class="mt-1 focusable px-4 py-1.5 bg-blue-50 text-blue-600 border border-blue-200 rounded-lg font-bold text-sm transition-all hover:bg-blue-600 hover:text-white" onclick="openModal()">
-                        Xem Tất Cả
-                    </button>
                 </div>
             </div>
             <div class="flex items-center gap-6 text-right">
@@ -196,72 +166,90 @@
             </div>
         </header>
 
-        <main class="flex-grow grid grid-cols-10 gap-6 overflow-hidden h-full">
+        <main class="flex-grow grid grid-cols-10 gap-4 overflow-hidden h-full">
             <!-- Left Column: Stats -->
-            <div class="col-span-2 flex flex-col gap-4 h-full">
-                <div class="flex-1 bg-white rounded-3xl p-5 shadow-lg border border-slate-100 flex flex-col justify-center">
-                    <p class="text-sm font-bold text-slate-400 uppercase tracking-wider">Tổng Điểm Chảy Tháng</p>
-                    <p class="text-5xl font-black text-slate-900 mt-2" id="val-total">--</p>
+            <div class="col-span-2 flex flex-col gap-3 h-full">
+                <div
+                    class="flex-1 bg-white rounded-2xl p-4 shadow-lg border border-slate-100 flex flex-col justify-center">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Tổng Điểm Chảy Tháng</p>
+                    <p class="text-4xl font-black text-slate-900 mt-1" id="val-total">--</p>
                 </div>
-                <div class="flex-1 bg-white rounded-3xl p-5 shadow-lg border border-slate-100 flex flex-col justify-center">
-                    <p class="text-sm font-bold text-slate-400 uppercase tracking-wider">Đã Xử Lý</p>
-                    <p class="text-5xl font-black text-accent-success mt-2" id="val-done">--</p>
+                <div
+                    class="flex-1 bg-white rounded-2xl p-4 shadow-lg border border-slate-100 flex flex-col justify-center">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Đã Xử Lý</p>
+                    <p class="text-4xl font-black text-accent-success mt-1" id="val-done">--</p>
                 </div>
-                <div class="flex-1 bg-white rounded-3xl p-5 shadow-lg border border-slate-100 flex flex-col justify-center">
-                    <p class="text-sm font-bold text-slate-400 uppercase tracking-wider">Đang Xử Lý</p>
-                    <p class="text-5xl font-black text-accent-warning mt-2" id="val-pending">--</p>
+                <div
+                    class="flex-1 bg-white rounded-2xl p-4 shadow-lg border border-slate-100 flex flex-col justify-center">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Đang Xử Lý</p>
+                    <p class="text-4xl font-black text-accent-warning mt-1" id="val-pending">--</p>
                 </div>
-                <div class="flex-1 bg-white rounded-3xl p-5 shadow-lg border border-slate-100 flex flex-col justify-center">
-                    <p class="text-sm font-bold text-slate-400 uppercase tracking-wider">Nghe Dò (Vị Trí)</p>
-                    <p class="text-5xl font-black text-accent-purple mt-2" id="val-listening-loc">--</p>
+                <div
+                    class="flex-1 bg-white rounded-2xl p-4 shadow-lg border border-slate-100 flex flex-col justify-center">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">SL Nghe Dò trong tháng</p>
+                    <p class="text-4xl font-black text-accent-purple mt-1" id="val-listening-count">--</p>
+                </div>
+                <div
+                    class="flex-1 bg-white rounded-2xl p-4 shadow-lg border border-slate-100 flex flex-col justify-center">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">SL Điểm Đang Nghe Dò</p>
+                    <p class="text-4xl font-black text-accent-purple mt-1" id="val-listening-loc">--</p>
                 </div>
             </div>
 
-            <!-- Middle/Right Content -->
-            <div class="col-span-8 flex flex-col gap-6 h-full overflow-hidden">
-                <!-- Top row: Charts -->
-                <div class="grid grid-cols-2 gap-6 h-[45%]">
-                    <div class="bg-white rounded-3xl p-5 shadow-lg border border-slate-100 flex flex-col">
-                        <h3 class="text-xl font-black text-slate-900 mb-4 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-blue-600">bar_chart</span>
-                            Tình Hình Xử Lý
-                        </h3>
-                        <div class="flex-grow relative min-h-0">
-                            <canvas id="processChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="bg-white rounded-3xl p-5 shadow-lg border border-slate-100 flex flex-col">
-                        <h3 class="text-xl font-black text-slate-900 mb-4 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-purple-600">query_stats</span>
-                            Hoạt Động Nghe Dò
-                        </h3>
-                        <div class="flex-grow relative min-h-0">
-                            <canvas id="listeningChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Bottom row: Table -->
-                <div class="flex-grow bg-white rounded-3xl shadow-lg border border-slate-100 flex flex-col overflow-hidden">
-                    <div class="px-6 py-4 border-b border-slate-50 flex items-center justify-between bg-slate-50/50">
-                        <h2 class="text-2xl font-black text-slate-900 flex items-center gap-3">
+            <!-- Right Column: 2 Tables -->
+            <div class="col-span-8 flex flex-col gap-4 h-full overflow-hidden">
+                <!-- Top Table: Top 5 -->
+                <div class="bg-white rounded-2xl shadow-lg border border-slate-100 flex flex-col overflow-hidden"
+                    style="height: 35%;">
+                    <div class="px-4 py-3 border-b border-slate-50 flex items-center justify-between bg-slate-50/50">
+                        <h2 class="text-xl font-black text-slate-900 flex items-center gap-2">
                             <span class="material-symbols-outlined text-red-500">warning</span>
                             Top 5 Chờ Xử Lý Lâu Nhất
                         </h2>
-                        <span class="text-sm font-bold text-slate-400">Ưu tiên xử lý ngay</span>
+                        <span class="text-xs font-bold text-slate-400">Ưu tiên xử lý ngay</span>
                     </div>
                     <div class="flex-grow overflow-y-auto tv-scrollbar p-2">
                         <table class="w-full text-left border-separate border-spacing-y-1">
                             <thead>
                                 <tr class="text-xs uppercase tracking-wider text-slate-400 font-bold">
-                                    <th class="px-4 py-2">Mã ĐC</th>
-                                    <th class="px-4 py-2">Vị Trí</th>
-                                    <th class="px-4 py-2">Ngày Tiếp Nhận</th>
-                                    <th class="px-4 py-2 text-right">Quá hạn (Phút)</th>
-                                    <th class="px-4 py-2 text-center">Trạng Thái</th>
+                                    <th class="px-3 py-2">Mã điểm chảy</th>
+                                    <th class="px-3 py-2">Vị trí điểm chảy</th>
+                                    <th class="px-3 py-2">Số điện thoại</th>
+                                    <th class="px-3 py-2">Thời gian tiếp nhận</th>
+                                    <th class="px-3 py-2">Nhân viên kỹ thuật</th>
+                                    <th class="px-3 py-2 text-center">Trạng thái xử lý</th>
                                 </tr>
                             </thead>
-                            <tbody id="top5-body" class="text-lg">
+                            <tbody id="top5-body" class="text-sm">
+                                <!-- Rendered via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Bottom Table: All Items -->
+                <div
+                    class="flex-grow bg-white rounded-2xl shadow-lg border border-slate-100 flex flex-col overflow-hidden">
+                    <div class="px-4 py-3 border-b border-slate-50 flex items-center justify-between bg-slate-50/50">
+                        <h2 class="text-xl font-black text-slate-900 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-blue-600">list_alt</span>
+                            Tất Cả Điểm Chảy Chưa Hoàn Thành
+                        </h2>
+                        <span class="text-xs font-bold text-slate-400" id="all-count">Tổng: 0</span>
+                    </div>
+                    <div class="flex-grow overflow-y-auto tv-scrollbar p-2">
+                        <table class="w-full text-left border-separate border-spacing-y-1">
+                            <thead class="sticky top-0 z-10 bg-white">
+                                <tr class="text-xs uppercase tracking-wider text-slate-400 font-bold">
+                                    <th class="px-3 py-2">Mã điểm chảy</th>
+                                    <th class="px-3 py-2">Vị trí điểm chảy</th>
+                                    <th class="px-3 py-2">Số điện thoại</th>
+                                    <th class="px-3 py-2">Thời gian tiếp nhận</th>
+                                    <th class="px-3 py-2">Nhân viên kỹ thuật</th>
+                                    <th class="px-3 py-2 text-center">Trạng thái xử lý</th>
+                                </tr>
+                            </thead>
+                            <tbody id="all-body" class="text-sm">
                                 <!-- Rendered via JS -->
                             </tbody>
                         </table>
@@ -278,9 +266,7 @@
         const XSRF_TOKEN = 'CfDJ8Jj_fLMZXdVGiF7LaxJKgH67zIadLPmx1rQUBmngplHfSzqmbvtWTw6wRiTBlIDSLmpo1XHvWPM0an_N6ktkr8iNrRtYQAqWPvfHKMhityf02HYc46dwr46xGnnRjVT_Qad-BzC-MxYcOeazYY9iP44swyLUZg6AJ6TjBiiYt7mjKgu8QoRHgIciWuKMrH8V1Q';
 
         // --- GLOBAL STATE ---
-        let charts = {};
         let allLeakPoints = [];
-        let isModalOpen = false;
 
         // --- CLOCK ---
         function updateClock() {
@@ -347,138 +333,68 @@
             allLeakPoints = validDetails;
             const top5 = validDetails.slice(0, 5);
 
-            // Update UI
+            // Update UI - Stats
             document.getElementById('val-total').innerText = total;
             document.getElementById('val-done').innerText = done;
             document.getElementById('val-pending').innerText = pending;
+            document.getElementById('val-listening-count').innerText = listeningCount;
             document.getElementById('val-listening-loc').innerText = listeningLocs;
 
-            updateCharts(total, done, pending, listeningCount, listeningLocs);
-
-            const tbody = document.getElementById('top5-body');
-            tbody.innerHTML = '';
+            // Render Top 5 Table
+            const top5Body = document.getElementById('top5-body');
+            top5Body.innerHTML = '';
             top5.forEach(item => {
-                tbody.appendChild(createRow(item, false));
+                top5Body.appendChild(createRow(item));
             });
 
-            if (isModalOpen) renderModalRows();
+            // Render All Items Table
+            const allBody = document.getElementById('all-body');
+            allBody.innerHTML = '';
+            validDetails.forEach(item => {
+                allBody.appendChild(createRow(item));
+            });
+            document.getElementById('all-count').innerText = `Tổng: ${validDetails.length}`;
+
             document.getElementById('loading').classList.remove('active');
         }
 
-        function createRow(item, isModal) {
+        function createRow(item) {
             const tr = document.createElement('tr');
             tr.className = "group transition-all duration-200 hover:bg-blue-50/50";
             const isOverdue = item.QuaHanKhaoSat === 1;
             const receivedDate = new Date(item.ThoiGianTiepNhan);
-            const minutes = item.KhoangThoiGianKhaoSat_Phut || 0;
-            const formattedMin = new Intl.NumberFormat('vi-VN').format(minutes);
+            const formattedDate = receivedDate.toLocaleDateString('vi-VN', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            const technician = item.MaNhanVienKyThuat || 'N/A';
 
             const bgCell = "bg-slate-50/50 group-hover:bg-transparent transition-colors";
 
-            if (!isModal) {
-                tr.innerHTML = `
-                    <td class="px-4 py-3 font-bold text-slate-900 rounded-l-xl ${bgCell}">${item.MaDiemChay}</td>
-                    <td class="${bgCell}"><div class="truncate max-w-[20vw]" title="${item.ViTri}">${item.ViTri}</div></td>
-                    <td class="${bgCell} text-slate-500 font-medium">${receivedDate.toLocaleDateString('vi-VN')}</td>
-                    <td class="${bgCell} text-right font-bold ${minutes > 4320 ? 'text-accent-danger' : 'text-slate-600'}">${formattedMin}</td>
-                    <td class="px-4 py-3 text-center rounded-r-xl ${bgCell}">
-                        <span class="px-3 py-1 rounded-full text-xs font-bold ${isOverdue ? 'bg-red-100 text-red-600 badge-overdue' : 'bg-amber-100 text-amber-600'}">
-                            ${isOverdue ? 'QUÁ HẠN' : 'Đang xử lý'}
-                        </span>
-                    </td>
-                `;
-            } else {
-                tr.innerHTML = `
-                    <td class="px-4 py-3 font-bold text-slate-900 rounded-l-xl ${bgCell}">${item.MaDiemChay}</td>
-                    <td class="${bgCell}"><div class="truncate max-w-[25vw]" title="${item.ViTri}">${item.ViTri}</div></td>
-                    <td class="${bgCell}">${item.SoDienThoai || ''}</td>
-                    <td class="${bgCell} text-slate-500 font-medium">${receivedDate.toLocaleDateString('vi-VN')}</td>
-                    <td class="${bgCell} font-bold ${minutes > 4320 ? 'text-accent-danger' : 'text-slate-600'}">${formattedMin}</td>
-                    <td class="px-4 py-3 rounded-r-xl ${bgCell}">
-                        <span class="px-3 py-1 rounded-full text-xs font-bold ${isOverdue ? 'bg-red-100 text-red-600 badge-overdue' : 'bg-amber-100 text-amber-600'}">
-                            ${isOverdue ? 'QUÁ HẠN' : 'Đang xử lý'}
-                        </span>
-                    </td>
-                `;
-            }
+            tr.innerHTML = `
+                <td class="px-3 py-2 font-bold text-slate-900 rounded-l-xl ${bgCell}">${item.MaDiemChay}</td>
+                <td class="${bgCell}"><div class="truncate max-w-[25vw]" title="${item.ViTri}">${item.ViTri}</div></td>
+                <td class="${bgCell} text-slate-600">${item.SoDienThoai || 'N/A'}</td>
+                <td class="${bgCell} text-slate-500 font-medium">${formattedDate}</td>
+                <td class="${bgCell} text-slate-700 font-semibold">${technician}</td>
+                <td class="px-3 py-2 text-center rounded-r-xl ${bgCell}">
+                    <span class="px-2 py-1 rounded-full text-xs font-bold ${isOverdue ? 'bg-red-100 text-red-600 badge-overdue' : 'bg-amber-100 text-amber-600'}">
+                        ${isOverdue ? 'QUÁ HẠN' : 'Đang xử lý'}
+                    </span>
+                </td>
+            `;
             return tr;
         }
 
-        // --- CHARTS ---
-        function updateCharts(total, done, pending, listeningCount, listeningLocs) {
-            // Chart 1: Process Overview
-            const ctxProcess = document.getElementById('processChart').getContext('2d');
-            if (charts.process) charts.process.destroy();
+        // --- CHARTS --- (ĐÃ BỎ)
+        // function updateCharts(total, done, pending, listeningCount, listeningLocs) {
+        //     // Đã loại bỏ phần biểu đồ theo yêu cầu
+        // }
 
-            charts.process = new Chart(ctxProcess, {
-                type: 'bar',
-                data: {
-                    labels: ['Đang xử lý', 'Đã xử lý', 'Tổng số'],
-                    datasets: [{
-                        data: [pending, done, total],
-                        backgroundColor: ['#F59E0B', '#10B981', '#3B82F6'],
-                        borderRadius: 8,
-                        barPercentage: 0.6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    indexAxis: 'y',
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { grid: { color: '#f1f5f9' }, ticks: { color: '#64748b', font: { weight: 'bold' } } },
-                        y: { grid: { display: false }, ticks: { color: '#1e293b', font: { size: 14, weight: 'bold' } } }
-                    }
-                }
-            });
-
-            // Chart 2: Listening stats
-            const ctxListening = document.getElementById('listeningChart').getContext('2d');
-            if (charts.listening) charts.listening.destroy();
-
-            charts.listening = new Chart(ctxListening, {
-                type: 'bar',
-                data: {
-                    labels: ['Số lần nghe dò', 'Vị trí đang nghe'],
-                    datasets: [{
-                        data: [listeningCount, listeningLocs],
-                        backgroundColor: ['#8b5cf6', '#ec4899'],
-                        borderRadius: 8,
-                        barPercentage: 0.5
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { color: '#64748b', font: { weight: 'bold' } } },
-                        x: { grid: { display: false }, ticks: { color: '#1e293b', font: { size: 14, weight: 'bold' } } }
-                    }
-                }
-            });
-        }
-
-        // --- MODAL LOGIC ---
-        function openModal() {
-            isModalOpen = true;
-            document.getElementById('all-modal').style.display = 'flex';
-            renderModalRows();
-        }
-
-        function closeModal() {
-            isModalOpen = false;
-            document.getElementById('all-modal').style.display = 'none';
-        }
-
-        function renderModalRows() {
-            const tbody = document.getElementById('all-body');
-            tbody.innerHTML = '';
-            allLeakPoints.forEach(item => {
-                tbody.appendChild(createRow(item, true));
-            });
-        }
+        // Modal logic đã bỏ theo yêu cầu
 
         // --- INITIALIZATION ---
         window.onload = () => {
@@ -507,33 +423,8 @@
 
         window.addEventListener('keydown', function (e) {
             if (e.key === 'Escape' || e.keyCode === 10009 || e.key === 'Back') {
-                if (isModalOpen) {
-                    closeModal();
-                    e.preventDefault();
-                } else {
-                    window.parent.postMessage({ type: 'back' }, '*');
-                }
+                window.parent.postMessage({ type: 'back' }, '*');
                 return;
-            }
-
-            if (isModalOpen) {
-                if (e.keyCode === 38) { // Up
-                    document.querySelector('.modal-body').scrollBy({ top: -100, behavior: 'smooth' });
-                }
-                if (e.keyCode === 40) { // Down
-                    document.querySelector('.modal-body').scrollBy({ top: 100, behavior: 'smooth' });
-                }
-            } else {
-                const els = getFocusables();
-                if (e.keyCode === 37) { // Left
-                    focusIndex--;
-                    updateFocus();
-                } else if (e.keyCode === 39) { // Right
-                    focusIndex++;
-                    updateFocus();
-                } else if (e.keyCode === 13) { // Enter
-                    if (els[focusIndex]) els[focusIndex].click();
-                }
             }
         });
     </script>
