@@ -176,12 +176,12 @@
                 </div>
                 <div
                     class="flex-1 bg-white rounded-2xl p-4 shadow-lg border border-slate-100 flex flex-col justify-center">
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Đã Xử Lý</p>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Đã nghiệm thu</p>
                     <p class="text-4xl font-black text-accent-success mt-1" id="val-done">--</p>
                 </div>
                 <div
                     class="flex-1 bg-white rounded-2xl p-4 shadow-lg border border-slate-100 flex flex-col justify-center">
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Đang Xử Lý</p>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Chưa nghiệm thu</p>
                     <p class="text-4xl font-black text-accent-warning mt-1" id="val-pending">--</p>
                 </div>
                 <div
@@ -285,26 +285,79 @@
             }
         }
 
+        // --- API lấy dữ liệu điểm chảy theo tháng (GetSuaChuaSuCoOfNgay) ---
+        async function fetchDiemChayTongHop() {
+            try {
+                // Tính tuNgay (ngày đầu tháng) và denNgay (ngày cuối tháng hiện tại)
+                const now = new Date();
+                const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+                const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+                // Format dd/MM/yyyy
+                const formatDate = (date) => {
+                    const day = String(date.getDate()).padStart(2, '0');
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const year = date.getFullYear();
+                    return `${day}/${month}/${year}`;
+                };
+
+                const tuNgay = encodeURIComponent(formatDate(firstDay));
+                const denNgay = encodeURIComponent(formatDate(lastDay));
+
+                const url = `${API_BASE}/api/services/app/BCTH_MangCap4/GetSuaChuaSuCoOfNgay?tuNgay=${tuNgay}&denNgay=${denNgay}`;
+                const res = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'accept': 'text/plain',
+                        'Authorization': AUTH_TOKEN,
+                        'X-XSRF-TOKEN': XSRF_TOKEN,
+                        'ngrok-skip-browser-warning': 'true'
+                    }
+                });
+
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    console.error('API Error Response:', errorText);
+                    throw new Error(`API Error: ${res.status}`);
+                }
+                const data = await res.json();
+                return data?.result || [];
+            } catch (e) {
+                console.error("Fetch DiemChay Error:", e);
+                return [];
+            }
+        }
+
         // --- DATA PROCESSING ---
         async function reloadData() {
             document.getElementById('loading').classList.add('active');
 
-            const [summaryData, detailData] = await Promise.all([
+            // Gọi song song 3 API:
+            // 1. API mới cho điểm chảy tháng (SoDiemChay, DaNghiemThu, ChuaNghiemThu)
+            // 2. API cũ để lấy 2 trường nghe dò
+            // 3. API chi tiết điểm chảy chưa hoàn thành
+            const [diemChayList, summaryData, detailData] = await Promise.all([
+                fetchDiemChayTongHop(),
                 fetchReport('tt.dktt_TongHopDiemChays'),
                 fetchReport('tt.dktt_TongHopDiemChayChuaHoanThanhs')
             ]);
 
+            // Tính tổng từ danh sách điểm chảy trả về (tham khảo BcthTraCuuTongHopDiemChays.kt)
+            const tongHop = {
+                SoDiemChay: diemChayList.reduce((sum, item) => sum + (item.SoDiemChay || 0), 0),
+                DaNghiemThu: diemChayList.reduce((sum, item) => sum + (item.DaNghiemThu || 0), 0),
+                ChuaNghiemThu: diemChayList.reduce((sum, item) => sum + (item.ChuaNghiemThu || 0), 0)
+            };
+
+            // Lấy 2 trường nghe dò từ API cũ
             const summary = summaryData[0] || {
-                SoLuongDiemChayTrongThang: 0,
-                SoLuongDaXuLy: 0,
-                SoLuongDangXuLy: 0,
                 SoLuongNgheDoTrongThang: 0,
                 SoLuongViTriDangNgheDo: 0
             };
 
-            const total = summary.SoLuongDiemChayTrongThang || 0;
-            const done = summary.SoLuongDaXuLy || 0;
-            const pending = summary.SoLuongDangXuLy || 0;
+            const total = tongHop.SoDiemChay;
+            const done = tongHop.DaNghiemThu;
+            const pending = tongHop.ChuaNghiemThu;
             const listeningCount = summary.SoLuongNgheDoTrongThang || 0;
             const listeningLocs = summary.SoLuongViTriDangNgheDo || 0;
 
