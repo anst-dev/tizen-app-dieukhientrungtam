@@ -301,7 +301,6 @@ class DashboardGrid {
         if (screen.STT === 0) {
             div.innerHTML = `
                 <div class="screen-tile-header">
-                    <span class="screen-number">M${screen.STT}</span>
                     <h3 class="screen-name">Màn hình Bản đồ</h3>
                 </div>
                 <div class="screen-tile-content">
@@ -314,7 +313,6 @@ class DashboardGrid {
         } else {
             div.innerHTML = `
                 <div class="screen-tile-header">
-                    <span class="screen-number">M${screen.STT}</span>
                     <h3 class="screen-name">${screenTitle}</h3>
                 </div>
                 <div class="screen-tile-content">
