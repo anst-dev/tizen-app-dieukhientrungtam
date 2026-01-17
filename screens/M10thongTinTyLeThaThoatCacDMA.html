@@ -161,6 +161,8 @@
                     <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight leading-tight">
                         Quản Lý Thất Thoát
                     </h1>
+                    <p id="report-date" class="text-base font-medium text-gray-500 dark:text-gray-400 mt-1">Ngày báo
+                        cáo: --/--/----</p>
                 </div>
             </div>
             <div class="flex items-center gap-6">
@@ -606,14 +608,18 @@
 
     <script>
         // CONFIG
-        const API_HOST = 'http://localhost:44311';
+        const API_HOST = 'https://unsupercilious-leonarda-unreaving.ngrok-free.dev';
         const AUTH_TOKEN = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjY3MSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJuaG1hbmgiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJuaG1hbmhAbmF3YXNjby5jb20udm4iLCJBc3BOZXQuSWRlbnRpdHkuU2VjdXJpdHlTdGFtcCI6Ik9DRzQ1WDdXVVVTSlE1VlFUMjNNVkxXTVhMV0MzUktVIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoixJDEg25nIGvDvSBuZ2jhu4kiLCJzdWIiOiI2NzEiLCJqdGkiOiJjNGYyOTBlMy02MDg0LTRhZGItOGZjNC1hMWZlNzAyZWM1OTQiLCJpYXQiOjE3NTA2NzAwMTYsIm5iZiI6MTc1MDY3MDAxNiwiZXhwIjoyMDY2MDMwMDE2LCJpc3MiOiJFUlAiLCJhdWQiOiJFUlAifQ.ou9LMHMJw-D-YaRy28_sVDqZRDf1EY7Sl-gWXfx6cnQ';
         const XSRF_TOKEN = 'CfDJ8FNXrp6ZgvRLllnTFj9VlGLf01D9pf_xzEQvLYeYhCUYil5NJiYOf41qk9PUl4_3hQrdGktJ9diSRV9elA0AXdz_wSxOQKZeFW1WA-hZZB_y0BYZm094QPX7Lg7rkjZP_wIo7XFSq9JifB3xkgLzEQTNi_NM0A8aCHYgOKl7ujCnF09eMK1gpyzxFHvaJSZrbA';
 
         // HELPERS
         const $ = (id) => document.getElementById(id);
         const formatNumber = (num) => num ? num.toLocaleString('vi-VN', { maximumFractionDigits: 2 }) : '0';
-        const getToday = () => new Date().toISOString().split('T')[0];
+        const getToday = () => {
+            const d = new Date();
+            d.setDate(d.getDate() - 1);
+            return d.toISOString().split('T')[0];
+        };
 
         // Get indicator color based on rate
         const getIndicatorColor = (rate) => {
@@ -726,44 +732,71 @@
             container.innerHTML = gridLines + bars;
         }
 
-        // FETCH DATA
+        // FETCH DATA với fallback lùi ngày
+        async function fetchDataForDate(dateStr) {
+            const filter = encodeURIComponent(JSON.stringify([{ property: 'ngaybaocao', value: dateStr, operator: 'eq' }]));
+            const url = `${API_HOST}/api/services/app/DMA/GetAllBaoCaoTongHopTyLeThatThoatDMAs?filter=${filter}`;
+
+            const res = await fetch(url, {
+                headers: {
+                    'Authorization': AUTH_TOKEN,
+                    'X-XSRF-TOKEN': XSRF_TOKEN,
+                    'ngrok-skip-browser-warning': 'true'
+                }
+            });
+
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return await res.json();
+        }
+
         async function fetchData() {
             try {
-                const today = getToday();
-                const filter = encodeURIComponent(JSON.stringify([{ property: 'ngaybaocao', value: today, operator: 'eq' }]));
-                const url = `${API_HOST}/api/services/app/DMA/GetAllBaoCaoTongHopTyLeThatThoatDMAs?filter=${filter}`;
+                const maxRetries = 7; // Thử tối đa 7 ngày
+                let currentDate = new Date();
+                let items = null;
+                let dateStr = '';
 
-                const res = await fetch(url, {
-                    headers: {
-                        'Authorization': AUTH_TOKEN,
-                        'X-XSRF-TOKEN': XSRF_TOKEN,
-                        'ngrok-skip-browser-warning': 'true'
+                // Thử từ ngày hiện tại, lùi dần nếu không có dữ liệu
+                for (let i = 0; i < maxRetries; i++) {
+                    dateStr = currentDate.toISOString().split('T')[0];
+                    console.log(`[DMA] Trying date: ${dateStr}`);
+
+                    const data = await fetchDataForDate(dateStr);
+
+                    if (data.success && data.result?.items && data.result.items.length > 0) {
+                        items = data.result.items;
+                        console.log(`[DMA] Found ${items.length} items for ${dateStr}`);
+                        break;
                     }
-                });
 
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const data = await res.json();
+                    // Lùi 1 ngày
+                    currentDate.setDate(currentDate.getDate() - 1);
+                }
 
-                if (data.success && data.result?.items) {
-                    const items = data.result.items;
-                    const count = data.result.count || items.length;
+                if (items && items.length > 0) {
+                    const count = items.length;
 
                     // Update total count
                     $('dma-total-count').textContent = `${count} DMA`;
+
+                    // Update report date from ngayBaoCao
+                    if (items[0].ngayBaoCao) {
+                        const reportDate = new Date(items[0].ngayBaoCao);
+                        $('report-date').textContent = `Ngày báo cáo: ${reportDate.toLocaleDateString('vi-VN')}`;
+                    }
 
                     // Render table
                     renderTable(items);
 
                     // Render charts
                     renderChart('chart-thatthoat', items, 'tyLeThatThoatLuyKe', 'tyLeThatThoatLienKe', 'bg-blue-600', 'bg-blue-200 dark:bg-blue-800', true);
-                    // Biểu đồ KL nước lũy kế trong tháng: so sánh ĐHT vs ĐHKH
                     renderChart('chart-dhtong', items, 'tongKhoiLuongNuocDongHoTongDieuChinhLuyKeTu0h', 'tongKhoiLuongNuocDongHoConDieuChinhLuyKeTu0h', 'bg-emerald-500', 'bg-emerald-200 dark:bg-emerald-900');
-                    // Biểu đồ KL nước ngày liền kề: so sánh ĐHT vs ĐHKH
                     renderChart('chart-dhkh', items, 'tongKhoiLuongNuocDongHoTongDieuChinhNgayTruocLienKe', 'tongKhoiLuongNuocDongHoConDieuChinhNgayTruocLienKe', 'bg-indigo-500', 'bg-indigo-200 dark:bg-indigo-900');
 
-                    console.log(`[DMA] Loaded ${count} items for ${today}`);
+                    console.log(`[DMA] Loaded ${count} items for ${dateStr}`);
                 } else {
-                    throw new Error('Dữ liệu không hợp lệ');
+                    console.warn('[DMA] Không tìm thấy dữ liệu trong 7 ngày gần nhất');
+                    $('report-date').textContent = 'Không có dữ liệu';
                 }
             } catch (err) {
                 console.error('[DMA] Error:', err);
