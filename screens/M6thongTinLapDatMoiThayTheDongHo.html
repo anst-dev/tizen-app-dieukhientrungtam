@@ -142,97 +142,84 @@
             color: var(--text-primary);
         }
 
-        /* Cards Grid - 2 columns x 3 rows */
-        .cards-grid {
+        /* Data Table */
+        .data-table-container {
             flex: 1;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            grid-template-rows: repeat(3, 1fr);
-            gap: 0.5rem;
-        }
-
-        .tv-card {
             background: var(--card-bg);
-            border-radius: 10px;
-            padding: 0.5rem 0.75rem;
+            border-radius: 12px;
+            padding: 1rem;
             box-shadow: 0 2px 4px rgb(0 0 0 / 0.08);
             border: 1px solid #F1F5F9;
-            display: flex;
-            flex-direction: column;
+            overflow: auto;
         }
 
-        .tv-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid #F1F5F9;
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 16px;
         }
 
-        .tv-card-title {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text-primary);
-            line-height: 1.2;
-            flex: 1;
+        .data-table th,
+        .data-table td {
+            padding: 0.75rem 1rem;
+            text-align: center;
+            border: 1px solid #E2E8F0;
         }
 
-        .tv-card-badge {
+        .data-table thead th {
             background: var(--primary-gradient);
             color: white;
-            padding: 0.25rem 0.5rem;
-            border-radius: 6px;
-            font-size: 11px;
             font-weight: 700;
+            font-size: 15px;
+            white-space: nowrap;
         }
 
-        .tv-metrics {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .tv-metric {
-            text-align: center;
-        }
-
-        .tv-metric-label {
-            font-size: 10px;
-            color: var(--text-secondary);
+        .data-table tbody td {
+            background: var(--card-bg);
             font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.02em;
-            margin-bottom: 0.2rem;
+            color: var(--text-primary);
         }
 
-        .tv-metric-value {
-            font-size: 22px;
-            font-weight: 800;
-            line-height: 1;
+        .data-table tbody tr:nth-child(even) td {
+            background: #F8FAFC;
         }
 
-        .tv-progress {
-            position: relative;
-            background: #F1F5F9;
-            height: 6px;
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .tv-progress-bar {
-            height: 100%;
-            border-radius: 3px;
-        }
-
-        .tv-progress-text {
-            position: absolute;
-            top: -16px;
-            right: 0;
-            font-size: 11px;
+        .data-table tbody td.loai-dk {
             font-weight: 700;
+            color: var(--accent-blue);
+            background: #EFF6FF;
+        }
+
+        .data-table tbody td.loai-dk.ldm {
+            color: var(--accent-green);
+            background: #ECFDF5;
+        }
+
+        .data-table tbody td.number {
+            font-variant-numeric: tabular-nums;
+        }
+
+        .data-table tbody td.chua-ht {
+            color: var(--accent-orange);
+        }
+
+        .data-table tbody td.da-ht {
+            color: var(--accent-green);
+        }
+
+        .data-table tbody td.luỹ-ke {
+            color: var(--accent-blue);
+        }
+
+        .data-table tbody td.huy {
+            color: #EF4444;
+        }
+
+        .table-note {
+            margin-top: 0.75rem;
+            font-size: 13px;
             color: var(--text-secondary);
+            font-style: italic;
         }
 
         /* === RIGHT COLUMN: 2 CHARTS === */
@@ -371,8 +358,25 @@
             <div class="section-header">
                 <h2 class="section-title">Thông Tin Công Việc</h2>
             </div>
-            <div class="cards-grid" id="cards-grid">
-                <!-- Cards will be injected here -->
+            <div class="data-table-container">
+                <table class="data-table" id="data-table">
+                    <thead>
+                        <tr>
+                            <th>TT</th>
+                            <th>Loại ĐK</th>
+                            <th>Nội dung</th>
+                            <th>Chưa hoàn thành</th>
+                            <th>Đã hoàn thành</th>
+                            <th>Lũy kế đã hoàn thành</th>
+                            <th>Hủy</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <!-- Table rows will be injected here -->
+                    </tbody>
+                </table>
+                <p class="table-note">Lưu ý phần mềm: Số lượng đã hoàn thành, hủy được tính trong tháng, số lượng lũy kế
+                    đã hoàn thành được tính từ đầu năm.</p>
             </div>
         </div>
 
@@ -407,18 +411,42 @@
     </div>
 
     <script>
+        // Register ChartDataLabels plugin
+        Chart.register(ChartDataLabels);
+
         // CONFIG
-        const API_URL = 'http://localhost:44311/api/services/app/Report/GetReportDataNoCount';
+        const API_URL = 'https://unsupercilious-leonarda-unreaving.ngrok-free.dev/api/services/app/Report/GetReportDataNoCount';
         const AUTH_TOKEN = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjQ0MiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJuc3RhbmgiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJuc3RhbmhAbmF3YXNjby5jb20udm4iLCJBc3BOZXQuSWRlbnRpdHkuU2VjdXJpdHlTdGFtcCI6IlJNRFdIVExXTU1LUzdZNElGM1FMVlEyRUU2Q1ZRNjJRIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjpbIkFkbWluIiwixJDEg25nIGvDvSBuZ2jhu4kiXSwic3ViIjoiNDQyIiwianRpIjoiOWJlYmU0NzMtMmM5OC00NTczLTk2OGYtMzlmZjRmY2IzYTdkIiwiaWF0IjoxNzM3NTUyMTI5LCJuYmYiOjE3Mzc1NTIxMjksImV4cCI6MjA1MjkxMjEyOSwiaXNzIjoiRVJQIiwiYXVkIjoiRVJQIn0.i5NWUse89skdwOKFXnaBAYJA-JQBkNDYyO5ucfbVHi4';
+
+        // Tính toán ngày: từ ngày 1 của tháng đến ngày hiện tại
+        function getDateParameters() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+
+            // Từ ngày: ngày 1 của tháng hiện tại
+            const tuNgay = `${year}-${month}-01`;
+            // Đến ngày: ngày hiện tại
+            const denNgay = `${year}-${month}-${day}`;
+
+            return { tuNgay, denNgay };
+        }
+
+        const { tuNgay, denNgay } = getDateParameters();
+
         const PAYLOAD = {
             "reportPath": "tt.dktt_ThongKeLapDatMoiAndThayThe",
             "page": 0,
             "format": "HTML",
-            "parameters": {}
+            "parameters": {
+                "TUNGAY": tuNgay,
+                "DENNGAY": denNgay
+            }
         };
 
         // DOM
-        const cardsGrid = document.getElementById('cards-grid');
+        const tableBody = document.getElementById('table-body');
         const loadingOverlay = document.getElementById('loading');
         const apiStatus = document.getElementById('api-status');
         const lastUpdate = document.getElementById('last-update');
@@ -432,68 +460,139 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // CREATE CARD HTML
-        function createCardHTML(item) {
-            const total = item.ChuaHoanThanh + item.DaHoanThanh;
-            const percent = total > 0 ? Math.round((item.DaHoanThanh / total) * 100) : 0;
-            const accentColor = item.LoaiDK === 'LĐM' ? 'var(--accent-green)' : 'var(--accent-blue)';
-
-            return `
-                <div class="tv-card" style="border-left: 5px solid ${accentColor}">
-                    <div class="tv-card-header">
-                        <h3 class="tv-card-title">${item.NoiDung}</h3>
-                        <span class="tv-card-badge">${item.LoaiDK}</span>
-                    </div>
-                    
-                    <div class="tv-metrics">
-                        <div class="tv-metric">
-                            <div class="tv-metric-label">Chờ xử lý</div>
-                            <div class="tv-metric-value" style="color: var(--accent-orange)">
-                                ${item.ChuaHoanThanh.toLocaleString('vi-VN')}
-                            </div>
-                        </div>
-                        
-                        <div class="tv-metric">
-                            <div class="tv-metric-label">Đã xong</div>
-                            <div class="tv-metric-value" style="color: var(--accent-green)">
-                                ${item.DaHoanThanh.toLocaleString('vi-VN')}
-                            </div>
-                        </div>
-                        
-                        <div class="tv-metric">
-                            <div class="tv-metric-label">Lũy kế</div>
-                            <div class="tv-metric-value" style="color: var(--accent-blue)">
-                                ${item.LuyKeDaHoanThanh.toLocaleString('vi-VN')}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="tv-progress">
-                        <span class="tv-progress-text">${percent}%</span>
-                        <div class="tv-progress-bar" style="width: ${percent}%; background: ${accentColor}"></div>
-                    </div>
-                </div>
-            `;
-        }
-
-        // RENDER CARDS
-        function renderCards(items) {
+        // RENDER TABLE - with merged LoaiDK cells
+        function renderTable(items) {
             const sortedItems = items.sort((a, b) => a.TT - b.TT);
-            cardsGrid.innerHTML = sortedItems.map(item => createCardHTML(item)).join('');
+
+            // Group items by LoaiDK to calculate rowspan
+            const groups = {};
+            sortedItems.forEach(item => {
+                if (!groups[item.LoaiDK]) {
+                    groups[item.LoaiDK] = [];
+                }
+                groups[item.LoaiDK].push(item);
+            });
+
+            let html = '';
+            let processedLoaiDK = {};
+
+            sortedItems.forEach(item => {
+                const isFirstInGroup = !processedLoaiDK[item.LoaiDK];
+                const rowspan = groups[item.LoaiDK].length;
+                const isLDM = item.LoaiDK === 'LĐM';
+
+                html += `<tr>
+                    <td class="number">${item.TT}</td>
+                    ${isFirstInGroup ? `<td class="loai-dk ${isLDM ? 'ldm' : ''}" rowspan="${rowspan}">${item.LoaiDK}</td>` : ''}
+                    <td>${item.NoiDung}</td>
+                    <td class="number chua-ht">${item.ChuaHoanThanh.toLocaleString('vi-VN')}</td>
+                    <td class="number da-ht">${item.DaHoanThanh.toLocaleString('vi-VN')}</td>
+                    <td class="number luỹ-ke">${item.LuyKeDaHoanThanh.toLocaleString('vi-VN')}</td>
+                    <td class="number huy">${item.Huy}</td>
+                </tr>`;
+
+                if (isFirstInGroup) {
+                    processedLoaiDK[item.LoaiDK] = true;
+                }
+            });
+
+            tableBody.innerHTML = html;
         }
 
         // INIT CHARTS
         let ldmChart = null;
         let tdhChart = null;
 
-        function createChartConfig(color, title) {
+        // Chart config for LĐM (chỉ có XNDV, 10 Trạm)
+        function createLdmChartConfig() {
+            return {
+                type: 'bar',
+                data: {
+                    labels: ['XNDV', '10 Trạm'],
+                    datasets: [
+                        {
+                            label: 'Chưa hoàn thành',
+                            data: [0, 0],
+                            backgroundColor: 'rgba(245, 158, 11, 0.85)',
+                            borderColor: 'rgba(245, 158, 11, 1)',
+                            borderWidth: 1,
+                            borderRadius: 4,
+                        },
+                        {
+                            label: 'Đã hoàn thành',
+                            data: [0, 0],
+                            backgroundColor: 'rgba(16, 185, 129, 0.85)',
+                            borderColor: 'rgba(16, 185, 129, 1)',
+                            borderWidth: 1,
+                            borderRadius: 4,
+                        },
+                        {
+                            label: 'Lũy kế đã HT',
+                            data: [0, 0],
+                            backgroundColor: 'rgba(139, 92, 246, 0.85)',
+                            borderColor: 'rgba(139, 92, 246, 1)',
+                            borderWidth: 1,
+                            borderRadius: 4,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' },
+                                padding: 10,
+                                boxWidth: 12,
+                                boxHeight: 12,
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: { enabled: false },
+                        datalabels: {
+                            display: true,
+                            anchor: 'end',
+                            align: 'top',
+                            offset: 4,
+                            font: { family: 'Plus Jakarta Sans', size: 12, weight: '700' },
+                            color: '#0F172A',
+                            formatter: function (value) {
+                                return value.toLocaleString('vi-VN');
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' }, color: '#64748B' }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(226, 232, 240, 0.6)', drawBorder: false },
+                            ticks: {
+                                font: { family: 'Plus Jakarta Sans', size: 10 },
+                                color: '#64748B',
+                                callback: function (value) { return value.toLocaleString('vi-VN'); }
+                            }
+                        }
+                    },
+                    animation: { duration: 600, easing: 'easeOutQuart' }
+                }
+            };
+        }
+
+        // Chart config for TĐH (có XNDV, 10 Trạm, BGK)
+        function createTdhChartConfig() {
             return {
                 type: 'bar',
                 data: {
                     labels: ['XNDV', '10 Trạm', 'BGK'],
                     datasets: [
                         {
-                            label: 'Chờ xử lý',
+                            label: 'Chưa hoàn thành',
                             data: [0, 0, 0],
                             backgroundColor: 'rgba(245, 158, 11, 0.85)',
                             borderColor: 'rgba(245, 158, 11, 1)',
@@ -501,15 +600,15 @@
                             borderRadius: 4,
                         },
                         {
-                            label: 'Đã xong',
+                            label: 'Đã hoàn thành',
                             data: [0, 0, 0],
-                            backgroundColor: color === 'green' ? 'rgba(16, 185, 129, 0.85)' : 'rgba(59, 130, 246, 0.85)',
-                            borderColor: color === 'green' ? 'rgba(16, 185, 129, 1)' : 'rgba(59, 130, 246, 1)',
+                            backgroundColor: 'rgba(59, 130, 246, 0.85)',
+                            borderColor: 'rgba(59, 130, 246, 1)',
                             borderWidth: 1,
                             borderRadius: 4,
                         },
                         {
-                            label: 'Lũy kế',
+                            label: 'Lũy kế đã HT',
                             data: [0, 0, 0],
                             backgroundColor: 'rgba(139, 92, 246, 0.85)',
                             borderColor: 'rgba(139, 92, 246, 1)',
@@ -538,11 +637,11 @@
                             display: true,
                             anchor: 'end',
                             align: 'top',
-                            offset: 2,
-                            font: { family: 'Plus Jakarta Sans', size: 10, weight: '700' },
+                            offset: 4,
+                            font: { family: 'Plus Jakarta Sans', size: 12, weight: '700' },
                             color: '#0F172A',
                             formatter: function (value) {
-                                return value > 0 ? value.toLocaleString('vi-VN') : '';
+                                return value.toLocaleString('vi-VN');
                             }
                         }
                     },
@@ -570,8 +669,8 @@
             const ldmCtx = document.getElementById('ldmChart').getContext('2d');
             const tdhCtx = document.getElementById('tdhChart').getContext('2d');
 
-            ldmChart = new Chart(ldmCtx, createChartConfig('green', 'LĐM'));
-            tdhChart = new Chart(tdhCtx, createChartConfig('blue', 'TĐH'));
+            ldmChart = new Chart(ldmCtx, createLdmChartConfig());
+            tdhChart = new Chart(tdhCtx, createTdhChartConfig());
         }
 
         // UPDATE CHARTS
@@ -587,31 +686,30 @@
                 return item ? [item.ChuaHoanThanh, item.DaHoanThanh, item.LuyKeDaHoanThanh] : [0, 0, 0];
             };
 
-            // LĐM data
+            // LĐM data (chỉ có XNDV, 10 Trạm)
             const ldmXNDV = findData(ldmItems, 'XNDV');
             const ldmTram = findData(ldmItems, '10 Trạm');
-            const ldmBGK = findData(ldmItems, 'BGK');
 
-            ldmChart.data.datasets[0].data = [ldmXNDV[0], ldmTram[0], ldmBGK[0]]; // Chờ xử lý
-            ldmChart.data.datasets[1].data = [ldmXNDV[1], ldmTram[1], ldmBGK[1]]; // Đã xong
-            ldmChart.data.datasets[2].data = [ldmXNDV[2], ldmTram[2], ldmBGK[2]]; // Lũy kế
+            ldmChart.data.datasets[0].data = [ldmXNDV[0], ldmTram[0]]; // Chưa hoàn thành
+            ldmChart.data.datasets[1].data = [ldmXNDV[1], ldmTram[1]]; // Đã hoàn thành
+            ldmChart.data.datasets[2].data = [ldmXNDV[2], ldmTram[2]]; // Lũy kế đã HT
             ldmChart.update();
 
-            // TĐH data
+            // TĐH data (có XNDV, 10 Trạm, BGK)
             const tdhXNDV = findData(tdhItems, 'XNDV');
             const tdhTram = findData(tdhItems, '10 Trạm');
             const tdhBGK = findData(tdhItems, 'BGK');
 
-            tdhChart.data.datasets[0].data = [tdhXNDV[0], tdhTram[0], tdhBGK[0]]; // Chờ xử lý
-            tdhChart.data.datasets[1].data = [tdhXNDV[1], tdhTram[1], tdhBGK[1]]; // Đã xong
-            tdhChart.data.datasets[2].data = [tdhXNDV[2], tdhTram[2], tdhBGK[2]]; // Lũy kế
+            tdhChart.data.datasets[0].data = [tdhXNDV[0], tdhTram[0], tdhBGK[0]]; // Chưa hoàn thành
+            tdhChart.data.datasets[1].data = [tdhXNDV[1], tdhTram[1], tdhBGK[1]]; // Đã hoàn thành
+            tdhChart.data.datasets[2].data = [tdhXNDV[2], tdhTram[2], tdhBGK[2]]; // Lũy kế đã HT
             tdhChart.update();
         }
 
         // FETCH DATA
         async function fetchData() {
             try {
-                if (cardsGrid.children.length === 0) loadingOverlay.classList.add('active');
+                if (tableBody.children.length === 0) loadingOverlay.classList.add('active');
 
                 apiStatus.textContent = 'API: Fetching...';
 
@@ -620,6 +718,7 @@
                     headers: {
                         'accept': 'text/plain',
                         'Content-Type': 'application/json',
+                        'ngrok-skip-browser-warning': 'true',
                         'Authorization': AUTH_TOKEN
                     },
                     body: JSON.stringify(PAYLOAD)
@@ -630,7 +729,7 @@
                 const data = await res.json();
 
                 if (data.success && data.result?.items) {
-                    renderCards(data.result.items);
+                    renderTable(data.result.items);
                     updateCharts(data.result.items);
                     apiStatus.textContent = 'API: Connected ✅';
                     apiStatus.style.color = 'var(--accent-green)';
@@ -643,8 +742,8 @@
                 apiStatus.textContent = `API Error: ${err.message} ⚠️`;
                 apiStatus.style.color = 'var(--accent-orange)';
 
-                if (cardsGrid.children.length === 0) {
-                    cardsGrid.innerHTML = `<div style="color:red; padding:1.5rem; font-size: 18px; grid-column: 1/-1;">Không thể tải dữ liệu. Kiểm tra kết nối API.</div>`;
+                if (tableBody.children.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="7" style="color:red; padding:1.5rem; font-size: 18px;">Không thể tải dữ liệu. Kiểm tra kết nối API.</td></tr>`;
                 }
             } finally {
                 loadingOverlay.classList.remove('active');
