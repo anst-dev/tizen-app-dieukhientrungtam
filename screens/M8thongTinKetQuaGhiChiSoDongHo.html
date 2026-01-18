@@ -1,574 +1,572 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
-
-<head>
+  <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Production Dashboard - Metric First</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap"
-        rel="stylesheet" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <style type="text/tailwindcss">
-        :root {
-            --success-color: #16a34a;
-            --warning-color: #ea580c;
-            --primary-black: #000000;
-            --label-gray: #6b7280;
-        }
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-        }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #ffffff;
-        }
+      :root {
+        --success-color: #16a34a;
+        --warning-color: #ea580c;
+        --primary-black: #000000;
+        --label-gray: #6b7280;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #ffffff;
+      }
+      .metric-value {
+        font-size: 72pt;
+        line-height: 0.9;
+        font-weight: 900;
+        letter-spacing: -0.05em;
+        transition: font-size 0.3s ease;
+      }
+      .metric-value-large {
+        font-size: 120pt;
+      }
+      @media (max-width: 1536px) {
         .metric-value {
-            font-size: 72pt;
-            line-height: 0.9;
-            font-weight: 900;
-            letter-spacing: -0.05em;
-            transition: font-size 0.3s ease;
+          font-size: 60pt;
         }
         .metric-value-large {
-            font-size: 120pt;
+          font-size: 100pt;
         }
-        @media (max-width: 1536px) {
-            .metric-value {
-                font-size: 60pt;
-            }
-            .metric-value-large {
-                font-size: 100pt;
-            }
+      }
+      .loading-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(255, 255, 255, 0.95);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s;
+      }
+      .loading-overlay.active {
+        opacity: 1;
+        pointer-events: all;
+      }
+      .spinner {
+        width: 48px;
+        height: 48px;
+        border: 5px solid #e2e8f0;
+        border-top-color: #16a34a;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
         }
-        .loading-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(255, 255, 255, 0.95);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
-        }
-        .loading-overlay.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-        .spinner {
-            width: 48px;
-            height: 48px;
-            border: 5px solid #E2E8F0;
-            border-top-color: #16a34a;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-        /* Table styles for Miền Tây detail */
-        .mt-detail-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-        }
-        .mt-detail-table th {
-            background-color: #f1f5f9;
-            color: #475569;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 11px;
-            letter-spacing: 0.05em;
-            padding: 8px 12px;
-            text-align: left;
-            border-bottom: 2px solid #e2e8f0;
-        }
-        .mt-detail-table td {
-            padding: 6px 12px;
-            border-bottom: 1px solid #f1f5f9;
-            color: #334155;
-        }
-        .mt-detail-table tr:hover {
-            background-color: #f8fafc;
-        }
-        .mt-detail-table .num-col {
-            text-align: right;
-            font-variant-numeric: tabular-nums;
-            font-weight: 600;
-        }
-        .mt-detail-table .stt-col {
-            text-align: center;
-            color: #94a3b8;
-            font-weight: 500;
-        }
-        .tv-scrollbar::-webkit-scrollbar {
-            width: 8px;
-        }
-        .tv-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .tv-scrollbar::-webkit-scrollbar-thumb {
-            background-color: #cbd5e1;
-            border-radius: 20px;
-        }
+      }
+      /* Table styles for Miền Tây detail */
+      .mt-detail-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      .mt-detail-table th {
+        background-color: #f1f5f9;
+        color: #475569;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: 0.05em;
+        padding: 8px 12px;
+        text-align: left;
+        border-bottom: 2px solid #e2e8f0;
+      }
+      .mt-detail-table td {
+        padding: 6px 12px;
+        border-bottom: 1px solid #f1f5f9;
+        color: #334155;
+      }
+      .mt-detail-table tr:hover {
+        background-color: #f8fafc;
+      }
+      .mt-detail-table .num-col {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+        font-weight: 600;
+      }
+      .mt-detail-table .stt-col {
+        text-align: center;
+        color: #94a3b8;
+        font-weight: 500;
+      }
+      .tv-scrollbar::-webkit-scrollbar {
+        width: 8px;
+      }
+      .tv-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .tv-scrollbar::-webkit-scrollbar-thumb {
+        background-color: #cbd5e1;
+        border-radius: 20px;
+      }
     </style>
-</head>
+  </head>
 
-<body class="text-black h-screen w-screen flex flex-col overflow-hidden">
+  <body class="text-black h-screen w-screen flex flex-col overflow-hidden">
     <!-- Loading Overlay -->
     <div id="loading" class="loading-overlay active">
-        <div class="spinner"></div>
-        <p style="margin-top: 1rem; font-weight: 600; color: #64748B; font-size: 18px;">Đang tải dữ liệu...</p>
+      <div class="spinner"></div>
+      <p style="margin-top: 1rem; font-weight: 600; color: #64748b; font-size: 18px">Đang tải dữ liệu...</p>
     </div>
 
     <header class="border-b border-gray-100 px-10 py-2 flex justify-between items-end flex-shrink-0">
-        <div>
-            <h1 class="text-2xl font-black uppercase tracking-tight">Kết quả sản lượng ghi chỉ số theo tháng</h1>
-            <p class="text-base text-gray-500 font-medium mt-1" id="display-time">Tính đến: --/--/---- --:--</p>
-        </div>
+      <div>
+        <h1 class="text-2xl font-black uppercase tracking-tight">Kết quả sản lượng ghi chỉ số theo tháng</h1>
+        <p class="text-base text-gray-500 font-medium mt-1" id="display-time">Tính đến: --/--/---- --:--</p>
+      </div>
     </header>
     <main class="flex-1 flex px-10 py-2 gap-6 overflow-hidden" id="main-content">
-        <!-- Left Column: Summary Stats -->
-        <div class="flex flex-col gap-2 transition-all duration-300" id="stats-column">
-            <!-- Vinh -->
-            <div class="flex-1 flex flex-col justify-center border-b border-gray-100 pb-2">
-                <div class="flex items-center gap-6">
-                    <div class="flex flex-col items-center text-center flex-shrink-0">
-                        <span class="text-lg font-black uppercase tracking-tighter text-gray-400 mb-1">Vinh</span>
-                        <span id="vinh-percent" class="metric-value text-[var(--success-color)]">--%</span>
-                    </div>
-                    <div class="flex flex-col gap-2 flex-1">
-                        <div class="flex flex-col">
-                            <span class="text-sm uppercase font-bold text-gray-400 tracking-widest">Thực hiện</span>
-                            <span id="vinh-thuchien" class="text-3xl font-extrabold tracking-tighter">--</span>
-                        </div>
-                        <div class="flex flex-col border-t border-gray-100 pt-1">
-                            <span class="text-sm uppercase font-bold text-gray-400 tracking-widest">Kế hoạch</span>
-                            <span id="vinh-kehoach" class="text-2xl font-bold tracking-tighter text-gray-500">--</span>
-                        </div>
-                    </div>
-                </div>
+      <!-- Left Column: Summary Stats -->
+      <div class="flex flex-col gap-2 transition-all duration-300" id="stats-column">
+        <!-- Vinh -->
+        <div class="flex-1 flex flex-col justify-center border-b border-gray-100 pb-2">
+          <div class="flex items-center gap-6">
+            <div class="flex flex-col items-center text-center flex-shrink-0">
+              <span class="text-lg font-black uppercase tracking-tighter text-gray-400 mb-1">Vinh</span>
+              <span id="vinh-percent" class="metric-value text-[var(--success-color)]">--%</span>
             </div>
-            <!-- Miền Tây -->
-            <div class="flex-1 flex flex-col justify-center border-b border-gray-100 pb-2">
-                <div class="flex items-center gap-6">
-                    <div class="flex flex-col items-center text-center flex-shrink-0">
-                        <span class="text-lg font-black uppercase tracking-tighter text-gray-400 mb-1">Miền Tây</span>
-                        <span id="mt-percent" class="metric-value text-[var(--warning-color)]">--%</span>
-                    </div>
-                    <div class="flex flex-col gap-2 flex-1">
-                        <div class="flex flex-col">
-                            <span class="text-sm uppercase font-bold text-gray-400 tracking-widest">Thực hiện</span>
-                            <span id="mt-thuchien" class="text-3xl font-extrabold tracking-tighter">--</span>
-                        </div>
-                        <div class="flex flex-col border-t border-gray-100 pt-1">
-                            <span class="text-sm uppercase font-bold text-gray-400 tracking-widest">Kế hoạch</span>
-                            <span id="mt-kehoach" class="text-2xl font-bold tracking-tighter text-gray-500">--</span>
-                        </div>
-                    </div>
-                </div>
+            <div class="flex flex-col gap-2 flex-1">
+              <div class="flex flex-col">
+                <span class="text-sm uppercase font-bold text-gray-400 tracking-widest">Thực hiện</span>
+                <span id="vinh-thuchien" class="text-3xl font-extrabold tracking-tighter">--</span>
+              </div>
+              <div class="flex flex-col border-t border-gray-100 pt-1">
+                <span class="text-sm uppercase font-bold text-gray-400 tracking-widest">Kế hoạch</span>
+                <span id="vinh-kehoach" class="text-2xl font-bold tracking-tighter text-gray-500">--</span>
+              </div>
             </div>
-            <!-- Tổng cộng -->
-            <div class="flex-1 flex flex-col justify-center pb-1">
-                <div class="flex items-center gap-6">
-                    <div class="flex flex-col items-center text-center flex-shrink-0">
-                        <span class="text-lg font-black uppercase tracking-tighter text-gray-400 mb-1">Tổng cộng</span>
-                        <span id="tong-percent" class="metric-value text-[var(--success-color)]">--%</span>
-                    </div>
-                    <div class="flex flex-col gap-2 flex-1">
-                        <div class="flex flex-col">
-                            <span class="text-sm uppercase font-bold text-gray-400 tracking-widest">Thực hiện</span>
-                            <span id="tong-thuchien" class="text-3xl font-extrabold tracking-tighter">--</span>
-                        </div>
-                        <div class="flex flex-col border-t border-gray-100 pt-1">
-                            <span class="text-sm uppercase font-bold text-gray-400 tracking-widest">Kế hoạch</span>
-                            <span id="tong-kehoach" class="text-2xl font-bold tracking-tighter text-gray-500">--</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
+        <!-- Miền Tây -->
+        <div class="flex-1 flex flex-col justify-center border-b border-gray-100 pb-2">
+          <div class="flex items-center gap-6">
+            <div class="flex flex-col items-center text-center flex-shrink-0">
+              <span class="text-lg font-black uppercase tracking-tighter text-gray-400 mb-1">Miền Tây</span>
+              <span id="mt-percent" class="metric-value text-[var(--warning-color)]">--%</span>
+            </div>
+            <div class="flex flex-col gap-2 flex-1">
+              <div class="flex flex-col">
+                <span class="text-sm uppercase font-bold text-gray-400 tracking-widest">Thực hiện</span>
+                <span id="mt-thuchien" class="text-3xl font-extrabold tracking-tighter">--</span>
+              </div>
+              <div class="flex flex-col border-t border-gray-100 pt-1">
+                <span class="text-sm uppercase font-bold text-gray-400 tracking-widest">Kế hoạch</span>
+                <span id="mt-kehoach" class="text-2xl font-bold tracking-tighter text-gray-500">--</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Tổng cộng -->
+        <div class="flex-1 flex flex-col justify-center pb-1">
+          <div class="flex items-center gap-6">
+            <div class="flex flex-col items-center text-center flex-shrink-0">
+              <span class="text-lg font-black uppercase tracking-tighter text-gray-400 mb-1">Tổng cộng</span>
+              <span id="tong-percent" class="metric-value text-[var(--success-color)]">--%</span>
+            </div>
+            <div class="flex flex-col gap-2 flex-1">
+              <div class="flex flex-col">
+                <span class="text-sm uppercase font-bold text-gray-400 tracking-widest">Thực hiện</span>
+                <span id="tong-thuchien" class="text-3xl font-extrabold tracking-tighter">--</span>
+              </div>
+              <div class="flex flex-col border-t border-gray-100 pt-1">
+                <span class="text-sm uppercase font-bold text-gray-400 tracking-widest">Kế hoạch</span>
+                <span id="tong-kehoach" class="text-2xl font-bold tracking-tighter text-gray-500">--</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        <!-- Right Column: Miền Tây Detail Table (hidden by default) -->
-        <div class="flex-1 flex flex-col gap-2 overflow-hidden hidden transition-all duration-300" id="detail-column">
-            <!-- Table - hiển thị 100% không cuộn -->
-            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-visible">
-                <div class="px-3 py-1 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-                    <h2 class="text-sm font-black text-gray-800 uppercase tracking-tight">Chi tiết sản lượng Miền Tây
-                    </h2>
-                    <span class="text-xs font-semibold text-gray-400" id="mt-detail-count">Tổng: 0 trạm</span>
-                </div>
-                <table class="mt-detail-table">
-                    <thead>
-                        <tr>
-                            <th class="stt-col">STT</th>
-                            <th>Tên khu vực</th>
-                            <th class="num-col">SL Khách hàng</th>
-                            <th class="num-col">SL Hợp đồng</th>
-                            <th class="num-col">SL Tiêu thụ (m³)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="mt-detail-body">
-                        <!-- Rendered via JS -->
-                    </tbody>
-                </table>
-            </div>
-            <!-- Chart - 40% chiều cao -->
-            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden p-2"
-                style="height: 40%; flex-shrink: 0;">
-                <h3 class="text-xs font-bold text-gray-600 uppercase tracking-wide mb-1">Biểu đồ khối lượng tiêu thụ
-                    (m³)</h3>
-                <div style="height: calc(100% - 20px);">
-                    <canvas id="mtChart"></canvas>
-                </div>
-            </div>
+      <!-- Right Column: Miền Tây Detail Table (hidden by default) -->
+      <div class="flex-1 flex flex-col gap-2 overflow-hidden hidden transition-all duration-300" id="detail-column">
+        <!-- Table - hiển thị 100% không cuộn -->
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-visible">
+          <div class="px-3 py-1 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
+            <h2 class="text-sm font-black text-gray-800 uppercase tracking-tight">Chi tiết sản lượng Miền Tây</h2>
+            <span class="text-xs font-semibold text-gray-400" id="mt-detail-count">Tổng: 0 trạm</span>
+          </div>
+          <table class="mt-detail-table">
+            <thead>
+              <tr>
+                <th class="stt-col">STT</th>
+                <th>Tên khu vực</th>
+                <th class="num-col">SL Khách hàng</th>
+                <th class="num-col">SL Hợp đồng</th>
+                <th class="num-col">SL Tiêu thụ (m³)</th>
+              </tr>
+            </thead>
+            <tbody id="mt-detail-body">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
         </div>
+        <!-- Chart - 40% chiều cao -->
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden p-2" style="height: 40%; flex-shrink: 0">
+          <h3 class="text-xs font-bold text-gray-600 uppercase tracking-wide mb-1">Biểu đồ khối lượng tiêu thụ (m³)</h3>
+          <div style="height: calc(100% - 20px)">
+            <canvas id="mtChart"></canvas>
+          </div>
+        </div>
+      </div>
     </main>
     <script>
-        // CONFIG
-        const API_HOST = 'https://unsupercilious-leonarda-unreaving.ngrok-free.dev';
-        const AUTH_TOKEN = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjQ0MiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJuc3RhbmgiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJuc3RhbmhAbmF3YXNjby5jb20udm4iLCJBc3BOZXQuSWRlbnRpdHkuU2VjdXJpdHlTdGFtcCI6IlJNRFdIVExXTU1LUzdZNElGM1FMVlEyRUU2Q1ZRNjJRIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjpbIkFkbWluIiwixJDEg25nIGvDvSBuZ2jhu4kiXSwic3ViIjoiNDQyIiwianRpIjoiOWJlYmU0NzMtMmM5OC00NTczLTk2OGYtMzlmZjRmY2IzYTdkIiwiaWF0IjoxNzM3NTUyMTI5LCJuYmYiOjE3Mzc1NTIxMjksImV4cCI6MjA1MjkxMjEyOSwiaXNzIjoiRVJQIiwiYXVkIjoiRVJQIn0.i5NWUse89skdwOKFXnaBAYJA-JQBkNDYyO5ucfbVHi4';
-        const XSRF_TOKEN = 'CfDJ8Jj_fLMZXdVGiF7LaxJKgH4TR7qPGmCyUN5NeEMWt69UgzqXsxJm8hlicgf8BlwvE0QM7v9G1HxjGGbzuB7mpXxQbaV59Kk_ZOolujbrbNvNJWNYomY7_x9QGggzmjWBYxYQRtYyV7JSGRfuDe1kAtbyLpBPDMG-jLT-mbeWIy5sfXmCLD-UcqDXX4TUu2XQ5g';
+      // CONFIG
+      const API_HOST = "https://unsupercilious-leonarda-unreaving.ngrok-free.dev";
+      const AUTH_TOKEN =
+        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjQ0MiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJuc3RhbmgiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJuc3RhbmhAbmF3YXNjby5jb20udm4iLCJBc3BOZXQuSWRlbnRpdHkuU2VjdXJpdHlTdGFtcCI6IlJNRFdIVExXTU1LUzdZNElGM1FMVlEyRUU2Q1ZRNjJRIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjpbIkFkbWluIiwixJDEg25nIGvDvSBuZ2jhu4kiXSwic3ViIjoiNDQyIiwianRpIjoiOWJlYmU0NzMtMmM5OC00NTczLTk2OGYtMzlmZjRmY2IzYTdkIiwiaWF0IjoxNzM3NTUyMTI5LCJuYmYiOjE3Mzc1NTIxMjksImV4cCI6MjA1MjkxMjEyOSwiaXNzIjoiRVJQIiwiYXVkIjoiRVJQIn0.i5NWUse89skdwOKFXnaBAYJA-JQBkNDYyO5ucfbVHi4";
+      const XSRF_TOKEN = "CfDJ8Jj_fLMZXdVGiF7LaxJKgH4TR7qPGmCyUN5NeEMWt69UgzqXsxJm8hlicgf8BlwvE0QM7v9G1HxjGGbzuB7mpXxQbaV59Kk_ZOolujbrbNvNJWNYomY7_x9QGggzmjWBYxYQRtYyV7JSGRfuDe1kAtbyLpBPDMG-jLT-mbeWIy5sfXmCLD-UcqDXX4TUu2XQ5g";
 
-        // STATE: Toggle chi tiết view
-        let isDetailView = false;
+      // STATE: Luôn hiển thị chi tiết Miền Tây
+      let isDetailView = true;
 
-        // HELPERS
-        const $ = (id) => document.getElementById(id);
-        const formatNumber = (num) => num ? Math.round(num).toLocaleString('vi-VN') : '0';
+      // HELPERS
+      const $ = (id) => document.getElementById(id);
+      const formatNumber = (num) => (num ? Math.round(num).toLocaleString("vi-VN") : "0");
 
-        // Format DateTime từ API
-        function formatDateTime(dateString) {
-            if (!dateString) return 'Tính đến: --/--/---- --:--';
-            const date = new Date(dateString);
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-            const hours = String(date.getHours()).padStart(2, '0');
-            const minutes = String(date.getMinutes()).padStart(2, '0');
-            return `Tính đến: ${day}/${month}/${year} ${hours}:${minutes}`;
+      // Format DateTime từ API
+      function formatDateTime(dateString) {
+        if (!dateString) return "Tính đến: --/--/---- --:--";
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, "0");
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const year = date.getFullYear();
+        const hours = String(date.getHours()).padStart(2, "0");
+        const minutes = String(date.getMinutes()).padStart(2, "0");
+        return `Tính đến: ${day}/${month}/${year} ${hours}:${minutes}`;
+      }
+
+      // Lấy màu dựa trên tỷ lệ
+      function getColorClass(percentage) {
+        return percentage >= 70 ? "var(--success-color)" : "var(--warning-color)";
+      }
+
+      // FETCH REPORT - Gọi API GetReportDataNoCount (tham khảo M5thongTinDiemChay.html)
+      async function fetchReport(reportPath) {
+        try {
+          const url = `${API_HOST}/api/services/app/Report/GetReportDataNoCount`;
+          const res = await fetch(url, {
+            method: "POST",
+            headers: {
+              accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: AUTH_TOKEN,
+              "X-XSRF-TOKEN": XSRF_TOKEN,
+              "ngrok-skip-browser-warning": "true",
+            },
+            body: JSON.stringify({
+              reportPath: reportPath,
+              page: 0,
+              format: "HTML",
+              parameters: {},
+            }),
+          });
+
+          if (!res.ok) {
+            const errorText = await res.text();
+            console.error("API Error Response:", errorText);
+            throw new Error(`API Error: ${res.status}`);
+          }
+          const data = await res.json();
+          return data?.result?.items || [];
+        } catch (e) {
+          console.error("Fetch Report Error:", e);
+          return [];
+        }
+      }
+
+      // RENDER CHI TIẾT MIỀN TÂY
+      function renderMTDetail(items) {
+        const tbody = $("mt-detail-body");
+        tbody.innerHTML = "";
+
+        if (!items || items.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-gray-400">Không có dữ liệu</td></tr>';
+          $("mt-detail-count").textContent = "Tổng: 0 trạm";
+          return;
         }
 
-        // Lấy màu dựa trên tỷ lệ
-        function getColorClass(percentage) {
-            return percentage >= 70 ? 'var(--success-color)' : 'var(--warning-color)';
-        }
-
-        // FETCH REPORT - Gọi API GetReportDataNoCount (tham khảo M5thongTinDiemChay.html)
-        async function fetchReport(reportPath) {
-            try {
-                const url = `${API_HOST}/api/services/app/Report/GetReportDataNoCount`;
-                const res = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        'Authorization': AUTH_TOKEN,
-                        'X-XSRF-TOKEN': XSRF_TOKEN,
-                        'ngrok-skip-browser-warning': 'true'
-                    },
-                    body: JSON.stringify({
-                        reportPath: reportPath,
-                        page: 0,
-                        format: 'HTML',
-                        parameters: {}
-                    })
-                });
-
-                if (!res.ok) {
-                    const errorText = await res.text();
-                    console.error('API Error Response:', errorText);
-                    throw new Error(`API Error: ${res.status}`);
-                }
-                const data = await res.json();
-                return data?.result?.items || [];
-            } catch (e) {
-                console.error("Fetch Report Error:", e);
-                return [];
-            }
-        }
-
-        // RENDER CHI TIẾT MIỀN TÂY
-        function renderMTDetail(items) {
-            const tbody = $('mt-detail-body');
-            tbody.innerHTML = '';
-
-            if (!items || items.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-gray-400">Không có dữ liệu</td></tr>';
-                $('mt-detail-count').textContent = 'Tổng: 0 trạm';
-                return;
-            }
-
-            items.forEach((item, index) => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
+        items.forEach((item, index) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
                     <td class="stt-col">${index + 1}</td>
-                    <td>${item.TENKV || '--'}</td>
+                    <td>${item.TENKV || "--"}</td>
                     <td class="num-col">${formatNumber(item.SoLuongKH)}</td>
                     <td class="num-col">${formatNumber(item.SoLuongHD)}</td>
                     <td class="num-col">${formatNumber(item.SLTieuThu)}</td>
                 `;
-                tbody.appendChild(tr);
-            });
+          tbody.appendChild(tr);
+        });
 
-            $('mt-detail-count').textContent = `Tổng: ${items.length} trạm`;
-            console.log('[MTDetail] Rendered', items.length, 'rows');
+        $("mt-detail-count").textContent = `Tổng: ${items.length} trạm`;
+        console.log("[MTDetail] Rendered", items.length, "rows");
 
-            // Vẽ biểu đồ
-            renderMTChart(items);
+        // Vẽ biểu đồ
+        renderMTChart(items);
+      }
+
+      // RENDER BIỂU ĐỒ KHỐI LƯỢNG TIÊU THỤ
+      let mtChartInstance = null;
+      function renderMTChart(items) {
+        const canvas = $("mtChart");
+        if (!canvas) return;
+
+        // Destroy chart cũ nếu có
+        if (mtChartInstance) {
+          mtChartInstance.destroy();
         }
 
-        // RENDER BIỂU ĐỒ KHỐI LƯỢNG TIÊU THỤ
-        let mtChartInstance = null;
-        function renderMTChart(items) {
-            const canvas = $('mtChart');
-            if (!canvas) return;
+        if (!items || items.length === 0) return;
 
-            // Destroy chart cũ nếu có
-            if (mtChartInstance) {
-                mtChartInstance.destroy();
-            }
+        // Sắp xếp theo SLTieuThu giảm dần
+        const sortedItems = [...items].sort((a, b) => (b.SLTieuThu || 0) - (a.SLTieuThu || 0));
 
-            if (!items || items.length === 0) return;
+        const labels = sortedItems.map((item) => (item.TENKV || "").replace("Trạm ", ""));
+        const data = sortedItems.map((item) => item.SLTieuThu || 0);
 
-            // Sắp xếp theo SLTieuThu giảm dần
-            const sortedItems = [...items].sort((a, b) => (b.SLTieuThu || 0) - (a.SLTieuThu || 0));
+        // Tạo gradient màu
+        const colors = sortedItems.map((_, index) => {
+          const ratio = index / (sortedItems.length - 1 || 1);
+          // Gradient từ xanh lá đến cam
+          const r = Math.round(22 + (234 - 22) * ratio);
+          const g = Math.round(163 + (88 - 163) * ratio);
+          const b = Math.round(74 + (12 - 74) * ratio);
+          return `rgba(${r}, ${g}, ${b}, 0.85)`;
+        });
 
-            const labels = sortedItems.map(item => (item.TENKV || '').replace('Trạm ', ''));
-            const data = sortedItems.map(item => item.SLTieuThu || 0);
+        // Đăng ký plugin datalabels
+        Chart.register(ChartDataLabels);
 
-            // Tạo gradient màu
-            const colors = sortedItems.map((_, index) => {
-                const ratio = index / (sortedItems.length - 1 || 1);
-                // Gradient từ xanh lá đến cam
-                const r = Math.round(22 + (234 - 22) * ratio);
-                const g = Math.round(163 + (88 - 163) * ratio);
-                const b = Math.round(74 + (12 - 74) * ratio);
-                return `rgba(${r}, ${g}, ${b}, 0.85)`;
-            });
-
-            // Đăng ký plugin datalabels
-            Chart.register(ChartDataLabels);
-
-            mtChartInstance = new Chart(canvas, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Khối lượng tiêu thụ (m³)',
-                        data: data,
-                        backgroundColor: colors,
-                        borderColor: colors.map(c => c.replace('0.85', '1')),
-                        borderWidth: 1,
-                        borderRadius: 4,
-                        barPercentage: 0.7,
-                        categoryPercentage: 0.85
-                    }]
+        mtChartInstance = new Chart(canvas, {
+          type: "bar",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "Khối lượng tiêu thụ (m³)",
+                data: data,
+                backgroundColor: colors,
+                borderColor: colors.map((c) => c.replace("0.85", "1")),
+                borderWidth: 1,
+                borderRadius: 4,
+                barPercentage: 0.7,
+                categoryPercentage: 0.85,
+              },
+            ],
+          },
+          options: {
+            indexAxis: "y",
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: false,
+              },
+              tooltip: {
+                backgroundColor: "rgba(15, 23, 42, 0.9)",
+                titleFont: { size: 12, weight: "bold" },
+                bodyFont: { size: 11 },
+                padding: 10,
+                callbacks: {
+                  label: function (context) {
+                    return context.parsed.x.toLocaleString("vi-VN") + " m³";
+                  },
                 },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                            titleFont: { size: 12, weight: 'bold' },
-                            bodyFont: { size: 11 },
-                            padding: 10,
-                            callbacks: {
-                                label: function (context) {
-                                    return context.parsed.x.toLocaleString('vi-VN') + ' m³';
-                                }
-                            }
-                        },
-                        datalabels: {
-                            anchor: 'end',
-                            align: 'end',
-                            offset: 4,
-                            color: '#334155',
-                            font: {
-                                size: 11,
-                                weight: 'bold'
-                            },
-                            formatter: function (value) {
-                                return value.toLocaleString('vi-VN');
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            beginAtZero: true,
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.05)'
-                            },
-                            ticks: {
-                                font: { size: 10 },
-                                callback: function (value) {
-                                    return value.toLocaleString('vi-VN');
-                                }
-                            }
-                        },
-                        y: {
-                            grid: {
-                                display: false
-                            },
-                            ticks: {
-                                font: { size: 11, weight: '600' },
-                                color: '#475569'
-                            }
-                        }
-                    }
-                }
-            });
-            console.log('[MTChart] Rendered chart with', items.length, 'items');
+              },
+              datalabels: {
+                anchor: "end",
+                align: "end",
+                offset: 4,
+                color: "#334155",
+                font: {
+                  size: 11,
+                  weight: "bold",
+                },
+                formatter: function (value) {
+                  return value.toLocaleString("vi-VN");
+                },
+              },
+            },
+            scales: {
+              x: {
+                beginAtZero: true,
+                grid: {
+                  color: "rgba(0, 0, 0, 0.05)",
+                },
+                ticks: {
+                  font: { size: 10 },
+                  callback: function (value) {
+                    return value.toLocaleString("vi-VN");
+                  },
+                },
+              },
+              y: {
+                grid: {
+                  display: false,
+                },
+                ticks: {
+                  font: { size: 11, weight: "600" },
+                  color: "#475569",
+                },
+              },
+            },
+          },
+        });
+        console.log("[MTChart] Rendered chart with", items.length, "items");
+      }
+
+      // RENDER DATA
+      function renderData(data) {
+        // Cập nhật thời gian
+        $("display-time").textContent = formatDateTime(data.thoiGianTinh);
+
+        // === KHU VỰC VINH ===
+        const vinhPercent = data.tiLeThucHien_SanLuong_Vinh;
+        $("vinh-percent").textContent = vinhPercent + "%";
+        $("vinh-percent").style.color = getColorClass(vinhPercent);
+        $("vinh-thuchien").textContent = formatNumber(data.ketQua_SLuong_Vinh);
+        $("vinh-kehoach").textContent = formatNumber(data.keHoach_SLuong_Vinh);
+
+        // === KHU VỰC MIỀN TÂY ===
+        const mtPercent = data.tiLeThucHien_SanLuong_MT;
+        $("mt-percent").textContent = mtPercent + "%";
+        $("mt-percent").style.color = getColorClass(mtPercent);
+        $("mt-thuchien").textContent = formatNumber(data.ketQua_SLuong_MT);
+        $("mt-kehoach").textContent = formatNumber(data.keHoach_SLuong_MT);
+
+        // === TỔNG CỘNG ===
+        const tongPercent = data.tiLeThucHien_SanLuong_Tong;
+        $("tong-percent").textContent = tongPercent + "%";
+        $("tong-percent").style.color = getColorClass(tongPercent);
+        $("tong-thuchien").textContent = formatNumber(data.ketQua_SLuong_Tong);
+        $("tong-kehoach").textContent = formatNumber(data.keHoach_SLuong_Tong);
+
+        console.log("[SanLuong] Data rendered successfully");
+      }
+
+      // FETCH DATA - Gọi cả 2 API song song
+      async function fetchData() {
+        try {
+          // Lấy tháng và năm hiện tại
+          const now = new Date();
+          const thang = now.getMonth() + 1;
+          const nam = now.getFullYear();
+
+          // Gọi song song 2 API
+          const [summaryRes, mtDetailItems] = await Promise.all([
+            fetch(`${API_HOST}/api/services/app/Dashboard/GetKetQuaSanLuong?thang=${thang}&nam=${nam}`, {
+              headers: {
+                Authorization: AUTH_TOKEN,
+                "X-XSRF-TOKEN": XSRF_TOKEN,
+                "ngrok-skip-browser-warning": "true",
+              },
+            }),
+            fetchReport("tt.dktt_BaoCaoSanLuongMTChiTiets"),
+          ]);
+
+          // Xử lý dữ liệu tổng hợp
+          if (summaryRes.ok) {
+            const summaryData = await summaryRes.json();
+            if (summaryData.success && summaryData.result) {
+              renderData(summaryData.result);
+              console.log("[SanLuong] Fetched summary:", summaryData.result);
+            }
+          }
+
+          // Render chi tiết miền tây
+          renderMTDetail(mtDetailItems);
+        } catch (err) {
+          console.error("[SanLuong] Error:", err);
+        } finally {
+          $("loading").classList.remove("active");
+        }
+      }
+
+      // ============================================
+      // REMOTE CONTROL - TIZEN TV (CHỈ LẮNG NGHE OK)
+      // ============================================
+
+      // Handle remote key press
+      function handleRemoteKey(e) {
+        const keyCode = e.keyCode || e.which;
+        const key = e.key;
+
+        // Log chi tiết để debug
+        console.log("[Remote] ===== KEY EVENT =====");
+        console.log("[Remote] keyCode:", keyCode);
+        console.log("[Remote] key:", key);
+        console.log("[Remote] event.code:", e.code);
+        console.log("[Remote] =====================");
+
+        // Handle Back/Return button (10009 = Tizen Back, 27 = ESC, 461 = LG Back)
+        if (keyCode === 10009 || keyCode === 27 || keyCode === 461 || key === "Escape" || key === "Back" || key === "GoBack") {
+          e.preventDefault();
+          console.log("[Remote] BACK pressed - returning to index");
+          window.location.href = "../index.html";
+          return;
         }
 
-        // RENDER DATA
-        function renderData(data) {
-            // Cập nhật thời gian
-            $('display-time').textContent = formatDateTime(data.thoiGianTinh);
-
-            // === KHU VỰC VINH ===
-            const vinhPercent = data.tiLeThucHien_SanLuong_Vinh;
-            $('vinh-percent').textContent = vinhPercent + '%';
-            $('vinh-percent').style.color = getColorClass(vinhPercent);
-            $('vinh-thuchien').textContent = formatNumber(data.ketQua_SLuong_Vinh);
-            $('vinh-kehoach').textContent = formatNumber(data.keHoach_SLuong_Vinh);
-
-            // === KHU VỰC MIỀN TÂY ===
-            const mtPercent = data.tiLeThucHien_SanLuong_MT;
-            $('mt-percent').textContent = mtPercent + '%';
-            $('mt-percent').style.color = getColorClass(mtPercent);
-            $('mt-thuchien').textContent = formatNumber(data.ketQua_SLuong_MT);
-            $('mt-kehoach').textContent = formatNumber(data.keHoach_SLuong_MT);
-
-            // === TỔNG CỘNG ===
-            const tongPercent = data.tiLeThucHien_SanLuong_Tong;
-            $('tong-percent').textContent = tongPercent + '%';
-            $('tong-percent').style.color = getColorClass(tongPercent);
-            $('tong-thuchien').textContent = formatNumber(data.ketQua_SLuong_Tong);
-            $('tong-kehoach').textContent = formatNumber(data.keHoach_SLuong_Tong);
-
-            console.log('[SanLuong] Data rendered successfully');
+        // Handle Enter/OK button - Chỉ log, không làm gì
+        if (keyCode === 13 || key === "Enter") {
+          e.preventDefault();
+          console.log("[Remote] ENTER/OK pressed - no action needed");
+          return;
         }
+      }
 
-        // FETCH DATA - Gọi cả 2 API song song
-        async function fetchData() {
+      // Add keyboard/remote event listener
+      document.addEventListener("keydown", handleRemoteKey);
+
+      // Register Tizen TV keys
+      if (typeof tizen !== "undefined" && tizen.tvinputdevice) {
+        try {
+          ["MediaPlayPause", "MediaPlay", "MediaPause", "MediaStop"].forEach((key) => {
             try {
-                // Lấy tháng và năm hiện tại
-                const now = new Date();
-                const thang = now.getMonth() + 1;
-                const nam = now.getFullYear();
+              tizen.tvinputdevice.registerKey(key);
+            } catch (e) {}
+          });
+          console.log("[Tizen] Remote keys registered");
+        } catch (e) {}
+      }
 
-                // Gọi song song 2 API
-                const [summaryRes, mtDetailItems] = await Promise.all([
-                    fetch(`${API_HOST}/api/services/app/Dashboard/GetKetQuaSanLuong?thang=${thang}&nam=${nam}`, {
-                        headers: {
-                            'Authorization': AUTH_TOKEN,
-                            'X-XSRF-TOKEN': XSRF_TOKEN,
-                            'ngrok-skip-browser-warning': 'true'
-                        }
-                    }),
-                    fetchReport('tt.dktt_BaoCaoSanLuongMTChiTiets')
-                ]);
+      // INIT - Mặc định hiển thị chi tiết Miền Tây
+      function initDetailView() {
+        const statsColumn = $("stats-column");
+        const detailColumn = $("detail-column");
 
-                // Xử lý dữ liệu tổng hợp
-                if (summaryRes.ok) {
-                    const summaryData = await summaryRes.json();
-                    if (summaryData.success && summaryData.result) {
-                        renderData(summaryData.result);
-                        console.log('[SanLuong] Fetched summary:', summaryData.result);
-                    }
-                }
+        // Hiển thị chi tiết: thu nhỏ stats, hiện bảng
+        statsColumn.classList.remove("w-full");
+        statsColumn.classList.add("w-1/3");
+        detailColumn.classList.remove("hidden");
+      }
 
-                // Render chi tiết miền tây
-                renderMTDetail(mtDetailItems);
-
-            } catch (err) {
-                console.error('[SanLuong] Error:', err);
-            } finally {
-                $('loading').classList.remove('active');
-            }
-        }
-
-        // TOGGLE DETAIL VIEW
-        function toggleDetailView() {
-            isDetailView = !isDetailView;
-            const statsColumn = $('stats-column');
-            const detailColumn = $('detail-column');
-            const metricValues = document.querySelectorAll('.metric-value');
-
-            if (isDetailView) {
-                // Hiển thị chi tiết: thu nhỏ stats, hiện bảng
-                statsColumn.classList.remove('w-full');
-                statsColumn.classList.add('w-1/3');
-                detailColumn.classList.remove('hidden');
-                metricValues.forEach(el => el.classList.remove('metric-value-large'));
-            } else {
-                // Ẩn chi tiết: phóng to stats, ẩn bảng
-                statsColumn.classList.remove('w-1/3');
-                statsColumn.classList.add('w-full');
-                detailColumn.classList.add('hidden');
-                metricValues.forEach(el => el.classList.add('metric-value-large'));
-            }
-            console.log('[Toggle] Detail view:', isDetailView);
-        }
-
-        // NAVIGATION HANDLER - Xử lý phím ESC/Back/Enter
-        window.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape' || e.keyCode === 10009 || e.key === 'Back') {
-                if (isDetailView) {
-                    // Nếu đang xem chi tiết, quay về view mặc định
-                    toggleDetailView();
-                    e.preventDefault();
-                } else {
-                    // Nếu đang ở view mặc định, quay về Dashboard
-                    window.parent.postMessage({ type: 'back' }, '*');
-                    e.preventDefault();
-                }
-            } else if (e.key === 'Enter' || e.keyCode === 13) {
-                // Bấm Enter để toggle chi tiết
-                toggleDetailView();
-                e.preventDefault();
-            }
-        });
-
-        // CLICK HANDLER - Click vào màn hình để toggle
-        document.body.addEventListener('click', function (e) {
-            toggleDetailView();
-        });
-
-        // INIT - Mặc định hiển thị view lớn (không có bảng chi tiết)
-        function initDefaultView() {
-            const statsColumn = $('stats-column');
-            const metricValues = document.querySelectorAll('.metric-value');
-            statsColumn.classList.add('w-full');
-            metricValues.forEach(el => el.classList.add('metric-value-large'));
-        }
-
-        // INIT
-        initDefaultView();
-        fetchData();
-        setInterval(fetchData, 60000); // Refresh mỗi 60 giây
+      // INIT
+      initDetailView();
+      fetchData();
+      setInterval(fetchData, 60000); // Refresh mỗi 60 giây
+      console.log("[M8] Page initialized - detail view shown by default");
     </script>
-
-</body>
-
+  </body>
 </html>

@@ -1,695 +1,558 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
-
-<head>
+  <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>High-Density TV DMA Dashboard</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap"
-        rel="stylesheet" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
     <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        primary: "#3B82F6", // Blue-500
-                        secondary: "#93C5FD", // Blue-300
-                        "background-light": "#F8FAFC", // Slate-50 - lighter for minimalist feel
-                        "background-dark": "#020617", // Slate-950 - darker
-                        "surface-light": "#FFFFFF",
-                        "surface-dark": "#0F172A", // Slate-900
-                        "text-light": "#0F172A", // Slate-900 - high contrast
-                        "text-dark": "#F8FAFC", // Slate-50
-                        "accent-success": "#10B981",
-                        "accent-warning": "#F59E0B",
-                        "accent-danger": "#EF4444",
-                        "focus-ring": "#2563EB", // Strong blue for focus
-                    },
-                    fontFamily: {
-                        sans: ["Inter", "sans-serif"],
-                    },
-                    screens: {
-                        'tv': '1920px',
-                    }
-                },
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#3B82F6", // Blue-500
+              secondary: "#93C5FD", // Blue-300
+              "background-light": "#F8FAFC", // Slate-50 - lighter for minimalist feel
+              "background-dark": "#020617", // Slate-950 - darker
+              "surface-light": "#FFFFFF",
+              "surface-dark": "#0F172A", // Slate-900
+              "text-light": "#0F172A", // Slate-900 - high contrast
+              "text-dark": "#F8FAFC", // Slate-50
+              "accent-success": "#10B981",
+              "accent-warning": "#F59E0B",
+              "accent-danger": "#EF4444",
+              "focus-ring": "#2563EB", // Strong blue for focus
             },
-        };
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+            },
+            screens: {
+              tv: "1920px",
+            },
+          },
+        },
+      };
     </script>
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            overflow: hidden;
+      body {
+        font-family: "Inter", sans-serif;
+        overflow: hidden;
+      }
+
+      .tv-scrollbar::-webkit-scrollbar {
+        width: 12px;
+      }
+
+      .tv-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .tv-scrollbar::-webkit-scrollbar-thumb {
+        background-color: #cbd5e1;
+        border-radius: 20px;
+        border: 4px solid transparent;
+        background-clip: content-box;
+      }
+
+      .dark .tv-scrollbar::-webkit-scrollbar-thumb {
+        background-color: #334155;
+      }
+
+      @keyframes pulse-focus {
+        0% {
+          box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+          border-color: #60a5fa;
         }
 
-        .tv-scrollbar::-webkit-scrollbar {
-            width: 12px;
+        50% {
+          box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+          border-color: #3b82f6;
         }
 
-        .tv-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
+        100% {
+          box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+          border-color: #60a5fa;
         }
+      }
 
-        .tv-scrollbar::-webkit-scrollbar-thumb {
-            background-color: #cbd5e1;
-            border-radius: 20px;
-            border: 4px solid transparent;
-            background-clip: content-box;
+      .tv-focus-state {
+        animation: pulse-focus 2s infinite;
+        border: 2px solid #3b82f6;
+        background-color: #eff6ff !important;
+        transform: scale(1.005);
+        z-index: 20;
+      }
+
+      .dark .tv-focus-state {
+        background-color: rgba(30, 58, 138, 0.4) !important;
+        border-color: #60a5fa;
+      }
+
+      .chart-bar-group {
+        transition: all 0.3s ease;
+      }
+
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+
+      .loading-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(248, 250, 252, 0.95);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s;
+      }
+
+      .loading-overlay.active {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .spinner {
+        width: 48px;
+        height: 48px;
+        border: 5px solid #e2e8f0;
+        border-top-color: #3b82f6;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
         }
-
-        .dark .tv-scrollbar::-webkit-scrollbar-thumb {
-            background-color: #334155;
-        }
-
-        @keyframes pulse-focus {
-            0% {
-                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
-                border-color: #60A5FA;
-            }
-
-            50% {
-                box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-                border-color: #3B82F6;
-            }
-
-            100% {
-                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
-                border-color: #60A5FA;
-            }
-        }
-
-        .tv-focus-state {
-            animation: pulse-focus 2s infinite;
-            border: 2px solid #3B82F6;
-            background-color: #EFF6FF !important;
-            transform: scale(1.005);
-            z-index: 20;
-        }
-
-        .dark .tv-focus-state {
-            background-color: rgba(30, 58, 138, 0.4) !important;
-            border-color: #60A5FA;
-        }
-
-        .chart-bar-group {
-            transition: all 0.3s ease;
-        }
-
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-
-        .loading-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(248, 250, 252, 0.95);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
-        }
-
-        .loading-overlay.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        .spinner {
-            width: 48px;
-            height: 48px;
-            border: 5px solid #E2E8F0;
-            border-top-color: #3B82F6;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
+      }
     </style>
-</head>
+  </head>
 
-<body
-    class="bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark h-screen w-screen flex items-center justify-center">
+  <body class="bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark h-screen w-screen flex items-center justify-center">
     <div id="loading" class="loading-overlay active">
-        <div class="spinner"></div>
-        <p style="margin-top: 1rem; font-weight: 600; color: #64748B; font-size: 18px;">Đang tải dữ liệu...</p>
+      <div class="spinner"></div>
+      <p style="margin-top: 1rem; font-weight: 600; color: #64748b; font-size: 18px">Đang tải dữ liệu...</p>
     </div>
     <div class="w-[97vw] h-[97vh] flex flex-col gap-6 relative">
-        <header class="flex-shrink-0 flex items-center justify-between px-2 pb-2">
-            <div class="flex items-center gap-6">
-                <div
-                    class="h-16 w-16 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-xl shadow-blue-500/20">
-                    <span class="material-symbols-outlined text-4xl">water_drop</span>
-                </div>
-                <div>
-                    <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight leading-tight">
-                        Quản Lý Thất Thoát
-                    </h1>
-                    <p id="report-date" class="text-base font-medium text-gray-500 dark:text-gray-400 mt-1">Ngày báo
-                        cáo: --/--/----</p>
-                </div>
+      <header class="flex-shrink-0 flex items-center justify-between px-2 pb-2">
+        <div class="flex items-center gap-6">
+          <div class="h-16 w-16 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-xl shadow-blue-500/20">
+            <span class="material-symbols-outlined text-4xl">water_drop</span>
+          </div>
+          <div>
+            <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight leading-tight">Quản Lý Thất Thoát</h1>
+            <p id="report-date" class="text-base font-medium text-gray-500 dark:text-gray-400 mt-1">Ngày báo cáo: --/--/----</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-6">
+          <div class="text-right">
+            <div id="clock-time" class="text-4xl font-black text-gray-900 dark:text-white">--:-- <span class="text-xl font-bold text-gray-400 align-top mt-1 inline-block">AM</span></div>
+            <div id="clock-date" class="text-base font-medium text-gray-500 dark:text-gray-400">Cập nhật realtime</div>
+          </div>
+        </div>
+      </header>
+      <main class="flex-grow grid grid-cols-10 gap-6 overflow-hidden h-full">
+        <div class="col-span-6 flex flex-col h-full overflow-hidden bg-surface-light dark:bg-surface-dark rounded-3xl shadow-2xl border border-gray-100 dark:border-gray-800">
+          <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-800 shrink-0 flex items-center justify-between bg-gray-50/50 dark:bg-gray-900/50 backdrop-blur-sm">
+            <h2 class="text-2xl font-black text-gray-900 dark:text-white flex items-center gap-3">
+              Chi tiết DMA
+              <span id="dma-total-count" class="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm py-0.5 px-2.5 rounded-full font-bold">-- DMA</span>
+            </h2>
+            <div class="flex items-center gap-3">
+              <span class="text-base font-medium text-gray-400 mr-1">Sắp xếp:</span>
+              <button class="flex items-center gap-2 px-4 py-2 text-lg font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-400 rounded-lg transition-colors border border-transparent focus:border-blue-500">
+                Thất thoát cao nhất
+                <span class="material-symbols-outlined text-xl">arrow_drop_down</span>
+              </button>
             </div>
-            <div class="flex items-center gap-6">
-                <div class="text-right">
-                    <div id="clock-time" class="text-4xl font-black text-gray-900 dark:text-white">--:-- <span
-                            class="text-xl font-bold text-gray-400 align-top mt-1 inline-block">AM</span></div>
-                    <div id="clock-date" class="text-base font-medium text-gray-500 dark:text-gray-400">Cập nhật
-                        realtime</div>
-                </div>
-            </div>
-        </header>
-        <main class="flex-grow grid grid-cols-10 gap-6 overflow-hidden h-full">
-            <div
-                class="col-span-6 flex flex-col h-full overflow-hidden bg-surface-light dark:bg-surface-dark rounded-3xl shadow-2xl border border-gray-100 dark:border-gray-800">
-                <div
-                    class="px-6 py-5 border-b border-gray-100 dark:border-gray-800 shrink-0 flex items-center justify-between bg-gray-50/50 dark:bg-gray-900/50 backdrop-blur-sm">
-                    <h2 class="text-2xl font-black text-gray-900 dark:text-white flex items-center gap-3">
-                        Chi tiết DMA
-                        <span id="dma-total-count"
-                            class="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm py-0.5 px-2.5 rounded-full font-bold">--
-                            DMA</span>
-                    </h2>
+          </div>
+          <div id="table-container" class="overflow-y-auto tv-scrollbar flex-grow p-2 relative">
+            <table class="w-full text-left border-separate border-spacing-y-1">
+              <thead class="sticky top-0 z-10 bg-surface-light dark:bg-surface-dark shadow-sm">
+                <tr class="text-sm uppercase tracking-wider text-gray-400 dark:text-gray-500">
+                  <th class="px-4 py-3 font-bold bg-surface-light dark:bg-surface-dark">Tên DMA</th>
+                  <th class="px-4 py-3 font-bold text-right bg-surface-light dark:bg-surface-dark">Tỉ lệ TT trong tháng</th>
+                  <th class="px-4 py-3 font-bold text-right bg-surface-light dark:bg-surface-dark">TT ngày liền kề</th>
+                  <th class="px-4 py-3 font-bold text-right bg-surface-light dark:bg-surface-dark">Khối lượng ĐHT (m³)</th>
+                  <th class="px-4 py-3 font-bold text-right bg-surface-light dark:bg-surface-dark">Khối lượng ĐHKH (m³)</th>
+                </tr>
+              </thead>
+              <tbody id="dma-table-body" class="text-xl">
+                <tr class="group transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800/60">
+                  <td class="px-4 py-3 font-bold text-gray-900 dark:text-white rounded-l-xl bg-gray-50 dark:bg-gray-800/40 border-l border-transparent">
                     <div class="flex items-center gap-3">
-                        <span class="text-base font-medium text-gray-400 mr-1">Sắp xếp:</span>
-                        <button
-                            class="flex items-center gap-2 px-4 py-2 text-lg font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-400 rounded-lg transition-colors border border-transparent focus:border-blue-500">
-                            Thất thoát cao nhất
-                            <span class="material-symbols-outlined text-xl">arrow_drop_down</span>
-                        </button>
+                      <div class="w-2.5 h-2.5 rounded-full bg-red-500 shadow-sm shadow-red-500/50"></div>
+                      DMA-15 Thủ Đức
                     </div>
-                </div>
-                <div class="overflow-y-auto tv-scrollbar flex-grow p-2 relative">
-                    <table class="w-full text-left border-separate border-spacing-y-1">
-                        <thead class="sticky top-0 z-10 bg-surface-light dark:bg-surface-dark shadow-sm">
-                            <tr class="text-sm uppercase tracking-wider text-gray-400 dark:text-gray-500">
-                                <th class="px-4 py-3 font-bold bg-surface-light dark:bg-surface-dark">Tên DMA</th>
-                                <th class="px-4 py-3 font-bold text-right bg-surface-light dark:bg-surface-dark">Tỉ lệ
-                                    TT trong tháng</th>
-                                <th class="px-4 py-3 font-bold text-right bg-surface-light dark:bg-surface-dark">TT ngày
-                                    liền kề</th>
-                                <th class="px-4 py-3 font-bold text-right bg-surface-light dark:bg-surface-dark">Khối
-                                    lượng ĐHT (m³)</th>
-                                <th class="px-4 py-3 font-bold text-right bg-surface-light dark:bg-surface-dark">Khối
-                                    lượng ĐHKH (m³)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="dma-table-body" class="text-xl">
-                            <tr class="group transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800/60">
-                                <td
-                                    class="px-4 py-3 font-bold text-gray-900 dark:text-white rounded-l-xl bg-gray-50 dark:bg-gray-800/40 border-l border-transparent">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-2.5 h-2.5 rounded-full bg-red-500 shadow-sm shadow-red-500/50">
-                                        </div>
-                                        DMA-15 Thủ Đức
-                                    </div>
-                                </td>
-                                <td
-                                    class="px-4 py-3 text-right font-black text-accent-danger bg-gray-50 dark:bg-gray-800/40">
-                                    10.2%</td>
-                                <td
-                                    class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/40 text-lg">
-                                    10.5%</td>
-                                <td
-                                    class="px-4 py-3 text-right font-bold text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-800/40">
-                                    110,500</td>
-                                <td
-                                    class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 rounded-r-xl bg-gray-50 dark:bg-gray-800/40 border-r border-transparent">
-                                    99,229</td>
-                            </tr>
-                            <tr class="tv-focus-state relative z-10 rounded-xl shadow-md">
-                                <td class="px-4 py-3 font-bold text-gray-900 dark:text-white rounded-l-xl border-none">
-                                    <div class="flex items-center gap-3">
-                                        <div
-                                            class="w-2.5 h-2.5 rounded-full bg-orange-500 shadow-sm shadow-orange-500/50">
-                                        </div>
-                                        DMA-03 Quận 3
-                                    </div>
-                                </td>
-                                <td class="px-4 py-3 text-right font-black text-accent-warning text-2xl border-none">
-                                    8.5%</td>
-                                <td
-                                    class="px-4 py-3 text-right text-gray-900 dark:text-white font-bold border-none text-lg">
-                                    9.1%</td>
-                                <td class="px-4 py-3 text-right font-black text-gray-900 dark:text-white border-none">
-                                    76,400</td>
-                                <td
-                                    class="px-4 py-3 text-right text-gray-800 dark:text-gray-200 font-bold rounded-r-xl border-none">
-                                    69,906</td>
-                            </tr>
-                            <tr class="group transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800/60">
-                                <td
-                                    class="px-4 py-3 font-bold text-gray-900 dark:text-white rounded-l-xl bg-gray-50 dark:bg-gray-800/40 border-l border-transparent">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-2.5 h-2.5 rounded-full bg-orange-400"></div>
-                                        DMA-12 Bình Thạnh
-                                    </div>
-                                </td>
-                                <td
-                                    class="px-4 py-3 text-right font-black text-accent-warning bg-gray-50 dark:bg-gray-800/40">
-                                    7.2%</td>
-                                <td
-                                    class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/40 text-lg">
-                                    6.9%</td>
-                                <td
-                                    class="px-4 py-3 text-right font-bold text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-800/40">
-                                    54,300</td>
-                                <td
-                                    class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 rounded-r-xl bg-gray-50 dark:bg-gray-800/40 border-r border-transparent">
-                                    50,390</td>
-                            </tr>
-                            <tr class="group transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800/60">
-                                <td
-                                    class="px-4 py-3 font-bold text-gray-900 dark:text-white rounded-l-xl bg-gray-50 dark:bg-gray-800/40 border-l border-transparent">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-2.5 h-2.5 rounded-full bg-orange-400"></div>
-                                        DMA-07 Gò Vấp
-                                    </div>
-                                </td>
-                                <td
-                                    class="px-4 py-3 text-right font-black text-accent-warning bg-gray-50 dark:bg-gray-800/40">
-                                    6.8%</td>
-                                <td
-                                    class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/40 text-lg">
-                                    7.1%</td>
-                                <td
-                                    class="px-4 py-3 text-right font-bold text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-800/40">
-                                    92,500</td>
-                                <td
-                                    class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 rounded-r-xl bg-gray-50 dark:bg-gray-800/40 border-r border-transparent">
-                                    86,210</td>
-                            </tr>
-                            <tr class="group transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800/60">
-                                <td
-                                    class="px-4 py-3 font-bold text-gray-900 dark:text-white rounded-l-xl bg-gray-50 dark:bg-gray-800/40 border-l border-transparent">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
-                                        DMA-04 Phú Nhuận
-                                    </div>
-                                </td>
-                                <td
-                                    class="px-4 py-3 text-right font-black text-accent-success bg-gray-50 dark:bg-gray-800/40">
-                                    5.1%</td>
-                                <td
-                                    class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/40 text-lg">
-                                    6.2%</td>
-                                <td
-                                    class="px-4 py-3 text-right font-bold text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-800/40">
-                                    68,120</td>
-                                <td
-                                    class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 rounded-r-xl bg-gray-50 dark:bg-gray-800/40 border-r border-transparent">
-                                    64,645</td>
-                            </tr>
-                            <tr class="group transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800/60">
-                                <td
-                                    class="px-4 py-3 font-bold text-gray-900 dark:text-white rounded-l-xl bg-gray-50 dark:bg-gray-800/40 border-l border-transparent">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
-                                        DMA-01 Tân Bình
-                                    </div>
-                                </td>
-                                <td
-                                    class="px-4 py-3 text-right font-black text-accent-success bg-gray-50 dark:bg-gray-800/40">
-                                    4.2%</td>
-                                <td
-                                    class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/40 text-lg">
-                                    4.0%</td>
-                                <td
-                                    class="px-4 py-3 text-right font-bold text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-800/40">
-                                    45,230</td>
-                                <td
-                                    class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 rounded-r-xl bg-gray-50 dark:bg-gray-800/40 border-r border-transparent">
-                                    43,330</td>
-                            </tr>
-                            <tr class="group transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800/60">
-                                <td
-                                    class="px-4 py-3 font-bold text-gray-900 dark:text-white rounded-l-xl bg-gray-50 dark:bg-gray-800/40 border-l border-transparent">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
-                                        DMA-02 Bình Tân
-                                    </div>
-                                </td>
-                                <td
-                                    class="px-4 py-3 text-right font-black text-accent-success bg-gray-50 dark:bg-gray-800/40">
-                                    3.9%</td>
-                                <td
-                                    class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/40 text-lg">
-                                    4.1%</td>
-                                <td
-                                    class="px-4 py-3 text-right font-bold text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-800/40">
-                                    38,100</td>
-                                <td
-                                    class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 rounded-r-xl bg-gray-50 dark:bg-gray-800/40 border-r border-transparent">
-                                    36,600</td>
-                            </tr>
-                            <tr class="group transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800/60">
-                                <td
-                                    class="px-4 py-3 font-bold text-gray-900 dark:text-white rounded-l-xl bg-gray-50 dark:bg-gray-800/40 border-l border-transparent">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
-                                        DMA-09 Bình Chánh
-                                    </div>
-                                </td>
-                                <td
-                                    class="px-4 py-3 text-right font-black text-accent-success bg-gray-50 dark:bg-gray-800/40">
-                                    3.5%</td>
-                                <td
-                                    class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/40 text-lg">
-                                    3.2%</td>
-                                <td
-                                    class="px-4 py-3 text-right font-bold text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-800/40">
-                                    28,900</td>
-                                <td
-                                    class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 rounded-r-xl bg-gray-50 dark:bg-gray-800/40 border-r border-transparent">
-                                    27,890</td>
-                            </tr>
-                            <tr class="group transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800/60">
-                                <td
-                                    class="px-4 py-3 font-bold text-gray-900 dark:text-white rounded-l-xl bg-gray-50 dark:bg-gray-800/40 border-l border-transparent">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
-                                        DMA-18 Thủ Thiêm
-                                    </div>
-                                </td>
-                                <td
-                                    class="px-4 py-3 text-right font-black text-accent-success bg-gray-50 dark:bg-gray-800/40">
-                                    3.1%</td>
-                                <td
-                                    class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/40 text-lg">
-                                    2.9%</td>
-                                <td
-                                    class="px-4 py-3 text-right font-bold text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-800/40">
-                                    41,200</td>
-                                <td
-                                    class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 rounded-r-xl bg-gray-50 dark:bg-gray-800/40 border-r border-transparent">
-                                    39,923</td>
-                            </tr>
-                            <tr class="group transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800/60">
-                                <td
-                                    class="px-4 py-3 font-bold text-gray-900 dark:text-white rounded-l-xl bg-gray-50 dark:bg-gray-800/40 border-l border-transparent">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
-                                        DMA-22 Củ Chi
-                                    </div>
-                                </td>
-                                <td
-                                    class="px-4 py-3 text-right font-black text-accent-success bg-gray-50 dark:bg-gray-800/40">
-                                    2.8%</td>
-                                <td
-                                    class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/40 text-lg">
-                                    3.0%</td>
-                                <td
-                                    class="px-4 py-3 text-right font-bold text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-800/40">
-                                    18,500</td>
-                                <td
-                                    class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 rounded-r-xl bg-gray-50 dark:bg-gray-800/40 border-r border-transparent">
-                                    17,980</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div
-                        class="absolute bottom-4 right-6 flex flex-col items-center animate-bounce bg-white dark:bg-surface-dark shadow-lg rounded-full p-2 border border-gray-100 dark:border-gray-700 opacity-90 hover:opacity-100 cursor-pointer">
-                        <span class="material-symbols-outlined text-3xl text-primary">arrow_downward</span>
+                  </td>
+                  <td class="px-4 py-3 text-right font-black text-accent-danger bg-gray-50 dark:bg-gray-800/40">10.2%</td>
+                  <td class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/40 text-lg">10.5%</td>
+                  <td class="px-4 py-3 text-right font-bold text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-800/40">110,500</td>
+                  <td class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 rounded-r-xl bg-gray-50 dark:bg-gray-800/40 border-r border-transparent">99,229</td>
+                </tr>
+                <tr class="tv-focus-state relative z-10 rounded-xl shadow-md">
+                  <td class="px-4 py-3 font-bold text-gray-900 dark:text-white rounded-l-xl border-none">
+                    <div class="flex items-center gap-3">
+                      <div class="w-2.5 h-2.5 rounded-full bg-orange-500 shadow-sm shadow-orange-500/50"></div>
+                      DMA-03 Quận 3
                     </div>
-                </div>
-                <div class="h-2 bg-gradient-to-t from-gray-100 dark:from-gray-800 to-transparent"></div>
+                  </td>
+                  <td class="px-4 py-3 text-right font-black text-accent-warning text-2xl border-none">8.5%</td>
+                  <td class="px-4 py-3 text-right text-gray-900 dark:text-white font-bold border-none text-lg">9.1%</td>
+                  <td class="px-4 py-3 text-right font-black text-gray-900 dark:text-white border-none">76,400</td>
+                  <td class="px-4 py-3 text-right text-gray-800 dark:text-gray-200 font-bold rounded-r-xl border-none">69,906</td>
+                </tr>
+                <tr class="group transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800/60">
+                  <td class="px-4 py-3 font-bold text-gray-900 dark:text-white rounded-l-xl bg-gray-50 dark:bg-gray-800/40 border-l border-transparent">
+                    <div class="flex items-center gap-3">
+                      <div class="w-2.5 h-2.5 rounded-full bg-orange-400"></div>
+                      DMA-12 Bình Thạnh
+                    </div>
+                  </td>
+                  <td class="px-4 py-3 text-right font-black text-accent-warning bg-gray-50 dark:bg-gray-800/40">7.2%</td>
+                  <td class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/40 text-lg">6.9%</td>
+                  <td class="px-4 py-3 text-right font-bold text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-800/40">54,300</td>
+                  <td class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 rounded-r-xl bg-gray-50 dark:bg-gray-800/40 border-r border-transparent">50,390</td>
+                </tr>
+                <tr class="group transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800/60">
+                  <td class="px-4 py-3 font-bold text-gray-900 dark:text-white rounded-l-xl bg-gray-50 dark:bg-gray-800/40 border-l border-transparent">
+                    <div class="flex items-center gap-3">
+                      <div class="w-2.5 h-2.5 rounded-full bg-orange-400"></div>
+                      DMA-07 Gò Vấp
+                    </div>
+                  </td>
+                  <td class="px-4 py-3 text-right font-black text-accent-warning bg-gray-50 dark:bg-gray-800/40">6.8%</td>
+                  <td class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/40 text-lg">7.1%</td>
+                  <td class="px-4 py-3 text-right font-bold text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-800/40">92,500</td>
+                  <td class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 rounded-r-xl bg-gray-50 dark:bg-gray-800/40 border-r border-transparent">86,210</td>
+                </tr>
+                <tr class="group transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800/60">
+                  <td class="px-4 py-3 font-bold text-gray-900 dark:text-white rounded-l-xl bg-gray-50 dark:bg-gray-800/40 border-l border-transparent">
+                    <div class="flex items-center gap-3">
+                      <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                      DMA-04 Phú Nhuận
+                    </div>
+                  </td>
+                  <td class="px-4 py-3 text-right font-black text-accent-success bg-gray-50 dark:bg-gray-800/40">5.1%</td>
+                  <td class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/40 text-lg">6.2%</td>
+                  <td class="px-4 py-3 text-right font-bold text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-800/40">68,120</td>
+                  <td class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 rounded-r-xl bg-gray-50 dark:bg-gray-800/40 border-r border-transparent">64,645</td>
+                </tr>
+                <tr class="group transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800/60">
+                  <td class="px-4 py-3 font-bold text-gray-900 dark:text-white rounded-l-xl bg-gray-50 dark:bg-gray-800/40 border-l border-transparent">
+                    <div class="flex items-center gap-3">
+                      <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                      DMA-01 Tân Bình
+                    </div>
+                  </td>
+                  <td class="px-4 py-3 text-right font-black text-accent-success bg-gray-50 dark:bg-gray-800/40">4.2%</td>
+                  <td class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/40 text-lg">4.0%</td>
+                  <td class="px-4 py-3 text-right font-bold text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-800/40">45,230</td>
+                  <td class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 rounded-r-xl bg-gray-50 dark:bg-gray-800/40 border-r border-transparent">43,330</td>
+                </tr>
+                <tr class="group transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800/60">
+                  <td class="px-4 py-3 font-bold text-gray-900 dark:text-white rounded-l-xl bg-gray-50 dark:bg-gray-800/40 border-l border-transparent">
+                    <div class="flex items-center gap-3">
+                      <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                      DMA-02 Bình Tân
+                    </div>
+                  </td>
+                  <td class="px-4 py-3 text-right font-black text-accent-success bg-gray-50 dark:bg-gray-800/40">3.9%</td>
+                  <td class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/40 text-lg">4.1%</td>
+                  <td class="px-4 py-3 text-right font-bold text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-800/40">38,100</td>
+                  <td class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 rounded-r-xl bg-gray-50 dark:bg-gray-800/40 border-r border-transparent">36,600</td>
+                </tr>
+                <tr class="group transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800/60">
+                  <td class="px-4 py-3 font-bold text-gray-900 dark:text-white rounded-l-xl bg-gray-50 dark:bg-gray-800/40 border-l border-transparent">
+                    <div class="flex items-center gap-3">
+                      <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                      DMA-09 Bình Chánh
+                    </div>
+                  </td>
+                  <td class="px-4 py-3 text-right font-black text-accent-success bg-gray-50 dark:bg-gray-800/40">3.5%</td>
+                  <td class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/40 text-lg">3.2%</td>
+                  <td class="px-4 py-3 text-right font-bold text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-800/40">28,900</td>
+                  <td class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 rounded-r-xl bg-gray-50 dark:bg-gray-800/40 border-r border-transparent">27,890</td>
+                </tr>
+                <tr class="group transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800/60">
+                  <td class="px-4 py-3 font-bold text-gray-900 dark:text-white rounded-l-xl bg-gray-50 dark:bg-gray-800/40 border-l border-transparent">
+                    <div class="flex items-center gap-3">
+                      <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                      DMA-18 Thủ Thiêm
+                    </div>
+                  </td>
+                  <td class="px-4 py-3 text-right font-black text-accent-success bg-gray-50 dark:bg-gray-800/40">3.1%</td>
+                  <td class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/40 text-lg">2.9%</td>
+                  <td class="px-4 py-3 text-right font-bold text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-800/40">41,200</td>
+                  <td class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 rounded-r-xl bg-gray-50 dark:bg-gray-800/40 border-r border-transparent">39,923</td>
+                </tr>
+                <tr class="group transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800/60">
+                  <td class="px-4 py-3 font-bold text-gray-900 dark:text-white rounded-l-xl bg-gray-50 dark:bg-gray-800/40 border-l border-transparent">
+                    <div class="flex items-center gap-3">
+                      <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                      DMA-22 Củ Chi
+                    </div>
+                  </td>
+                  <td class="px-4 py-3 text-right font-black text-accent-success bg-gray-50 dark:bg-gray-800/40">2.8%</td>
+                  <td class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/40 text-lg">3.0%</td>
+                  <td class="px-4 py-3 text-right font-bold text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-800/40">18,500</td>
+                  <td class="px-4 py-3 text-right text-gray-500 dark:text-gray-400 rounded-r-xl bg-gray-50 dark:bg-gray-800/40 border-r border-transparent">17,980</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="absolute bottom-4 right-6 flex flex-col items-center animate-bounce bg-white dark:bg-surface-dark shadow-lg rounded-full p-2 border border-gray-100 dark:border-gray-700 opacity-90 hover:opacity-100 cursor-pointer">
+              <span class="material-symbols-outlined text-3xl text-primary">arrow_downward</span>
             </div>
-            <div class="col-span-4 flex flex-col gap-6 h-full overflow-hidden">
-                <div
-                    class="bg-surface-light dark:bg-surface-dark rounded-3xl p-5 flex flex-col flex-1 min-h-0 shadow-lg relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl -mr-10 -mt-10">
-                    </div>
-                    <div class="mb-2 flex items-start justify-between shrink-0 relative z-10">
-                        <div>
-                            <h3 class="text-xl font-black text-gray-900 dark:text-white tracking-tight">TỈ LỆ THẤT THOÁT
-                            </h3>
-                        </div>
-                        <div class="flex items-center gap-3 text-xs font-bold text-gray-500 dark:text-gray-400">
-                            <div class="flex items-center gap-1.5">
-                                <span class="w-2.5 h-2.5 bg-blue-600 rounded-full"></span> Lũy kế
-                            </div>
-                            <div class="flex items-center gap-1.5">
-                                <span class="w-2.5 h-2.5 bg-blue-200 dark:bg-blue-800 rounded-full"></span> Trước
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex-grow w-full relative pb-2">
-                        <div id="chart-thatthoat" class="absolute inset-0 flex items-end justify-between px-2">
-                            <div
-                                class="absolute inset-0 flex flex-col justify-between pointer-events-none z-0 pb-6 pr-2">
-                                <div class="w-full h-px bg-gray-100 dark:bg-gray-800"></div>
-                                <div class="w-full h-px bg-gray-100 dark:bg-gray-800"></div>
-                                <div class="w-full h-px bg-gray-100 dark:bg-gray-800"></div>
-                            </div>
-                            <div class="flex flex-col items-center gap-1 z-10 w-1/5 h-full justify-end">
-                                <div class="flex gap-1 items-end h-[85%] w-full justify-center">
-                                    <div class="w-6 bg-blue-600 rounded-t-lg h-full"></div>
-                                    <div class="w-6 bg-blue-200 dark:bg-blue-800 rounded-t-lg h-[105%]"></div>
-                                </div>
-                                <span class="text-base font-bold text-gray-500 dark:text-gray-400">DMA-15</span>
-                            </div>
-                            <div class="flex flex-col items-center gap-1 z-10 w-1/5 h-full justify-end">
-                                <div class="flex gap-1 items-end h-[70%] w-full justify-center">
-                                    <div class="w-6 bg-blue-600 rounded-t-lg h-full"></div>
-                                    <div class="w-6 bg-blue-200 dark:bg-blue-800 rounded-t-lg h-[105%]"></div>
-                                </div>
-                                <span class="text-base font-bold text-gray-900 dark:text-white">DMA-03</span>
-                            </div>
-                            <div class="flex flex-col items-center gap-1 z-10 w-1/5 h-full justify-end">
-                                <div class="flex gap-1 items-end h-[60%] w-full justify-center">
-                                    <div class="w-6 bg-blue-600 rounded-t-lg h-full"></div>
-                                    <div class="w-6 bg-blue-200 dark:bg-blue-800 rounded-t-lg h-[95%]"></div>
-                                </div>
-                                <span class="text-base font-bold text-gray-500 dark:text-gray-400">DMA-12</span>
-                            </div>
-                            <div class="flex flex-col items-center gap-1 z-10 w-1/5 h-full justify-end">
-                                <div class="flex gap-1 items-end h-[42%] w-full justify-center">
-                                    <div class="w-6 bg-blue-600 rounded-t-lg h-full"></div>
-                                    <div class="w-6 bg-blue-200 dark:bg-blue-800 rounded-t-lg h-[120%]"></div>
-                                </div>
-                                <span class="text-base font-bold text-gray-500 dark:text-gray-400">DMA-04</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div
-                    class="bg-surface-light dark:bg-surface-dark rounded-3xl p-5 flex flex-col flex-1 min-h-0 shadow-lg relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-3xl -mr-10 -mt-10">
-                    </div>
-                    <div class="mb-2 flex items-start justify-between shrink-0 relative z-10">
-                        <div>
-                            <h3 class="text-xl font-black text-gray-900 dark:text-white tracking-tight">KL NƯỚC LŨY KẾ
-                                TRONG THÁNG
-                            </h3>
-                        </div>
-                        <div class="flex items-center gap-3 text-xs font-bold text-gray-500 dark:text-gray-400">
-                            <div class="flex items-center gap-1.5">
-                                <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full"></span> ĐHT
-                            </div>
-                            <div class="flex items-center gap-1.5">
-                                <span class="w-2.5 h-2.5 bg-emerald-200 dark:bg-emerald-900 rounded-full"></span> ĐHKH
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex-grow w-full relative pb-2">
-                        <div id="chart-dhtong" class="absolute inset-0 flex items-end justify-between px-2">
-                            <div
-                                class="absolute inset-0 flex flex-col justify-between pointer-events-none z-0 pb-6 pr-2">
-                                <div class="w-full h-px bg-gray-100 dark:bg-gray-800"></div>
-                                <div class="w-full h-px bg-gray-100 dark:bg-gray-800"></div>
-                                <div class="w-full h-px bg-gray-100 dark:bg-gray-800"></div>
-                            </div>
-                            <div class="relative flex flex-col items-center gap-1 z-10 w-1/5 h-full justify-end">
-                                <div class="flex gap-1 items-end h-[90%] w-full justify-center">
-                                    <div class="w-6 bg-emerald-500 rounded-t-lg h-full"></div>
-                                    <div class="w-6 bg-emerald-200 dark:bg-emerald-900 rounded-t-lg h-[15%]"></div>
-                                </div>
-                                <span class="text-base font-bold text-gray-500 dark:text-gray-400">DMA-15</span>
-                            </div>
-                            <div class="relative flex flex-col items-center gap-1 z-10 w-1/5 h-full justify-end">
-                                <div class="flex gap-1 items-end h-[60%] w-full justify-center">
-                                    <div class="w-6 bg-emerald-500 rounded-t-lg h-full"></div>
-                                    <div class="w-6 bg-emerald-200 dark:bg-emerald-900 rounded-t-lg h-[14%]"></div>
-                                </div>
-                                <span class="text-base font-bold text-gray-900 dark:text-white">DMA-03</span>
-                            </div>
-                            <div class="relative flex flex-col items-center gap-1 z-10 w-1/5 h-full justify-end">
-                                <div class="flex gap-1 items-end h-[45%] w-full justify-center">
-                                    <div class="w-6 bg-emerald-500 rounded-t-lg h-full"></div>
-                                    <div class="w-6 bg-emerald-200 dark:bg-emerald-900 rounded-t-lg h-[10%]"></div>
-                                </div>
-                                <span class="text-base font-bold text-gray-500 dark:text-gray-400">DMA-12</span>
-                            </div>
-                            <div class="relative flex flex-col items-center gap-1 z-10 w-1/5 h-full justify-end">
-                                <div class="flex gap-1 items-end h-[75%] w-full justify-center">
-                                    <div class="w-6 bg-emerald-500 rounded-t-lg h-full"></div>
-                                    <div class="w-6 bg-emerald-200 dark:bg-emerald-900 rounded-t-lg h-[15%]"></div>
-                                </div>
-                                <span class="text-base font-bold text-gray-500 dark:text-gray-400">DMA-07</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div
-                    class="bg-surface-light dark:bg-surface-dark rounded-3xl p-5 flex flex-col flex-1 min-h-0 shadow-lg relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl -mr-10 -mt-10">
-                    </div>
-                    <div class="mb-2 flex items-start justify-between shrink-0 relative z-10">
-                        <div>
-                            <h3 class="text-xl font-black text-gray-900 dark:text-white tracking-tight">KL NƯỚC NGÀY
-                                LIỀN KỀ</h3>
-                        </div>
-                        <div class="flex items-center gap-3 text-xs font-bold text-gray-500 dark:text-gray-400">
-                            <div class="flex items-center gap-1.5">
-                                <span class="w-2.5 h-2.5 bg-indigo-500 rounded-full"></span> ĐHT
-                            </div>
-                            <div class="flex items-center gap-1.5">
-                                <span class="w-2.5 h-2.5 bg-indigo-200 dark:bg-indigo-900 rounded-full"></span> ĐHKH
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex-grow w-full relative pb-2">
-                        <div id="chart-dhkh" class="absolute inset-0 flex items-end justify-between px-2">
-                            <div
-                                class="absolute inset-0 flex flex-col justify-between pointer-events-none z-0 pb-6 pr-2">
-                                <div class="w-full h-px bg-gray-100 dark:bg-gray-800"></div>
-                                <div class="w-full h-px bg-gray-100 dark:bg-gray-800"></div>
-                                <div class="w-full h-px bg-gray-100 dark:bg-gray-800"></div>
-                            </div>
-                            <div class="relative flex flex-col items-center gap-1 z-10 w-1/5 h-full justify-end">
-                                <div class="flex gap-1 items-end h-[88%] w-full justify-center">
-                                    <div class="w-6 bg-indigo-500 rounded-t-lg h-full"></div>
-                                    <div class="w-6 bg-indigo-200 dark:bg-indigo-900 rounded-t-lg h-[14%]"></div>
-                                </div>
-                                <span class="text-base font-bold text-gray-500 dark:text-gray-400">DMA-15</span>
-                            </div>
-                            <div class="relative flex flex-col items-center gap-1 z-10 w-1/5 h-full justify-end">
-                                <div class="flex gap-1 items-end h-[58%] w-full justify-center">
-                                    <div class="w-6 bg-indigo-500 rounded-t-lg h-full"></div>
-                                    <div class="w-6 bg-indigo-200 dark:bg-indigo-900 rounded-t-lg h-[13%]"></div>
-                                </div>
-                                <span class="text-base font-bold text-gray-900 dark:text-white">DMA-03</span>
-                            </div>
-                            <div class="relative flex flex-col items-center gap-1 z-10 w-1/5 h-full justify-end">
-                                <div class="flex gap-1 items-end h-[42%] w-full justify-center">
-                                    <div class="w-6 bg-indigo-500 rounded-t-lg h-full"></div>
-                                    <div class="w-6 bg-indigo-200 dark:bg-indigo-900 rounded-t-lg h-[9%]"></div>
-                                </div>
-                                <span class="text-base font-bold text-gray-500 dark:text-gray-400">DMA-12</span>
-                            </div>
-                            <div class="relative flex flex-col items-center gap-1 z-10 w-1/5 h-full justify-end">
-                                <div class="flex gap-1 items-end h-[72%] w-full justify-center">
-                                    <div class="w-6 bg-indigo-500 rounded-t-lg h-full"></div>
-                                    <div class="w-6 bg-indigo-200 dark:bg-indigo-900 rounded-t-lg h-[14%]"></div>
-                                </div>
-                                <span class="text-base font-bold text-gray-500 dark:text-gray-400">DMA-07</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+          </div>
+          <div class="h-2 bg-gradient-to-t from-gray-100 dark:from-gray-800 to-transparent"></div>
+        </div>
+        <div class="col-span-4 flex flex-col gap-6 h-full overflow-hidden">
+          <div class="bg-surface-light dark:bg-surface-dark rounded-3xl p-5 flex flex-col flex-1 min-h-0 shadow-lg relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
+            <div class="mb-2 flex items-start justify-between shrink-0 relative z-10">
+              <div>
+                <h3 class="text-xl font-black text-gray-900 dark:text-white tracking-tight">TỈ LỆ THẤT THOÁT</h3>
+              </div>
+              <div class="flex items-center gap-3 text-xs font-bold text-gray-500 dark:text-gray-400">
+                <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-blue-600 rounded-full"></span> Lũy kế</div>
+                <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-blue-200 dark:bg-blue-800 rounded-full"></span> Trước</div>
+              </div>
             </div>
-        </main>
+            <div class="flex-grow w-full relative pb-2">
+              <div id="chart-thatthoat" class="absolute inset-0 flex items-end justify-between px-2">
+                <div class="absolute inset-0 flex flex-col justify-between pointer-events-none z-0 pb-6 pr-2">
+                  <div class="w-full h-px bg-gray-100 dark:bg-gray-800"></div>
+                  <div class="w-full h-px bg-gray-100 dark:bg-gray-800"></div>
+                  <div class="w-full h-px bg-gray-100 dark:bg-gray-800"></div>
+                </div>
+                <div class="flex flex-col items-center gap-1 z-10 w-1/5 h-full justify-end">
+                  <div class="flex gap-1 items-end h-[85%] w-full justify-center">
+                    <div class="w-6 bg-blue-600 rounded-t-lg h-full"></div>
+                    <div class="w-6 bg-blue-200 dark:bg-blue-800 rounded-t-lg h-[105%]"></div>
+                  </div>
+                  <span class="text-base font-bold text-gray-500 dark:text-gray-400">DMA-15</span>
+                </div>
+                <div class="flex flex-col items-center gap-1 z-10 w-1/5 h-full justify-end">
+                  <div class="flex gap-1 items-end h-[70%] w-full justify-center">
+                    <div class="w-6 bg-blue-600 rounded-t-lg h-full"></div>
+                    <div class="w-6 bg-blue-200 dark:bg-blue-800 rounded-t-lg h-[105%]"></div>
+                  </div>
+                  <span class="text-base font-bold text-gray-900 dark:text-white">DMA-03</span>
+                </div>
+                <div class="flex flex-col items-center gap-1 z-10 w-1/5 h-full justify-end">
+                  <div class="flex gap-1 items-end h-[60%] w-full justify-center">
+                    <div class="w-6 bg-blue-600 rounded-t-lg h-full"></div>
+                    <div class="w-6 bg-blue-200 dark:bg-blue-800 rounded-t-lg h-[95%]"></div>
+                  </div>
+                  <span class="text-base font-bold text-gray-500 dark:text-gray-400">DMA-12</span>
+                </div>
+                <div class="flex flex-col items-center gap-1 z-10 w-1/5 h-full justify-end">
+                  <div class="flex gap-1 items-end h-[42%] w-full justify-center">
+                    <div class="w-6 bg-blue-600 rounded-t-lg h-full"></div>
+                    <div class="w-6 bg-blue-200 dark:bg-blue-800 rounded-t-lg h-[120%]"></div>
+                  </div>
+                  <span class="text-base font-bold text-gray-500 dark:text-gray-400">DMA-04</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="bg-surface-light dark:bg-surface-dark rounded-3xl p-5 flex flex-col flex-1 min-h-0 shadow-lg relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
+            <div class="mb-2 flex items-start justify-between shrink-0 relative z-10">
+              <div>
+                <h3 class="text-xl font-black text-gray-900 dark:text-white tracking-tight">KL NƯỚC LŨY KẾ TRONG THÁNG</h3>
+              </div>
+              <div class="flex items-center gap-3 text-xs font-bold text-gray-500 dark:text-gray-400">
+                <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-emerald-500 rounded-full"></span> ĐHT</div>
+                <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-emerald-200 dark:bg-emerald-900 rounded-full"></span> ĐHKH</div>
+              </div>
+            </div>
+            <div class="flex-grow w-full relative pb-2">
+              <div id="chart-dhtong" class="absolute inset-0 flex items-end justify-between px-2">
+                <div class="absolute inset-0 flex flex-col justify-between pointer-events-none z-0 pb-6 pr-2">
+                  <div class="w-full h-px bg-gray-100 dark:bg-gray-800"></div>
+                  <div class="w-full h-px bg-gray-100 dark:bg-gray-800"></div>
+                  <div class="w-full h-px bg-gray-100 dark:bg-gray-800"></div>
+                </div>
+                <div class="relative flex flex-col items-center gap-1 z-10 w-1/5 h-full justify-end">
+                  <div class="flex gap-1 items-end h-[90%] w-full justify-center">
+                    <div class="w-6 bg-emerald-500 rounded-t-lg h-full"></div>
+                    <div class="w-6 bg-emerald-200 dark:bg-emerald-900 rounded-t-lg h-[15%]"></div>
+                  </div>
+                  <span class="text-base font-bold text-gray-500 dark:text-gray-400">DMA-15</span>
+                </div>
+                <div class="relative flex flex-col items-center gap-1 z-10 w-1/5 h-full justify-end">
+                  <div class="flex gap-1 items-end h-[60%] w-full justify-center">
+                    <div class="w-6 bg-emerald-500 rounded-t-lg h-full"></div>
+                    <div class="w-6 bg-emerald-200 dark:bg-emerald-900 rounded-t-lg h-[14%]"></div>
+                  </div>
+                  <span class="text-base font-bold text-gray-900 dark:text-white">DMA-03</span>
+                </div>
+                <div class="relative flex flex-col items-center gap-1 z-10 w-1/5 h-full justify-end">
+                  <div class="flex gap-1 items-end h-[45%] w-full justify-center">
+                    <div class="w-6 bg-emerald-500 rounded-t-lg h-full"></div>
+                    <div class="w-6 bg-emerald-200 dark:bg-emerald-900 rounded-t-lg h-[10%]"></div>
+                  </div>
+                  <span class="text-base font-bold text-gray-500 dark:text-gray-400">DMA-12</span>
+                </div>
+                <div class="relative flex flex-col items-center gap-1 z-10 w-1/5 h-full justify-end">
+                  <div class="flex gap-1 items-end h-[75%] w-full justify-center">
+                    <div class="w-6 bg-emerald-500 rounded-t-lg h-full"></div>
+                    <div class="w-6 bg-emerald-200 dark:bg-emerald-900 rounded-t-lg h-[15%]"></div>
+                  </div>
+                  <span class="text-base font-bold text-gray-500 dark:text-gray-400">DMA-07</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="bg-surface-light dark:bg-surface-dark rounded-3xl p-5 flex flex-col flex-1 min-h-0 shadow-lg relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
+            <div class="mb-2 flex items-start justify-between shrink-0 relative z-10">
+              <div>
+                <h3 class="text-xl font-black text-gray-900 dark:text-white tracking-tight">KL NƯỚC NGÀY LIỀN KỀ</h3>
+              </div>
+              <div class="flex items-center gap-3 text-xs font-bold text-gray-500 dark:text-gray-400">
+                <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-indigo-500 rounded-full"></span> ĐHT</div>
+                <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-indigo-200 dark:bg-indigo-900 rounded-full"></span> ĐHKH</div>
+              </div>
+            </div>
+            <div class="flex-grow w-full relative pb-2">
+              <div id="chart-dhkh" class="absolute inset-0 flex items-end justify-between px-2">
+                <div class="absolute inset-0 flex flex-col justify-between pointer-events-none z-0 pb-6 pr-2">
+                  <div class="w-full h-px bg-gray-100 dark:bg-gray-800"></div>
+                  <div class="w-full h-px bg-gray-100 dark:bg-gray-800"></div>
+                  <div class="w-full h-px bg-gray-100 dark:bg-gray-800"></div>
+                </div>
+                <div class="relative flex flex-col items-center gap-1 z-10 w-1/5 h-full justify-end">
+                  <div class="flex gap-1 items-end h-[88%] w-full justify-center">
+                    <div class="w-6 bg-indigo-500 rounded-t-lg h-full"></div>
+                    <div class="w-6 bg-indigo-200 dark:bg-indigo-900 rounded-t-lg h-[14%]"></div>
+                  </div>
+                  <span class="text-base font-bold text-gray-500 dark:text-gray-400">DMA-15</span>
+                </div>
+                <div class="relative flex flex-col items-center gap-1 z-10 w-1/5 h-full justify-end">
+                  <div class="flex gap-1 items-end h-[58%] w-full justify-center">
+                    <div class="w-6 bg-indigo-500 rounded-t-lg h-full"></div>
+                    <div class="w-6 bg-indigo-200 dark:bg-indigo-900 rounded-t-lg h-[13%]"></div>
+                  </div>
+                  <span class="text-base font-bold text-gray-900 dark:text-white">DMA-03</span>
+                </div>
+                <div class="relative flex flex-col items-center gap-1 z-10 w-1/5 h-full justify-end">
+                  <div class="flex gap-1 items-end h-[42%] w-full justify-center">
+                    <div class="w-6 bg-indigo-500 rounded-t-lg h-full"></div>
+                    <div class="w-6 bg-indigo-200 dark:bg-indigo-900 rounded-t-lg h-[9%]"></div>
+                  </div>
+                  <span class="text-base font-bold text-gray-500 dark:text-gray-400">DMA-12</span>
+                </div>
+                <div class="relative flex flex-col items-center gap-1 z-10 w-1/5 h-full justify-end">
+                  <div class="flex gap-1 items-end h-[72%] w-full justify-center">
+                    <div class="w-6 bg-indigo-500 rounded-t-lg h-full"></div>
+                    <div class="w-6 bg-indigo-200 dark:bg-indigo-900 rounded-t-lg h-[14%]"></div>
+                  </div>
+                  <span class="text-base font-bold text-gray-500 dark:text-gray-400">DMA-07</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
 
     <script>
-        // CONFIG
-        const API_HOST = 'https://unsupercilious-leonarda-unreaving.ngrok-free.dev';
-        const AUTH_TOKEN = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjY3MSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJuaG1hbmgiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJuaG1hbmhAbmF3YXNjby5jb20udm4iLCJBc3BOZXQuSWRlbnRpdHkuU2VjdXJpdHlTdGFtcCI6Ik9DRzQ1WDdXVVVTSlE1VlFUMjNNVkxXTVhMV0MzUktVIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoixJDEg25nIGvDvSBuZ2jhu4kiLCJzdWIiOiI2NzEiLCJqdGkiOiJjNGYyOTBlMy02MDg0LTRhZGItOGZjNC1hMWZlNzAyZWM1OTQiLCJpYXQiOjE3NTA2NzAwMTYsIm5iZiI6MTc1MDY3MDAxNiwiZXhwIjoyMDY2MDMwMDE2LCJpc3MiOiJFUlAiLCJhdWQiOiJFUlAifQ.ou9LMHMJw-D-YaRy28_sVDqZRDf1EY7Sl-gWXfx6cnQ';
-        const XSRF_TOKEN = 'CfDJ8FNXrp6ZgvRLllnTFj9VlGLf01D9pf_xzEQvLYeYhCUYil5NJiYOf41qk9PUl4_3hQrdGktJ9diSRV9elA0AXdz_wSxOQKZeFW1WA-hZZB_y0BYZm094QPX7Lg7rkjZP_wIo7XFSq9JifB3xkgLzEQTNi_NM0A8aCHYgOKl7ujCnF09eMK1gpyzxFHvaJSZrbA';
+      // CONFIG
+      const API_HOST = "https://unsupercilious-leonarda-unreaving.ngrok-free.dev";
+      const AUTH_TOKEN =
+        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjY3MSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJuaG1hbmgiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJuaG1hbmhAbmF3YXNjby5jb20udm4iLCJBc3BOZXQuSWRlbnRpdHkuU2VjdXJpdHlTdGFtcCI6Ik9DRzQ1WDdXVVVTSlE1VlFUMjNNVkxXTVhMV0MzUktVIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoixJDEg25nIGvDvSBuZ2jhu4kiLCJzdWIiOiI2NzEiLCJqdGkiOiJjNGYyOTBlMy02MDg0LTRhZGItOGZjNC1hMWZlNzAyZWM1OTQiLCJpYXQiOjE3NTA2NzAwMTYsIm5iZiI6MTc1MDY3MDAxNiwiZXhwIjoyMDY2MDMwMDE2LCJpc3MiOiJFUlAiLCJhdWQiOiJFUlAifQ.ou9LMHMJw-D-YaRy28_sVDqZRDf1EY7Sl-gWXfx6cnQ";
+      const XSRF_TOKEN = "CfDJ8FNXrp6ZgvRLllnTFj9VlGLf01D9pf_xzEQvLYeYhCUYil5NJiYOf41qk9PUl4_3hQrdGktJ9diSRV9elA0AXdz_wSxOQKZeFW1WA-hZZB_y0BYZm094QPX7Lg7rkjZP_wIo7XFSq9JifB3xkgLzEQTNi_NM0A8aCHYgOKl7ujCnF09eMK1gpyzxFHvaJSZrbA";
 
-        // HELPERS
-        const $ = (id) => document.getElementById(id);
-        const formatNumber = (num) => num ? num.toLocaleString('vi-VN', { maximumFractionDigits: 2 }) : '0';
-        const getToday = () => {
-            const d = new Date();
-            d.setDate(d.getDate() - 1);
-            return d.toISOString().split('T')[0];
-        };
+      // HELPERS
+      const $ = (id) => document.getElementById(id);
+      const formatNumber = (num) => (num ? num.toLocaleString("vi-VN", { maximumFractionDigits: 2 }) : "0");
+      const getToday = () => {
+        const d = new Date();
+        d.setDate(d.getDate() - 1);
+        return d.toISOString().split("T")[0];
+      };
 
-        // Get indicator color based on rate
-        const getIndicatorColor = (rate) => {
-            if (rate >= 8) return { bg: 'bg-red-500', shadow: 'shadow-red-500/50', text: 'text-accent-danger' };
-            if (rate >= 5) return { bg: 'bg-orange-500', shadow: 'shadow-orange-500/50', text: 'text-accent-warning' };
-            return { bg: 'bg-green-500', shadow: 'shadow-green-500/50', text: 'text-accent-success' };
-        };
+      // Get indicator color based on rate
+      const getIndicatorColor = (rate) => {
+        if (rate >= 8) return { bg: "bg-red-500", shadow: "shadow-red-500/50", text: "text-accent-danger" };
+        if (rate >= 5) return { bg: "bg-orange-500", shadow: "shadow-orange-500/50", text: "text-accent-warning" };
+        return { bg: "bg-green-500", shadow: "shadow-green-500/50", text: "text-accent-success" };
+      };
 
-        // CLOCK
-        function updateClock() {
-            const now = new Date();
-            const hours = now.getHours();
-            const ampm = hours >= 12 ? 'PM' : 'AM';
-            const displayHours = hours % 12 || 12;
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            $('clock-time').innerHTML = `${displayHours}:${minutes} <span class="text-xl font-bold text-gray-400 align-top mt-1 inline-block">${ampm}</span>`;
-            $('clock-date').textContent = now.toLocaleDateString('vi-VN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      // CLOCK
+      function updateClock() {
+        const now = new Date();
+        const hours = now.getHours();
+        const ampm = hours >= 12 ? "PM" : "AM";
+        const displayHours = hours % 12 || 12;
+        const minutes = now.getMinutes().toString().padStart(2, "0");
+        $("clock-time").innerHTML = `${displayHours}:${minutes} <span class="text-xl font-bold text-gray-400 align-top mt-1 inline-block">${ampm}</span>`;
+        $("clock-date").textContent = now.toLocaleDateString("vi-VN", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+      }
+      setInterval(updateClock, 1000);
+      updateClock();
+
+      // RENDER TABLE
+      function renderTable(items) {
+        const tbody = $("dma-table-body");
+        if (!items || items.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-500">Không có dữ liệu</td></tr>';
+          return;
         }
-        setInterval(updateClock, 1000);
-        updateClock();
 
-        // RENDER TABLE
-        function renderTable(items) {
-            const tbody = $('dma-table-body');
-            if (!items || items.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-500">Không có dữ liệu</td></tr>';
-                return;
-            }
+        // Sort by tyLeThatThoatLuyKe descending
+        const sorted = [...items].sort((a, b) => (b.tyLeThatThoatLuyKe || 0) - (a.tyLeThatThoatLuyKe || 0));
 
-            // Sort by tyLeThatThoatLuyKe descending
-            const sorted = [...items].sort((a, b) => (b.tyLeThatThoatLuyKe || 0) - (a.tyLeThatThoatLuyKe || 0));
+        tbody.innerHTML = sorted
+          .map((item, idx) => {
+            const color = getIndicatorColor(item.tyLeThatThoatLuyKe || 0);
+            const isFirst = idx === 0;
+            const rowClass = isFirst ? "tv-focus-state relative z-10 rounded-xl shadow-md" : "group transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800/60";
+            const bgClass = isFirst ? "" : "bg-gray-50 dark:bg-gray-800/40";
 
-            tbody.innerHTML = sorted.map((item, idx) => {
-                const color = getIndicatorColor(item.tyLeThatThoatLuyKe || 0);
-                const isFirst = idx === 0;
-                const rowClass = isFirst
-                    ? 'tv-focus-state relative z-10 rounded-xl shadow-md'
-                    : 'group transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800/60';
-                const bgClass = isFirst ? '' : 'bg-gray-50 dark:bg-gray-800/40';
-
-                return `
+            return `
                     <tr class="${rowClass}">
                         <td class="px-4 py-3 font-bold text-gray-900 dark:text-white rounded-l-xl ${bgClass} border-l border-transparent">
                             <div class="flex items-center gap-3">
                                 <div class="w-2.5 h-2.5 rounded-full ${color.bg} ${color.shadow}"></div>
-                                ${item.tenDMA || 'N/A'}
+                                ${item.tenDMA || "N/A"}
                             </div>
                         </td>
-                        <td class="px-4 py-3 text-right font-black ${color.text} ${bgClass} ${isFirst ? 'text-2xl' : ''}">${item.tyLeThatThoatLuyKe?.toFixed(2) || '0.00'}%</td>
-                        <td class="px-4 py-3 text-right ${isFirst ? 'text-gray-900 dark:text-white font-bold' : 'text-gray-500 dark:text-gray-400'} ${bgClass} text-lg">${item.tyLeThatThoatLienKe?.toFixed(2) || '0.00'}%</td>
-                        <td class="px-4 py-3 text-right font-bold ${isFirst ? 'text-gray-900 dark:text-white' : 'text-gray-800 dark:text-gray-200'} ${bgClass}">${formatNumber(item.tongKhoiLuongNuocDongHoTongDieuChinhLuyKeTu0h)}</td>
-                        <td class="px-4 py-3 text-right ${isFirst ? 'text-gray-800 dark:text-gray-200 font-bold' : 'text-gray-500 dark:text-gray-400'} rounded-r-xl ${bgClass} border-r border-transparent">${formatNumber(item.tongKhoiLuongNuocDongHoConDieuChinhLuyKeTu0h)}</td>
+                        <td class="px-4 py-3 text-right font-black ${color.text} ${bgClass} ${isFirst ? "text-2xl" : ""}">${item.tyLeThatThoatLuyKe?.toFixed(2) || "0.00"}%</td>
+                        <td class="px-4 py-3 text-right ${isFirst ? "text-gray-900 dark:text-white font-bold" : "text-gray-500 dark:text-gray-400"} ${bgClass} text-lg">${item.tyLeThatThoatLienKe?.toFixed(2) || "0.00"}%</td>
+                        <td class="px-4 py-3 text-right font-bold ${isFirst ? "text-gray-900 dark:text-white" : "text-gray-800 dark:text-gray-200"} ${bgClass}">${formatNumber(item.tongKhoiLuongNuocDongHoTongDieuChinhLuyKeTu0h)}</td>
+                        <td class="px-4 py-3 text-right ${isFirst ? "text-gray-800 dark:text-gray-200 font-bold" : "text-gray-500 dark:text-gray-400"} rounded-r-xl ${bgClass} border-r border-transparent">${formatNumber(item.tongKhoiLuongNuocDongHoConDieuChinhLuyKeTu0h)}</td>
                     </tr>
                 `;
-            }).join('');
-        }
+          })
+          .join("");
+      }
 
-        // RENDER CHART - 2 cột cạnh nhau để so sánh tương quan với số liệu trên đầu
-        function renderChart(containerId, items, valueKey1, valueKey2, colorPrimary, colorSecondary, isPercent = false) {
-            const container = $(containerId);
-            if (!container || !items || items.length === 0) return;
+      // RENDER CHART - 2 cột cạnh nhau để so sánh tương quan với số liệu trên đầu
+      function renderChart(containerId, items, valueKey1, valueKey2, colorPrimary, colorSecondary, isPercent = false) {
+        const container = $(containerId);
+        if (!container || !items || items.length === 0) return;
 
-            // Get top 5 by tyLeThatThoatLuyKe
-            const top5 = [...items]
-                .sort((a, b) => (b.tyLeThatThoatLuyKe || 0) - (a.tyLeThatThoatLuyKe || 0))
-                .slice(0, 5);
+        // Get top 5 by tyLeThatThoatLuyKe
+        const top5 = [...items].sort((a, b) => (b.tyLeThatThoatLuyKe || 0) - (a.tyLeThatThoatLuyKe || 0)).slice(0, 5);
 
-            const maxVal = Math.max(...top5.map(d => Math.max(d[valueKey1] || 0, d[valueKey2] || 0)));
+        const maxVal = Math.max(...top5.map((d) => Math.max(d[valueKey1] || 0, d[valueKey2] || 0)));
 
-            const gridLines = `
+        const gridLines = `
                 <div class="absolute inset-0 flex flex-col justify-between pointer-events-none z-0 pb-6 pr-2">
                     <div class="w-full h-px bg-gray-100 dark:bg-gray-800"></div>
                     <div class="w-full h-px bg-gray-100 dark:bg-gray-800"></div>
@@ -697,22 +560,23 @@
                 </div>
             `;
 
-            // Format value for display - không viết tắt k, bỏ thập phân cho biểu đồ KL
-            const formatVal = (v) => {
-                if (isPercent) return v.toFixed(1) + '%';
-                return Math.round(v).toLocaleString('vi-VN');
-            };
+        // Format value for display - không viết tắt k, bỏ thập phân cho biểu đồ KL
+        const formatVal = (v) => {
+          if (isPercent) return v.toFixed(1) + "%";
+          return Math.round(v).toLocaleString("vi-VN");
+        };
 
-            const bars = top5.map((item, idx) => {
-                const v1 = item[valueKey1] || 0;
-                const v2 = item[valueKey2] || 0;
-                const h1 = maxVal > 0 ? Math.max(8, (v1 / maxVal) * 100) : 8;
-                const h2 = maxVal > 0 ? Math.max(8, (v2 / maxVal) * 100) : 8;
-                const isFirst = idx === 0;
-                const labelClass = isFirst ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400';
-                const shortName = item.tenDMA?.replace('DMA ', 'DMA-').split(' ')[0] || `DMA-${item.dmaId}`;
+        const bars = top5
+          .map((item, idx) => {
+            const v1 = item[valueKey1] || 0;
+            const v2 = item[valueKey2] || 0;
+            const h1 = maxVal > 0 ? Math.max(8, (v1 / maxVal) * 100) : 8;
+            const h2 = maxVal > 0 ? Math.max(8, (v2 / maxVal) * 100) : 8;
+            const isFirst = idx === 0;
+            const labelClass = isFirst ? "text-gray-900 dark:text-white" : "text-gray-500 dark:text-gray-400";
+            const shortName = item.tenDMA?.replace("DMA ", "DMA-").split(" ")[0] || `DMA-${item.dmaId}`;
 
-                return `
+            return `
                     <div class="flex flex-col items-center gap-1 z-10 w-1/5 h-full justify-end">
                         <div class="flex gap-1 items-end w-full justify-center" style="height: 80%">
                             <div class="flex flex-col items-center justify-end h-full">
@@ -727,90 +591,224 @@
                         <span class="text-sm font-bold ${labelClass}">${shortName}</span>
                     </div>
                 `;
-            }).join('');
+          })
+          .join("");
 
-            container.innerHTML = gridLines + bars;
-        }
+        container.innerHTML = gridLines + bars;
+      }
 
-        // FETCH DATA với fallback lùi ngày
-        async function fetchDataForDate(dateStr) {
-            const filter = encodeURIComponent(JSON.stringify([{ property: 'ngaybaocao', value: dateStr, operator: 'eq' }]));
-            const url = `${API_HOST}/api/services/app/DMA/GetAllBaoCaoTongHopTyLeThatThoatDMAs?filter=${filter}`;
+      // FETCH DATA với fallback lùi ngày
+      async function fetchDataForDate(dateStr) {
+        const filter = encodeURIComponent(JSON.stringify([{ property: "ngaybaocao", value: dateStr, operator: "eq" }]));
+        const url = `${API_HOST}/api/services/app/DMA/GetAllBaoCaoTongHopTyLeThatThoatDMAs?filter=${filter}`;
 
-            const res = await fetch(url, {
-                headers: {
-                    'Authorization': AUTH_TOKEN,
-                    'X-XSRF-TOKEN': XSRF_TOKEN,
-                    'ngrok-skip-browser-warning': 'true'
-                }
-            });
+        const res = await fetch(url, {
+          headers: {
+            Authorization: AUTH_TOKEN,
+            "X-XSRF-TOKEN": XSRF_TOKEN,
+            "ngrok-skip-browser-warning": "true",
+          },
+        });
 
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            return await res.json();
-        }
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return await res.json();
+      }
 
-        async function fetchData() {
-            try {
-                const maxRetries = 7; // Thử tối đa 7 ngày
-                let currentDate = new Date();
-                let items = null;
-                let dateStr = '';
+      async function fetchData() {
+        try {
+          const maxRetries = 7; // Thử tối đa 7 ngày
+          let currentDate = new Date();
+          let items = null;
+          let dateStr = "";
 
-                // Thử từ ngày hiện tại, lùi dần nếu không có dữ liệu
-                for (let i = 0; i < maxRetries; i++) {
-                    dateStr = currentDate.toISOString().split('T')[0];
-                    console.log(`[DMA] Trying date: ${dateStr}`);
+          // Thử từ ngày hiện tại, lùi dần nếu không có dữ liệu
+          for (let i = 0; i < maxRetries; i++) {
+            dateStr = currentDate.toISOString().split("T")[0];
+            console.log(`[DMA] Trying date: ${dateStr}`);
 
-                    const data = await fetchDataForDate(dateStr);
+            const data = await fetchDataForDate(dateStr);
 
-                    if (data.success && data.result?.items && data.result.items.length > 0) {
-                        items = data.result.items;
-                        console.log(`[DMA] Found ${items.length} items for ${dateStr}`);
-                        break;
-                    }
-
-                    // Lùi 1 ngày
-                    currentDate.setDate(currentDate.getDate() - 1);
-                }
-
-                if (items && items.length > 0) {
-                    const count = items.length;
-
-                    // Update total count
-                    $('dma-total-count').textContent = `${count} DMA`;
-
-                    // Update report date from ngayBaoCao
-                    if (items[0].ngayBaoCao) {
-                        const reportDate = new Date(items[0].ngayBaoCao);
-                        $('report-date').textContent = `Ngày báo cáo: ${reportDate.toLocaleDateString('vi-VN')}`;
-                    }
-
-                    // Render table
-                    renderTable(items);
-
-                    // Render charts
-                    renderChart('chart-thatthoat', items, 'tyLeThatThoatLuyKe', 'tyLeThatThoatLienKe', 'bg-blue-600', 'bg-blue-200 dark:bg-blue-800', true);
-                    renderChart('chart-dhtong', items, 'tongKhoiLuongNuocDongHoTongDieuChinhLuyKeTu0h', 'tongKhoiLuongNuocDongHoConDieuChinhLuyKeTu0h', 'bg-emerald-500', 'bg-emerald-200 dark:bg-emerald-900');
-                    renderChart('chart-dhkh', items, 'tongKhoiLuongNuocDongHoTongDieuChinhNgayTruocLienKe', 'tongKhoiLuongNuocDongHoConDieuChinhNgayTruocLienKe', 'bg-indigo-500', 'bg-indigo-200 dark:bg-indigo-900');
-
-                    console.log(`[DMA] Loaded ${count} items for ${dateStr}`);
-                } else {
-                    console.warn('[DMA] Không tìm thấy dữ liệu trong 7 ngày gần nhất');
-                    $('report-date').textContent = 'Không có dữ liệu';
-                }
-            } catch (err) {
-                console.error('[DMA] Error:', err);
-            } finally {
-                $('loading').classList.remove('active');
+            if (data.success && data.result?.items && data.result.items.length > 0) {
+              items = data.result.items;
+              console.log(`[DMA] Found ${items.length} items for ${dateStr}`);
+              break;
             }
+
+            // Lùi 1 ngày
+            currentDate.setDate(currentDate.getDate() - 1);
+          }
+
+          if (items && items.length > 0) {
+            const count = items.length;
+
+            // Update total count
+            $("dma-total-count").textContent = `${count} DMA`;
+
+            // Update report date from ngayBaoCao
+            if (items[0].ngayBaoCao) {
+              const reportDate = new Date(items[0].ngayBaoCao);
+              $("report-date").textContent = `Ngày báo cáo: ${reportDate.toLocaleDateString("vi-VN")}`;
+            }
+
+            // Render table
+            renderTable(items);
+
+            // Render charts
+            renderChart("chart-thatthoat", items, "tyLeThatThoatLuyKe", "tyLeThatThoatLienKe", "bg-blue-600", "bg-blue-200 dark:bg-blue-800", true);
+            renderChart("chart-dhtong", items, "tongKhoiLuongNuocDongHoTongDieuChinhLuyKeTu0h", "tongKhoiLuongNuocDongHoConDieuChinhLuyKeTu0h", "bg-emerald-500", "bg-emerald-200 dark:bg-emerald-900");
+            renderChart("chart-dhkh", items, "tongKhoiLuongNuocDongHoTongDieuChinhNgayTruocLienKe", "tongKhoiLuongNuocDongHoConDieuChinhNgayTruocLienKe", "bg-indigo-500", "bg-indigo-200 dark:bg-indigo-900");
+
+            console.log(`[DMA] Loaded ${count} items for ${dateStr}`);
+          } else {
+            console.warn("[DMA] Không tìm thấy dữ liệu trong 7 ngày gần nhất");
+            $("report-date").textContent = "Không có dữ liệu";
+          }
+        } catch (err) {
+          console.error("[DMA] Error:", err);
+        } finally {
+          $("loading").classList.remove("active");
+        }
+      }
+
+      // ============================================
+      // TV REMOTE CONTROL - DEBUG VERSION
+      // ============================================
+      const SCROLL_AMOUNT = 150; // Pixels to scroll per key press
+
+      // Lấy container bảng
+      function getTableContainer() {
+        const container = document.getElementById("table-container");
+        return container;
+      }
+
+      // DEBUG: Log scroll info
+      function logScrollInfo(container) {
+        if (container) {
+          console.log("[DEBUG] scrollTop:", container.scrollTop);
+          console.log("[DEBUG] scrollHeight:", container.scrollHeight);
+          console.log("[DEBUG] clientHeight:", container.clientHeight);
+          console.log("[DEBUG] Can scroll:", container.scrollHeight > container.clientHeight);
+        }
+      }
+
+      // Scroll function - dùng scrollTop trực tiếp thay vì scrollBy
+      function scrollTable(direction) {
+        const container = getTableContainer();
+        if (!container) {
+          console.error("[Remote] Container NOT FOUND!");
+          return;
         }
 
-        // INIT
-        document.documentElement.classList.remove('dark');
-        fetchData();
-        setInterval(fetchData, 60000); // Refresh every 1 minute
+        const currentScroll = container.scrollTop;
+        const maxScroll = container.scrollHeight - container.clientHeight;
+
+        console.log("[Remote] Before scroll - scrollTop:", currentScroll, "maxScroll:", maxScroll);
+
+        if (direction === "up") {
+          container.scrollTop = Math.max(0, currentScroll - SCROLL_AMOUNT);
+          console.log("[Remote] Scrolled UP to:", container.scrollTop);
+        } else if (direction === "down") {
+          container.scrollTop = Math.min(maxScroll, currentScroll + SCROLL_AMOUNT);
+          console.log("[Remote] Scrolled DOWN to:", container.scrollTop);
+        }
+      }
+
+      // Xử lý phím remote
+      function handleRemoteKey(event) {
+        const keyCode = event.keyCode || event.which;
+        const key = event.key;
+
+        // Log chi tiết để debug
+        console.log("[Remote] ========== KEY EVENT ==========");
+        console.log("[Remote] keyCode:", keyCode, "| key:", key, "| code:", event.code);
+        console.log("[Remote] ================================");
+
+        // UP - Cuộn lên (keyCode 38, hoặc ArrowUp, hoặc Up)
+        if (keyCode === 38 || key === "ArrowUp" || key === "Up") {
+          event.preventDefault();
+          event.stopPropagation();
+          scrollTable("up");
+          return false;
+        }
+
+        // DOWN - Cuộn xuống (keyCode 40, hoặc ArrowDown, hoặc Down)
+        if (keyCode === 40 || key === "ArrowDown" || key === "Down") {
+          event.preventDefault();
+          event.stopPropagation();
+          scrollTable("down");
+          return false;
+        }
+
+        // ENTER/OK - Không làm gì đặc biệt
+        if (keyCode === 13 || key === "Enter") {
+          event.preventDefault();
+          console.log("[Remote] ENTER pressed");
+          return false;
+        }
+
+        // BACK/RETURN - Quay lại (10009 = Tizen Back, 27 = ESC, 461 = LG Back)
+        if (keyCode === 10009 || keyCode === 27 || keyCode === 461 || key === "Escape" || key === "Back" || key === "GoBack") {
+          event.preventDefault();
+          console.log("[Remote] BACK pressed");
+          window.location.href = "../index.html";
+          return false;
+        }
+      }
+
+      // Register Tizen remote keys if available
+      function registerTizenKeys() {
+        if (typeof tizen !== "undefined" && tizen.tvinputdevice) {
+          try {
+            const keys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "MediaPlayPause", "MediaPlay", "MediaPause", "MediaStop", "MediaFastForward", "MediaRewind", "ColorF0Red", "ColorF1Green", "ColorF2Yellow", "ColorF3Blue"];
+            keys.forEach((key) => {
+              try {
+                tizen.tvinputdevice.registerKey(key);
+              } catch (e) {
+                console.log("[Tizen] Could not register key:", key);
+              }
+            });
+            console.log("[Tizen] Remote keys registered");
+          } catch (e) {
+            console.error("[Tizen] Error registering keys:", e);
+          }
+        }
+      }
+
+      // FIX: Đảm bảo document có thể nhận keyboard events
+      function ensureFocus() {
+        // Thêm tabindex cho body để có thể nhận focus
+        document.body.setAttribute("tabindex", "0");
+        document.body.focus();
+        console.log("[Focus] Body focused, activeElement:", document.activeElement?.tagName);
+      }
+
+      // Add keyboard/remote event listener - capture phase để bắt sớm nhất
+      document.addEventListener("keydown", handleRemoteKey, true);
+      window.addEventListener("keydown", handleRemoteKey, true);
+
+      // Initialize Tizen keys
+      registerTizenKeys();
+
+      // Ensure focus when page loads
+      window.addEventListener("load", () => {
+        ensureFocus();
+        // Log scroll info after data loaded
+        setTimeout(() => {
+          const container = getTableContainer();
+          console.log("[Init] Table container check:");
+          logScrollInfo(container);
+        }, 2000);
+      });
+
+      // Re-focus when clicking anywhere
+      document.addEventListener("click", ensureFocus);
+
+      // INIT
+      document.documentElement.classList.remove("dark");
+      fetchData();
+      setInterval(fetchData, 60000); // Refresh every 1 minute
+
+      console.log("[DMA] Page initialized - use UP/DOWN to scroll table");
     </script>
-
-</body>
-
+  </body>
 </html>
