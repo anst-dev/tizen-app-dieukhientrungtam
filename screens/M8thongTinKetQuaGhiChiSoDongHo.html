@@ -1,17 +1,21 @@
 <!doctype html>
 <html lang="vi">
-  <head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Production Dashboard - Metric First</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
-    <style type="text/tailwindcss">
-      :root {
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Production Dashboard - Metric First</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+  <style type="text/tailwindcss">
+    :root {
         --success-color: #16a34a;
         --warning-color: #ea580c;
         --primary-black: #000000;
@@ -123,450 +127,565 @@
         border-radius: 20px;
       }
     </style>
-  </head>
+</head>
 
-  <body class="text-black h-screen w-screen flex flex-col overflow-hidden">
-    <!-- Loading Overlay -->
-    <div id="loading" class="loading-overlay active">
-      <div class="spinner"></div>
-      <p style="margin-top: 1rem; font-weight: 600; color: #64748b; font-size: 18px">Đang tải dữ liệu...</p>
+<body class="text-black h-screen w-screen flex flex-col overflow-hidden">
+  <!-- Loading Overlay -->
+  <div id="loading" class="loading-overlay active">
+    <div class="spinner"></div>
+    <p style="margin-top: 1rem; font-weight: 600; color: #64748b; font-size: 18px">Đang tải dữ liệu...</p>
+  </div>
+
+  <header class="border-b border-gray-100 px-10 py-2 flex justify-between items-end flex-shrink-0">
+    <div>
+      <h1 class="text-2xl font-black uppercase tracking-tight">Kết quả sản lượng ghi chỉ số theo tháng</h1>
+      <p class="text-base text-gray-500 font-medium mt-1" id="display-time">Tính đến: --/--/---- --:--</p>
+    </div>
+  </header>
+  <main class="flex-1 flex px-10 py-2 gap-6 overflow-hidden" id="main-content">
+    <!-- Left Column: Summary Stats -->
+    <div class="flex flex-col gap-2 transition-all duration-300" id="stats-column">
+      <!-- Vinh -->
+      <div class="flex-1 flex flex-col justify-center border-b border-gray-100 pb-2">
+        <div class="flex items-center gap-6">
+          <div class="flex flex-col items-center text-center flex-shrink-0">
+            <span class="text-lg font-black uppercase tracking-tighter text-gray-400 mb-1">Tỷ Lệ Hoàn Thành Vinh</span>
+            <span id="vinh-percent" class="metric-value text-[var(--success-color)]">--%</span>
+          </div>
+          <div class="flex flex-col gap-2 flex-1">
+            <div class="flex flex-col">
+              <span class="text-sm uppercase font-bold text-gray-400 tracking-widest">Thực hiện</span>
+              <span id="vinh-thuchien" class="text-3xl font-extrabold tracking-tighter">--</span>
+            </div>
+            <div class="flex flex-col border-t border-gray-100 pt-1">
+              <span class="text-sm uppercase font-bold text-gray-400 tracking-widest">Kế hoạch</span>
+              <span id="vinh-kehoach" class="text-2xl font-bold tracking-tighter text-gray-500">--</span>
+            </div>
+            <div class="flex flex-col border-t border-gray-100 pt-1">
+              <span class="text-sm uppercase font-bold text-blue-400 tracking-widest">TL Dự kiến</span>
+              <span id="vinh-dukien" class="text-2xl font-bold tracking-tighter text-blue-500">--%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Miền Tây -->
+      <div class="flex-1 flex flex-col justify-center border-b border-gray-100 pb-2">
+        <div class="flex items-center gap-6">
+          <div class="flex flex-col items-center text-center flex-shrink-0">
+            <span class="text-lg font-black uppercase tracking-tighter text-gray-400 mb-1">Tỷ Lệ Hoàn Thành Miền
+              Tây</span>
+            <span id="mt-percent" class="metric-value text-[var(--warning-color)]">--%</span>
+          </div>
+          <div class="flex flex-col gap-2 flex-1">
+            <div class="flex flex-col">
+              <span class="text-sm uppercase font-bold text-gray-400 tracking-widest">Thực hiện</span>
+              <span id="mt-thuchien" class="text-3xl font-extrabold tracking-tighter">--</span>
+            </div>
+            <div class="flex flex-col border-t border-gray-100 pt-1">
+              <span class="text-sm uppercase font-bold text-gray-400 tracking-widest">Kế hoạch</span>
+              <span id="mt-kehoach" class="text-2xl font-bold tracking-tighter text-gray-500">--</span>
+            </div>
+            <div class="flex flex-col border-t border-gray-100 pt-1">
+              <span class="text-sm uppercase font-bold text-blue-400 tracking-widest">TL Dự kiến</span>
+              <span id="mt-dukien" class="text-2xl font-bold tracking-tighter text-blue-500">--%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Tổng cộng -->
+      <div class="flex-1 flex flex-col justify-center pb-1">
+        <div class="flex items-center gap-6">
+          <div class="flex flex-col items-center text-center flex-shrink-0">
+            <span class="text-lg font-black uppercase tracking-tighter text-gray-400 mb-1">Tỷ Lệ Hoàn Thành Tổng
+              Cộng</span>
+            <span id="tong-percent" class="metric-value text-[var(--success-color)]">--%</span>
+          </div>
+          <div class="flex flex-col gap-2 flex-1">
+            <div class="flex flex-col">
+              <span class="text-sm uppercase font-bold text-gray-400 tracking-widest">Thực hiện</span>
+              <span id="tong-thuchien" class="text-3xl font-extrabold tracking-tighter">--</span>
+            </div>
+            <div class="flex flex-col border-t border-gray-100 pt-1">
+              <span class="text-sm uppercase font-bold text-gray-400 tracking-widest">Kế hoạch</span>
+              <span id="tong-kehoach" class="text-2xl font-bold tracking-tighter text-gray-500">--</span>
+            </div>
+            <div class="flex flex-col border-t border-gray-100 pt-1">
+              <span class="text-sm uppercase font-bold text-blue-400 tracking-widest">TL Dự kiến</span>
+              <span id="tong-dukien" class="text-2xl font-bold tracking-tighter text-blue-500">--%</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <header class="border-b border-gray-100 px-10 py-2 flex justify-between items-end flex-shrink-0">
-      <div>
-        <h1 class="text-2xl font-black uppercase tracking-tight">Kết quả sản lượng ghi chỉ số theo tháng</h1>
-        <p class="text-base text-gray-500 font-medium mt-1" id="display-time">Tính đến: --/--/---- --:--</p>
+    <!-- Right Column: Miền Tây Detail Table (hidden by default) -->
+    <div class="flex-1 flex flex-col gap-2 overflow-hidden hidden transition-all duration-300" id="detail-column">
+      <!-- Table - hiển thị 100% không cuộn -->
+      <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-visible">
+        <div class="px-3 py-1 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
+          <h2 class="text-sm font-black text-gray-800 uppercase tracking-tight">Chi tiết sản lượng Miền Tây</h2>
+          <span class="text-xs font-semibold text-gray-400" id="mt-detail-count">Tổng: 0 trạm</span>
+        </div>
+        <table class="mt-detail-table">
+          <thead>
+            <tr>
+              <th class="stt-col">STT</th>
+              <th>Tên khu vực</th>
+              <th class="num-col">SL Khách hàng</th>
+              <th class="num-col">SL Hợp đồng</th>
+              <th class="num-col">SL Tiêu thụ (m³)</th>
+            </tr>
+          </thead>
+          <tbody id="mt-detail-body">
+            <!-- Rendered via JS -->
+          </tbody>
+        </table>
       </div>
-    </header>
-    <main class="flex-1 flex px-10 py-2 gap-6 overflow-hidden" id="main-content">
-      <!-- Left Column: Summary Stats -->
-      <div class="flex flex-col gap-2 transition-all duration-300" id="stats-column">
-        <!-- Vinh -->
-        <div class="flex-1 flex flex-col justify-center border-b border-gray-100 pb-2">
-          <div class="flex items-center gap-6">
-            <div class="flex flex-col items-center text-center flex-shrink-0">
-              <span class="text-lg font-black uppercase tracking-tighter text-gray-400 mb-1">Vinh</span>
-              <span id="vinh-percent" class="metric-value text-[var(--success-color)]">--%</span>
-            </div>
-            <div class="flex flex-col gap-2 flex-1">
-              <div class="flex flex-col">
-                <span class="text-sm uppercase font-bold text-gray-400 tracking-widest">Thực hiện</span>
-                <span id="vinh-thuchien" class="text-3xl font-extrabold tracking-tighter">--</span>
-              </div>
-              <div class="flex flex-col border-t border-gray-100 pt-1">
-                <span class="text-sm uppercase font-bold text-gray-400 tracking-widest">Kế hoạch</span>
-                <span id="vinh-kehoach" class="text-2xl font-bold tracking-tighter text-gray-500">--</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- Miền Tây -->
-        <div class="flex-1 flex flex-col justify-center border-b border-gray-100 pb-2">
-          <div class="flex items-center gap-6">
-            <div class="flex flex-col items-center text-center flex-shrink-0">
-              <span class="text-lg font-black uppercase tracking-tighter text-gray-400 mb-1">Miền Tây</span>
-              <span id="mt-percent" class="metric-value text-[var(--warning-color)]">--%</span>
-            </div>
-            <div class="flex flex-col gap-2 flex-1">
-              <div class="flex flex-col">
-                <span class="text-sm uppercase font-bold text-gray-400 tracking-widest">Thực hiện</span>
-                <span id="mt-thuchien" class="text-3xl font-extrabold tracking-tighter">--</span>
-              </div>
-              <div class="flex flex-col border-t border-gray-100 pt-1">
-                <span class="text-sm uppercase font-bold text-gray-400 tracking-widest">Kế hoạch</span>
-                <span id="mt-kehoach" class="text-2xl font-bold tracking-tighter text-gray-500">--</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- Tổng cộng -->
-        <div class="flex-1 flex flex-col justify-center pb-1">
-          <div class="flex items-center gap-6">
-            <div class="flex flex-col items-center text-center flex-shrink-0">
-              <span class="text-lg font-black uppercase tracking-tighter text-gray-400 mb-1">Tổng cộng</span>
-              <span id="tong-percent" class="metric-value text-[var(--success-color)]">--%</span>
-            </div>
-            <div class="flex flex-col gap-2 flex-1">
-              <div class="flex flex-col">
-                <span class="text-sm uppercase font-bold text-gray-400 tracking-widest">Thực hiện</span>
-                <span id="tong-thuchien" class="text-3xl font-extrabold tracking-tighter">--</span>
-              </div>
-              <div class="flex flex-col border-t border-gray-100 pt-1">
-                <span class="text-sm uppercase font-bold text-gray-400 tracking-widest">Kế hoạch</span>
-                <span id="tong-kehoach" class="text-2xl font-bold tracking-tighter text-gray-500">--</span>
-              </div>
-            </div>
-          </div>
+      <!-- Chart - 40% chiều cao -->
+      <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden p-2"
+        style="height: 40%; flex-shrink: 0">
+        <h3 class="text-xs font-bold text-gray-600 uppercase tracking-wide mb-1">Biểu đồ khối lượng tiêu thụ (m³)</h3>
+        <div style="height: calc(100% - 20px)">
+          <canvas id="mtChart"></canvas>
         </div>
       </div>
+    </div>
+  </main>
+  <script>
+    // CONFIG
+    const API_HOST = "https://unsupercilious-leonarda-unreaving.ngrok-free.dev";
+    const AUTH_TOKEN =
+      "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjQ0MiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJuc3RhbmgiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJuc3RhbmhAbmF3YXNjby5jb20udm4iLCJBc3BOZXQuSWRlbnRpdHkuU2VjdXJpdHlTdGFtcCI6IlJNRFdIVExXTU1LUzdZNElGM1FMVlEyRUU2Q1ZRNjJRIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjpbIkFkbWluIiwixJDEg25nIGvDvSBuZ2jhu4kiXSwic3ViIjoiNDQyIiwianRpIjoiOWJlYmU0NzMtMmM5OC00NTczLTk2OGYtMzlmZjRmY2IzYTdkIiwiaWF0IjoxNzM3NTUyMTI5LCJuYmYiOjE3Mzc1NTIxMjksImV4cCI6MjA1MjkxMjEyOSwiaXNzIjoiRVJQIiwiYXVkIjoiRVJQIn0.i5NWUse89skdwOKFXnaBAYJA-JQBkNDYyO5ucfbVHi4";
+    const XSRF_TOKEN = "CfDJ8Jj_fLMZXdVGiF7LaxJKgH4TR7qPGmCyUN5NeEMWt69UgzqXsxJm8hlicgf8BlwvE0QM7v9G1HxjGGbzuB7mpXxQbaV59Kk_ZOolujbrbNvNJWNYomY7_x9QGggzmjWBYxYQRtYyV7JSGRfuDe1kAtbyLpBPDMG-jLT-mbeWIy5sfXmCLD-UcqDXX4TUu2XQ5g";
 
-      <!-- Right Column: Miền Tây Detail Table (hidden by default) -->
-      <div class="flex-1 flex flex-col gap-2 overflow-hidden hidden transition-all duration-300" id="detail-column">
-        <!-- Table - hiển thị 100% không cuộn -->
-        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-visible">
-          <div class="px-3 py-1 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-            <h2 class="text-sm font-black text-gray-800 uppercase tracking-tight">Chi tiết sản lượng Miền Tây</h2>
-            <span class="text-xs font-semibold text-gray-400" id="mt-detail-count">Tổng: 0 trạm</span>
-          </div>
-          <table class="mt-detail-table">
-            <thead>
-              <tr>
-                <th class="stt-col">STT</th>
-                <th>Tên khu vực</th>
-                <th class="num-col">SL Khách hàng</th>
-                <th class="num-col">SL Hợp đồng</th>
-                <th class="num-col">SL Tiêu thụ (m³)</th>
-              </tr>
-            </thead>
-            <tbody id="mt-detail-body">
-              <!-- Rendered via JS -->
-            </tbody>
-          </table>
-        </div>
-        <!-- Chart - 40% chiều cao -->
-        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden p-2" style="height: 40%; flex-shrink: 0">
-          <h3 class="text-xs font-bold text-gray-600 uppercase tracking-wide mb-1">Biểu đồ khối lượng tiêu thụ (m³)</h3>
-          <div style="height: calc(100% - 20px)">
-            <canvas id="mtChart"></canvas>
-          </div>
-        </div>
-      </div>
-    </main>
-    <script>
-      // CONFIG
-      const API_HOST = "https://unsupercilious-leonarda-unreaving.ngrok-free.dev";
-      const AUTH_TOKEN =
-        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjQ0MiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJuc3RhbmgiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJuc3RhbmhAbmF3YXNjby5jb20udm4iLCJBc3BOZXQuSWRlbnRpdHkuU2VjdXJpdHlTdGFtcCI6IlJNRFdIVExXTU1LUzdZNElGM1FMVlEyRUU2Q1ZRNjJRIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjpbIkFkbWluIiwixJDEg25nIGvDvSBuZ2jhu4kiXSwic3ViIjoiNDQyIiwianRpIjoiOWJlYmU0NzMtMmM5OC00NTczLTk2OGYtMzlmZjRmY2IzYTdkIiwiaWF0IjoxNzM3NTUyMTI5LCJuYmYiOjE3Mzc1NTIxMjksImV4cCI6MjA1MjkxMjEyOSwiaXNzIjoiRVJQIiwiYXVkIjoiRVJQIn0.i5NWUse89skdwOKFXnaBAYJA-JQBkNDYyO5ucfbVHi4";
-      const XSRF_TOKEN = "CfDJ8Jj_fLMZXdVGiF7LaxJKgH4TR7qPGmCyUN5NeEMWt69UgzqXsxJm8hlicgf8BlwvE0QM7v9G1HxjGGbzuB7mpXxQbaV59Kk_ZOolujbrbNvNJWNYomY7_x9QGggzmjWBYxYQRtYyV7JSGRfuDe1kAtbyLpBPDMG-jLT-mbeWIy5sfXmCLD-UcqDXX4TUu2XQ5g";
+    // STATE: Luôn hiển thị chi tiết Miền Tây
+    let isDetailView = true;
 
-      // STATE: Luôn hiển thị chi tiết Miền Tây
-      let isDetailView = true;
+    // HELPERS
+    const $ = (id) => document.getElementById(id);
+    const formatNumber = (num) => (num ? Math.round(num).toLocaleString("vi-VN") : "0");
 
-      // HELPERS
-      const $ = (id) => document.getElementById(id);
-      const formatNumber = (num) => (num ? Math.round(num).toLocaleString("vi-VN") : "0");
+    // Format DateTime từ API
+    function formatDateTime(dateString) {
+      if (!dateString) return "Tính đến: --/--/---- --:--";
+      const date = new Date(dateString);
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const year = date.getFullYear();
+      const hours = String(date.getHours()).padStart(2, "0");
+      const minutes = String(date.getMinutes()).padStart(2, "0");
+      return `Tính đến: ${day}/${month}/${year} ${hours}:${minutes}`;
+    }
 
-      // Format DateTime từ API
-      function formatDateTime(dateString) {
-        if (!dateString) return "Tính đến: --/--/---- --:--";
-        const date = new Date(dateString);
-        const day = String(date.getDate()).padStart(2, "0");
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-        const year = date.getFullYear();
-        const hours = String(date.getHours()).padStart(2, "0");
-        const minutes = String(date.getMinutes()).padStart(2, "0");
-        return `Tính đến: ${day}/${month}/${year} ${hours}:${minutes}`;
+    // Lấy màu dựa trên tỷ lệ
+    function getColorClass(percentage) {
+      return percentage >= 70 ? "var(--success-color)" : "var(--warning-color)";
+    }
+
+    // FETCH REPORT - Gọi API GetReportDataNoCount (tham khảo M5thongTinDiemChay.html)
+    async function fetchReport(reportPath) {
+      try {
+        const url = `${API_HOST}/api/services/app/Report/GetReportDataNoCount`;
+        const res = await fetch(url, {
+          method: "POST",
+          headers: {
+            accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: AUTH_TOKEN,
+            "X-XSRF-TOKEN": XSRF_TOKEN,
+            "ngrok-skip-browser-warning": "true",
+          },
+          body: JSON.stringify({
+            reportPath: reportPath,
+            page: 0,
+            format: "HTML",
+            parameters: {},
+          }),
+        });
+
+        if (!res.ok) {
+          const errorText = await res.text();
+          console.error("API Error Response:", errorText);
+          throw new Error(`API Error: ${res.status}`);
+        }
+        const data = await res.json();
+        return data?.result?.items || [];
+      } catch (e) {
+        console.error("Fetch Report Error:", e);
+        return [];
       }
+    }
 
-      // Lấy màu dựa trên tỷ lệ
-      function getColorClass(percentage) {
-        return percentage >= 70 ? "var(--success-color)" : "var(--warning-color)";
-      }
+    // FETCH REPORT DỰ KIẾN - Gọi API Report với path [tt].[dktt_KhachHangChuaGhiChiSoBinhQuan3Kys]
+    async function fetchReportDuKien() {
+      try {
+        const now = new Date();
+        const thang = now.getMonth() + 1;
+        const nam = now.getFullYear();
 
-      // FETCH REPORT - Gọi API GetReportDataNoCount (tham khảo M5thongTinDiemChay.html)
-      async function fetchReport(reportPath) {
-        try {
-          const url = `${API_HOST}/api/services/app/Report/GetReportDataNoCount`;
-          const res = await fetch(url, {
-            method: "POST",
-            headers: {
-              accept: "application/json",
-              "Content-Type": "application/json",
-              Authorization: AUTH_TOKEN,
-              "X-XSRF-TOKEN": XSRF_TOKEN,
-              "ngrok-skip-browser-warning": "true",
+        const url = `${API_HOST}/api/services/app/Report/GetReportDataNoCount`;
+        const res = await fetch(url, {
+          method: "POST",
+          headers: {
+            accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: AUTH_TOKEN,
+            "X-XSRF-TOKEN": XSRF_TOKEN,
+            "ngrok-skip-browser-warning": "true",
+          },
+          body: JSON.stringify({
+            reportPath: "[tt].[dktt_KhachHangChuaGhiChiSoBinhQuan3Kys]",
+            page: 0,
+            format: "HTML",
+            parameters: {
+              Thang: thang,
+              Nam: nam
             },
-            body: JSON.stringify({
-              reportPath: reportPath,
-              page: 0,
-              format: "HTML",
-              parameters: {},
-            }),
-          });
+          }),
+        });
 
-          if (!res.ok) {
-            const errorText = await res.text();
-            console.error("API Error Response:", errorText);
-            throw new Error(`API Error: ${res.status}`);
-          }
-          const data = await res.json();
-          return data?.result?.items || [];
-        } catch (e) {
-          console.error("Fetch Report Error:", e);
-          return [];
+        if (!res.ok) {
+          const errorText = await res.text();
+          console.error("API DuKien Error Response:", errorText);
+          throw new Error(`API Error: ${res.status}`);
         }
+        const data = await res.json();
+        return data?.result?.items || [];
+      } catch (e) {
+        console.error("Fetch Report DuKien Error:", e);
+        return [];
+      }
+    }
+
+    // RENDER CHI TIẾT MIỀN TÂY
+    function renderMTDetail(items) {
+      const tbody = $("mt-detail-body");
+      tbody.innerHTML = "";
+
+      if (!items || items.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-gray-400">Không có dữ liệu</td></tr>';
+        $("mt-detail-count").textContent = "Tổng: 0 trạm";
+        return;
       }
 
-      // RENDER CHI TIẾT MIỀN TÂY
-      function renderMTDetail(items) {
-        const tbody = $("mt-detail-body");
-        tbody.innerHTML = "";
-
-        if (!items || items.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-gray-400">Không có dữ liệu</td></tr>';
-          $("mt-detail-count").textContent = "Tổng: 0 trạm";
-          return;
-        }
-
-        items.forEach((item, index) => {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
+      items.forEach((item, index) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
                     <td class="stt-col">${index + 1}</td>
                     <td>${item.TENKV || "--"}</td>
                     <td class="num-col">${formatNumber(item.SoLuongKH)}</td>
                     <td class="num-col">${formatNumber(item.SoLuongHD)}</td>
                     <td class="num-col">${formatNumber(item.SLTieuThu)}</td>
                 `;
-          tbody.appendChild(tr);
-        });
+        tbody.appendChild(tr);
+      });
 
-        $("mt-detail-count").textContent = `Tổng: ${items.length} trạm`;
-        console.log("[MTDetail] Rendered", items.length, "rows");
+      $("mt-detail-count").textContent = `Tổng: ${items.length} trạm`;
+      console.log("[MTDetail] Rendered", items.length, "rows");
 
-        // Vẽ biểu đồ
-        renderMTChart(items);
+      // Vẽ biểu đồ
+      renderMTChart(items);
+    }
+
+    // RENDER BIỂU ĐỒ KHỐI LƯỢNG TIÊU THỤ
+    let mtChartInstance = null;
+    function renderMTChart(items) {
+      const canvas = $("mtChart");
+      if (!canvas) return;
+
+      // Destroy chart cũ nếu có
+      if (mtChartInstance) {
+        mtChartInstance.destroy();
       }
 
-      // RENDER BIỂU ĐỒ KHỐI LƯỢNG TIÊU THỤ
-      let mtChartInstance = null;
-      function renderMTChart(items) {
-        const canvas = $("mtChart");
-        if (!canvas) return;
+      if (!items || items.length === 0) return;
 
-        // Destroy chart cũ nếu có
-        if (mtChartInstance) {
-          mtChartInstance.destroy();
-        }
+      // Sắp xếp theo SLTieuThu giảm dần
+      const sortedItems = [...items].sort((a, b) => (b.SLTieuThu || 0) - (a.SLTieuThu || 0));
 
-        if (!items || items.length === 0) return;
+      const labels = sortedItems.map((item) => (item.TENKV || "").replace("Trạm ", ""));
+      const data = sortedItems.map((item) => item.SLTieuThu || 0);
 
-        // Sắp xếp theo SLTieuThu giảm dần
-        const sortedItems = [...items].sort((a, b) => (b.SLTieuThu || 0) - (a.SLTieuThu || 0));
+      // Tạo gradient màu
+      const colors = sortedItems.map((_, index) => {
+        const ratio = index / (sortedItems.length - 1 || 1);
+        // Gradient từ xanh lá đến cam
+        const r = Math.round(22 + (234 - 22) * ratio);
+        const g = Math.round(163 + (88 - 163) * ratio);
+        const b = Math.round(74 + (12 - 74) * ratio);
+        return `rgba(${r}, ${g}, ${b}, 0.85)`;
+      });
 
-        const labels = sortedItems.map((item) => (item.TENKV || "").replace("Trạm ", ""));
-        const data = sortedItems.map((item) => item.SLTieuThu || 0);
+      // Đăng ký plugin datalabels
+      Chart.register(ChartDataLabels);
 
-        // Tạo gradient màu
-        const colors = sortedItems.map((_, index) => {
-          const ratio = index / (sortedItems.length - 1 || 1);
-          // Gradient từ xanh lá đến cam
-          const r = Math.round(22 + (234 - 22) * ratio);
-          const g = Math.round(163 + (88 - 163) * ratio);
-          const b = Math.round(74 + (12 - 74) * ratio);
-          return `rgba(${r}, ${g}, ${b}, 0.85)`;
-        });
-
-        // Đăng ký plugin datalabels
-        Chart.register(ChartDataLabels);
-
-        mtChartInstance = new Chart(canvas, {
-          type: "bar",
-          data: {
-            labels: labels,
-            datasets: [
-              {
-                label: "Khối lượng tiêu thụ (m³)",
-                data: data,
-                backgroundColor: colors,
-                borderColor: colors.map((c) => c.replace("0.85", "1")),
-                borderWidth: 1,
-                borderRadius: 4,
-                barPercentage: 0.7,
-                categoryPercentage: 0.85,
+      mtChartInstance = new Chart(canvas, {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: "Khối lượng tiêu thụ (m³)",
+              data: data,
+              backgroundColor: colors,
+              borderColor: colors.map((c) => c.replace("0.85", "1")),
+              borderWidth: 1,
+              borderRadius: 4,
+              barPercentage: 0.7,
+              categoryPercentage: 0.85,
+            },
+          ],
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false,
+            },
+            tooltip: {
+              backgroundColor: "rgba(15, 23, 42, 0.9)",
+              titleFont: { size: 12, weight: "bold" },
+              bodyFont: { size: 11 },
+              padding: 10,
+              callbacks: {
+                label: function (context) {
+                  return context.parsed.x.toLocaleString("vi-VN") + " m³";
+                },
               },
-            ],
+            },
+            datalabels: {
+              anchor: "end",
+              align: "end",
+              offset: 4,
+              color: "#334155",
+              font: {
+                size: 11,
+                weight: "bold",
+              },
+              formatter: function (value) {
+                return value.toLocaleString("vi-VN");
+              },
+            },
           },
-          options: {
-            indexAxis: "y",
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                display: false,
+          scales: {
+            x: {
+              beginAtZero: true,
+              grid: {
+                color: "rgba(0, 0, 0, 0.05)",
               },
-              tooltip: {
-                backgroundColor: "rgba(15, 23, 42, 0.9)",
-                titleFont: { size: 12, weight: "bold" },
-                bodyFont: { size: 11 },
-                padding: 10,
-                callbacks: {
-                  label: function (context) {
-                    return context.parsed.x.toLocaleString("vi-VN") + " m³";
-                  },
-                },
-              },
-              datalabels: {
-                anchor: "end",
-                align: "end",
-                offset: 4,
-                color: "#334155",
-                font: {
-                  size: 11,
-                  weight: "bold",
-                },
-                formatter: function (value) {
+              ticks: {
+                font: { size: 10 },
+                callback: function (value) {
                   return value.toLocaleString("vi-VN");
                 },
               },
             },
-            scales: {
-              x: {
-                beginAtZero: true,
-                grid: {
-                  color: "rgba(0, 0, 0, 0.05)",
-                },
-                ticks: {
-                  font: { size: 10 },
-                  callback: function (value) {
-                    return value.toLocaleString("vi-VN");
-                  },
-                },
+            y: {
+              grid: {
+                display: false,
               },
-              y: {
-                grid: {
-                  display: false,
-                },
-                ticks: {
-                  font: { size: 11, weight: "600" },
-                  color: "#475569",
-                },
+              ticks: {
+                font: { size: 11, weight: "600" },
+                color: "#475569",
               },
             },
           },
-        });
-        console.log("[MTChart] Rendered chart with", items.length, "items");
+        },
+      });
+      console.log("[MTChart] Rendered chart with", items.length, "items");
+    }
+
+    // RENDER DATA
+    function renderData(data) {
+      // Cập nhật thời gian
+      $("display-time").textContent = formatDateTime(data.thoiGianTinh);
+
+      // === KHU VỰC VINH ===
+      const vinhPercent = data.tiLeThucHien_SanLuong_Vinh;
+      $("vinh-percent").textContent = vinhPercent + "%";
+      $("vinh-percent").style.color = getColorClass(vinhPercent);
+      $("vinh-thuchien").textContent = formatNumber(data.ketQua_SLuong_Vinh);
+      $("vinh-kehoach").textContent = formatNumber(data.keHoach_SLuong_Vinh);
+
+      // === KHU VỰC MIỀN TÂY ===
+      const mtPercent = data.tiLeThucHien_SanLuong_MT;
+      $("mt-percent").textContent = mtPercent + "%";
+      $("mt-percent").style.color = getColorClass(mtPercent);
+      $("mt-thuchien").textContent = formatNumber(data.ketQua_SLuong_MT);
+      $("mt-kehoach").textContent = formatNumber(data.keHoach_SLuong_MT);
+
+      // === TỔNG CỘNG ===
+      const tongPercent = data.tiLeThucHien_SanLuong_Tong;
+      $("tong-percent").textContent = tongPercent + "%";
+      $("tong-percent").style.color = getColorClass(tongPercent);
+      $("tong-thuchien").textContent = formatNumber(data.ketQua_SLuong_Tong);
+      $("tong-kehoach").textContent = formatNumber(data.keHoach_SLuong_Tong);
+
+      console.log("[SanLuong] Data rendered successfully");
+    }
+
+    // RENDER TỈ LỆ DỰ KIẾN
+    function renderDuKien(summaryData, duKienItems) {
+      // Tìm dữ liệu dự kiến từ API Report
+      // API trả về SL_DuKien_ChuaGhi cho từng khu vực hoặc tổng
+      let vinhDuKien = 0;
+      let mtDuKien = 0;
+      let tongDuKien = 0;
+
+      duKienItems.forEach(item => {
+        // Lấy giá trị SL_DuKien_ChuaGhi từ item
+        const slDuKien = item.SL_DuKien_ChuaGhi || 0;
+        if (item.TENKV && item.TENKV.includes("Vinh")) {
+          vinhDuKien += slDuKien;
+        } else if (item.TENKV) {
+          mtDuKien += slDuKien;
+        }
+        tongDuKien += slDuKien;
+      });
+
+      // Nếu API trả về tổng cộng không theo khu vực, phân bổ theo tỉ lệ thực hiện
+      if (duKienItems.length > 0 && vinhDuKien === 0 && mtDuKien === 0) {
+        tongDuKien = duKienItems.reduce((sum, item) => sum + (item.SL_DuKien_ChuaGhi || 0), 0);
+        const totalThucHien = summaryData.ketQua_SLuong_Tong || 1;
+        const vinhRatio = (summaryData.ketQua_SLuong_Vinh || 0) / totalThucHien;
+        const mtRatio = (summaryData.ketQua_SLuong_MT || 0) / totalThucHien;
+        vinhDuKien = Math.round(tongDuKien * vinhRatio);
+        mtDuKien = tongDuKien - vinhDuKien;
       }
 
-      // RENDER DATA
-      function renderData(data) {
-        // Cập nhật thời gian
-        $("display-time").textContent = formatDateTime(data.thoiGianTinh);
+      // Tính tỉ lệ dự kiến: (Thực hiện + SL_DuKien_ChuaGhi) / Kế hoạch * 100
+      const vinhKeHoach = summaryData.keHoach_SLuong_Vinh || 1;
+      const mtKeHoach = summaryData.keHoach_SLuong_MT || 1;
+      const tongKeHoach = summaryData.keHoach_SLuong_Tong || 1;
 
-        // === KHU VỰC VINH ===
-        const vinhPercent = data.tiLeThucHien_SanLuong_Vinh;
-        $("vinh-percent").textContent = vinhPercent + "%";
-        $("vinh-percent").style.color = getColorClass(vinhPercent);
-        $("vinh-thuchien").textContent = formatNumber(data.ketQua_SLuong_Vinh);
-        $("vinh-kehoach").textContent = formatNumber(data.keHoach_SLuong_Vinh);
+      const vinhThucHien = summaryData.ketQua_SLuong_Vinh || 0;
+      const mtThucHien = summaryData.ketQua_SLuong_MT || 0;
+      const tongThucHien = summaryData.ketQua_SLuong_Tong || 0;
 
-        // === KHU VỰC MIỀN TÂY ===
-        const mtPercent = data.tiLeThucHien_SanLuong_MT;
-        $("mt-percent").textContent = mtPercent + "%";
-        $("mt-percent").style.color = getColorClass(mtPercent);
-        $("mt-thuchien").textContent = formatNumber(data.ketQua_SLuong_MT);
-        $("mt-kehoach").textContent = formatNumber(data.keHoach_SLuong_MT);
+      const vinhTLDuKien = ((vinhThucHien + vinhDuKien) / vinhKeHoach * 100).toFixed(2);
+      const mtTLDuKien = ((mtThucHien + mtDuKien) / mtKeHoach * 100).toFixed(2);
+      const tongTLDuKien = ((tongThucHien + tongDuKien) / tongKeHoach * 100).toFixed(2);
 
-        // === TỔNG CỘNG ===
-        const tongPercent = data.tiLeThucHien_SanLuong_Tong;
-        $("tong-percent").textContent = tongPercent + "%";
-        $("tong-percent").style.color = getColorClass(tongPercent);
-        $("tong-thuchien").textContent = formatNumber(data.ketQua_SLuong_Tong);
-        $("tong-kehoach").textContent = formatNumber(data.keHoach_SLuong_Tong);
+      // Render lên UI
+      $("vinh-dukien").textContent = vinhTLDuKien + "%";
+      $("mt-dukien").textContent = mtTLDuKien + "%";
+      $("tong-dukien").textContent = tongTLDuKien + "%";
 
-        console.log("[SanLuong] Data rendered successfully");
-      }
+      console.log("[DuKien] Rendered:", { vinhTLDuKien, mtTLDuKien, tongTLDuKien, vinhDuKien, mtDuKien, tongDuKien });
+    }
 
-      // FETCH DATA - Gọi cả 2 API song song
-      async function fetchData() {
-        try {
-          // Lấy tháng và năm hiện tại
-          const now = new Date();
-          const thang = now.getMonth() + 1;
-          const nam = now.getFullYear();
+    // FETCH DATA - Gọi cả 3 API song song
+    async function fetchData() {
+      try {
+        // Lấy tháng và năm hiện tại
+        const now = new Date();
+        const thang = now.getMonth() + 1;
+        const nam = now.getFullYear();
 
-          // Gọi song song 2 API
-          const [summaryRes, mtDetailItems] = await Promise.all([
-            fetch(`${API_HOST}/api/services/app/Dashboard/GetKetQuaSanLuong?thang=${thang}&nam=${nam}`, {
-              headers: {
-                Authorization: AUTH_TOKEN,
-                "X-XSRF-TOKEN": XSRF_TOKEN,
-                "ngrok-skip-browser-warning": "true",
-              },
-            }),
-            fetchReport("tt.dktt_BaoCaoSanLuongMTChiTiets"),
-          ]);
+        // Gọi song song 3 API
+        const [summaryRes, mtDetailItems, duKienItems] = await Promise.all([
+          fetch(`${API_HOST}/api/services/app/Dashboard/GetKetQuaSanLuong?thang=${thang}&nam=${nam}`, {
+            headers: {
+              Authorization: AUTH_TOKEN,
+              "X-XSRF-TOKEN": XSRF_TOKEN,
+              "ngrok-skip-browser-warning": "true",
+            },
+          }),
+          fetchReport("tt.dktt_BaoCaoSanLuongMTChiTiets"),
+          fetchReportDuKien(),
+        ]);
 
-          // Xử lý dữ liệu tổng hợp
-          if (summaryRes.ok) {
-            const summaryData = await summaryRes.json();
-            if (summaryData.success && summaryData.result) {
-              renderData(summaryData.result);
-              console.log("[SanLuong] Fetched summary:", summaryData.result);
-            }
+        // Xử lý dữ liệu tổng hợp
+        let summaryResult = null;
+        if (summaryRes.ok) {
+          const summaryData = await summaryRes.json();
+          if (summaryData.success && summaryData.result) {
+            summaryResult = summaryData.result;
+            renderData(summaryResult);
+            console.log("[SanLuong] Fetched summary:", summaryResult);
           }
-
-          // Render chi tiết miền tây
-          renderMTDetail(mtDetailItems);
-        } catch (err) {
-          console.error("[SanLuong] Error:", err);
-        } finally {
-          $("loading").classList.remove("active");
-        }
-      }
-
-      // ============================================
-      // REMOTE CONTROL - TIZEN TV (CHỈ LẮNG NGHE OK)
-      // ============================================
-
-      // Handle remote key press
-      function handleRemoteKey(e) {
-        const keyCode = e.keyCode || e.which;
-        const key = e.key;
-
-        // Log chi tiết để debug
-        console.log("[Remote] ===== KEY EVENT =====");
-        console.log("[Remote] keyCode:", keyCode);
-        console.log("[Remote] key:", key);
-        console.log("[Remote] event.code:", e.code);
-        console.log("[Remote] =====================");
-
-        // Handle Back/Return button (10009 = Tizen Back, 27 = ESC, 461 = LG Back)
-        if (keyCode === 10009 || keyCode === 27 || keyCode === 461 || key === "Escape" || key === "Back" || key === "GoBack") {
-          e.preventDefault();
-          console.log("[Remote] BACK pressed - returning to index");
-          window.location.href = "../index.html";
-          return;
         }
 
-        // Handle Enter/OK button - Chỉ log, không làm gì
-        if (keyCode === 13 || key === "Enter") {
-          e.preventDefault();
-          console.log("[Remote] ENTER/OK pressed - no action needed");
-          return;
+        // Tính toán và render tỉ lệ dự kiến
+        if (summaryResult && duKienItems.length > 0) {
+          renderDuKien(summaryResult, duKienItems);
         }
+
+        // Render chi tiết miền tây
+        renderMTDetail(mtDetailItems);
+      } catch (err) {
+        console.error("[SanLuong] Error:", err);
+      } finally {
+        $("loading").classList.remove("active");
+      }
+    }
+
+    // ============================================
+    // REMOTE CONTROL - TIZEN TV (CHỈ LẮNG NGHE OK)
+    // ============================================
+
+    // Handle remote key press
+    function handleRemoteKey(e) {
+      const keyCode = e.keyCode || e.which;
+      const key = e.key;
+
+      // Log chi tiết để debug
+      console.log("[Remote] ===== KEY EVENT =====");
+      console.log("[Remote] keyCode:", keyCode);
+      console.log("[Remote] key:", key);
+      console.log("[Remote] event.code:", e.code);
+      console.log("[Remote] =====================");
+
+      // Handle Back/Return button (10009 = Tizen Back, 27 = ESC, 461 = LG Back)
+      if (keyCode === 10009 || keyCode === 27 || keyCode === 461 || key === "Escape" || key === "Back" || key === "GoBack") {
+        e.preventDefault();
+        console.log("[Remote] BACK pressed - returning to index");
+        window.location.href = "../index.html";
+        return;
       }
 
-      // Add keyboard/remote event listener
-      document.addEventListener("keydown", handleRemoteKey);
-
-      // Register Tizen TV keys
-      if (typeof tizen !== "undefined" && tizen.tvinputdevice) {
-        try {
-          ["MediaPlayPause", "MediaPlay", "MediaPause", "MediaStop"].forEach((key) => {
-            try {
-              tizen.tvinputdevice.registerKey(key);
-            } catch (e) {}
-          });
-          console.log("[Tizen] Remote keys registered");
-        } catch (e) {}
+      // Handle Enter/OK button - Chỉ log, không làm gì
+      if (keyCode === 13 || key === "Enter") {
+        e.preventDefault();
+        console.log("[Remote] ENTER/OK pressed - no action needed");
+        return;
       }
+    }
 
-      // INIT - Mặc định hiển thị chi tiết Miền Tây
-      function initDetailView() {
-        const statsColumn = $("stats-column");
-        const detailColumn = $("detail-column");
+    // Add keyboard/remote event listener
+    document.addEventListener("keydown", handleRemoteKey);
 
-        // Hiển thị chi tiết: thu nhỏ stats, hiện bảng
-        statsColumn.classList.remove("w-full");
-        statsColumn.classList.add("w-1/3");
-        detailColumn.classList.remove("hidden");
-      }
+    // Register Tizen TV keys
+    if (typeof tizen !== "undefined" && tizen.tvinputdevice) {
+      try {
+        ["MediaPlayPause", "MediaPlay", "MediaPause", "MediaStop"].forEach((key) => {
+          try {
+            tizen.tvinputdevice.registerKey(key);
+          } catch (e) { }
+        });
+        console.log("[Tizen] Remote keys registered");
+      } catch (e) { }
+    }
 
-      // INIT
-      initDetailView();
-      fetchData();
-      setInterval(fetchData, 60000); // Refresh mỗi 60 giây
-      console.log("[M8] Page initialized - detail view shown by default");
-    </script>
-  </body>
+    // INIT - Mặc định hiển thị chi tiết Miền Tây
+    function initDetailView() {
+      const statsColumn = $("stats-column");
+      const detailColumn = $("detail-column");
+
+      // Hiển thị chi tiết: thu nhỏ stats, hiện bảng
+      statsColumn.classList.remove("w-full");
+      statsColumn.classList.add("w-1/3");
+      detailColumn.classList.remove("hidden");
+    }
+
+    // INIT
+    initDetailView();
+    fetchData();
+    setInterval(fetchData, 60000); // Refresh mỗi 60 giây
+    console.log("[M8] Page initialized - detail view shown by default");
+  </script>
+</body>
+
 </html>
